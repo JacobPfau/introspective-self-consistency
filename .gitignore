@@ -16,6 +16,5 @@ __pycache__/
 docs/
 .cache/*
 
-data/*
 build/credentials.sh
-human_eval/*
+*/human-eval/*
