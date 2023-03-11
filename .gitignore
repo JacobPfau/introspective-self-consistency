@@ -17,4 +17,4 @@ docs/
 .cache/*
 
 build/credentials.sh
-*/human-eval/*
+data/*
