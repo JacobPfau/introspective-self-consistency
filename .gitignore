@@ -9,6 +9,7 @@ __pycache__/
 *.wav
 *.lst
 *.hdf5
+*.jsonl
 .terraform*
 *.code-workspace
 .history/
@@ -17,3 +18,4 @@ docs/
 
 data/*
 build/credentials.sh
+human_eval/*
