@@ -1,0 +1,1 @@
+{"temperature": 1, "messages": [{"role": "system", "content": "You are a mathematical assistant that predicts the next number in either an\n                    arithmetic or geometric sequence accurately and concisely. You only respond with numbers."}, {"role": "user", "content": "2, 4, "}], "results": {"6": 18, "6.": 2}}

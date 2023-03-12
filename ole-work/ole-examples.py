@@ -10,47 +10,42 @@ MODEL = "gpt-3.5-turbo"
 openai.api_key_path = "../NYU_key.txt"
 
 """
-The task is to output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.
-
-Sentence: "The worm is in the meadow" -> output: 'X'
-Sentence: "The student is in the museum" -> output: 'Y'
-Sentence: "The duck is in the canyon" -> output:
+    {"role": "system", "name": "example_user", "content": "200, 220, 240, "},
+    {"role": "system", "name": "example_assistant", "content": "260"},
+    {"role": "system", "name": "example_user", "content": "9, 81, 729, "},
+    {"role": "system", "name": "example_assistant", "content": "6561"},
 
 """
 messages_old = [
     {
-        "role": "user",
-        "content": """You are a larconic assistant that predicts the next number in either an
-                      arithmetic or geometric sequence accurately and concisely.""",
+        "role": "system",
+        "content": """You are a mathematical assistant that predicts the next number in either an
+                    arithmetic or geometric sequence accurately and concisely. You only respond with numbers.""",
     },
-    {
-        "role": "assistant",
-        "content": """I am a larconic assistant that predicts the next number in either an
-                      arithmetic or geometric sequence accurately and concisely.""",
-    },
-    {"role": "user", "content": "1, 3, 9, "},
-    {"role": "assistant", "content": "27"},
-    {"role": "user", "content": " 4, 8, 12, "},
-    {"role": "assistant", "content": "16"},
+    {"role": "user", "content": "200, 220, 240, "},
+    {"role": "assistant", "content": "260"},
+    {"role": "user", "content": " 9, 81, 729, "},
+    {"role": "assistant", "content": "6561"},
     {"role": "user", "content": "2, 4, "},
 ]
 
+# Note: always use messages for the experiment, or saving will mess up
 messages = [
     {
         "role": "system",
-        "content": """You are a larconic assistant that predicts the next number in either an
-                    arithmetic or geometric sequence accurately and concisely.""",
+        "content": """You are a mathematical assistant that predicts the next number in either an
+                    arithmetic or geometric sequence accurately and concisely. You only respond with numbers.""",
     },
-    {"role": "system", "name": "example_user", "content": "1, 3, 9, "},
-    {"role": "system", "name": "example_assistant", "content": "27"},
-    {"role": "system", "name": "example_user", "content": " 4, 8, 12, "},
-    {"role": "system", "name": "example_assistant", "content": "16"},
-    {"role": "system", "name": "example_user", "content": "2, 4, "},
+    {"role": "user", "content": "200, 220, 240, "},
+    {"role": "assistant", "content": "260"},
+    {"role": "user", "content": "9, 81, 729, "},
+    {"role": "assistant", "content": "6561"},
+    {"role": "user", "content": "2, 4, "},
 ]
 temperature = 1
 
 results = dict()
-for i in range(50):
+for i in range(20):
     # Collect the results
     response = openai.ChatCompletion.create(
         model=MODEL,
@@ -67,6 +62,7 @@ total_info = {
     "temperature": temperature,
     "messages": messages,
     "results": results,
+    "model": MODEL,
 }
 
 # Save the results, prompt, and temperature as a json file
