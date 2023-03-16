@@ -1,6 +1,6 @@
 from human_eval.data import read_problems, write_jsonl
 
-from src.models.openai import generate_completion  # type: ignore
+from src.models.openai_model import generate_completion  # type: ignore
 
 problems = read_problems()
 
