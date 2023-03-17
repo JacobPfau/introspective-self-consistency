@@ -9,9 +9,8 @@ Use like:
 >>> ambiguous_integer_sequences = find_ambiguous_integer_sequences()
 
 ToDo:
-Contant-recursive (Fibonnaci-like sequences)
-xth index in a sequence satisfying ORs of one or more criterion e.g. lambda x: [i for i in range(100) if i is {}][x]
-modular arithmetic progressions
+xth index in a sequence satisfying ORs of one or more criterion
+- add more criteria here (its just module first term or second term)
 Binary sequences (bitshift, codes, ect) (though error detecting / correcting codes might be its own pipeline)
 String sequences (concat, reverasal, rotations, lexicographic, substitions, string progresions, ect.)
 Generating few-shot templtes automatticaly with few-shot types:
@@ -77,6 +76,9 @@ modular_progression = "lambda x: (x * {}) % ({}+1)"
 indexing_criteria_progression = (
     "lambda x: [i for i in range(100) if i % ({} + 1) or i % ({} + 1)][x]"
 )
+recursive_progression = (
+    "(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
+)
 
 
 def find_ambiguous_integer_sequences(
@@ -110,6 +112,7 @@ def find_ambiguous_integer_sequences(
         bit_or_progression,
         modular_progression,
         indexing_criteria_progression,
+        recursive_progression,
     ]
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
@@ -199,6 +202,7 @@ def _generate_shot_pool(pool_size: int = 10):
         bit_or_progression,
         modular_progression,
         indexing_criteria_progression,
+        recursive_progression,
     ]
     shot_pool = []
     # we generate a prompt_pool with random parameters
