@@ -7,7 +7,7 @@ sys.path.insert(0, "..")
 
 from src.models.openai_model import generate_chat_completion
 from src.pipelines.sequence_completions import (
-    find_ambigious_integer_sequences,
+    find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
 
@@ -50,9 +50,9 @@ def sequence_completion_equality(sequence, fn):
     return int(actual_completion) == last_completion
 
 
-ambigious_sequences = find_ambigious_integer_sequences()
+ambiguous_sequences = find_ambiguous_integer_sequences()
 accs = []
-for sequence, fns in tqdm(ambigious_sequences.items()):
+for sequence, fns in tqdm(ambiguous_sequences.items()):
     fn = fns[0]  # just select one for now
     try:
         accs.append(sequence_completion_equality(sequence, fn))
@@ -63,7 +63,7 @@ for sequence, fns in tqdm(ambigious_sequences.items()):
 
 print(
     f"""
-    Evaluated {len(ambigious_sequences.items())} ambigious sequences.
+    Evaluated {len(ambiguous_sequences.items())} ambiguous sequences.
     Resulting in {round(np.mean(accs), 2)}% accuracy.
     """
 )
