@@ -9,6 +9,9 @@ Use like:
 >>> ambiguous_integer_sequences = find_ambiguous_integer_sequences()
 
 ToDo:
+Contant-recursive (Fibonnaci-like sequences)
+xth index in a sequence satisfying ORs of one or more criterion e.g. lambda x: [i for i in range(100) if i is {}][x]
+modular arithmetic progressions
 Binary sequences (bitshift, codes, ect) (though error detecting / correcting codes might be its own pipeline)
 String sequences (concat, reverasal, rotations, lexicographic, substitions, string progresions, ect.)
 Generating few-shot templtes automatticaly with few-shot types:
@@ -30,6 +33,7 @@ import numpy as np
 SYSTEM_PROMPT = """
 You are a mathematical assistant.
 You are helping with integer sequences like arithmetic or geometric sequences.
+The sequence's are not always 0 indexed, some are offset starting from an arbitrary i-index value.
 You answer accurately and concisely.
 """
 
@@ -68,8 +72,6 @@ arithmetic_progression = "lambda x: ({} * x) + {}"
 geometric_progression = "lambda x: ({} * x) * {}"
 exponential_progression = "lambda x: ({} * x) ** {}"
 power_progression = "lambda x: {} ** ({} * x)"
-bitshift_left_progression = "lambda x: ({} * x) << {}"
-bitshift_right_progression = "lambda x: ({} * x) >> {}"
 bit_or_progression = "lambda x: ({} * x) | {}"
 
 
@@ -101,8 +103,6 @@ def find_ambiguous_integer_sequences(
         geometric_progression,
         exponential_progression,
         power_progression,
-        bitshift_left_progression,
-        bitshift_right_progression,
         bit_or_progression,
     ]
     progressions_to_check = set()
@@ -190,8 +190,6 @@ def _generate_shot_pool(pool_size: int = 10):
         geometric_progression,
         exponential_progression,
         power_progression,
-        bitshift_left_progression,
-        bitshift_right_progression,
         bit_or_progression,
     ]
     shot_pool = []
@@ -277,12 +275,12 @@ def _sample_shots(
     Sample `:n_shots` number of shots.
     Initially we randomly generate `:_generate_shot_pool` the shots.
     """
-    # TODO: implement "oracle", "adversarial", "ambiguous" few shot strategies
-    shot_pool = _generate_shot_pool(pool_size=n_shots)
-    shots = np.random.choice(shot_pool, size=n_shots)
+    # TODO: implement "oracle", "adversarial", "ambigious" few shot strategies
+    shot_pool = _generate_shot_pool(pool_size=n_shots * 2)
+    shots = np.random.choice(shot_pool, size=n_shots, replace=False)
     # continue to draw if fn_item in shots
     while fn_item in shots:
-        shots = np.random.choice(shot_pool, size=n_shots)
+        shots = np.random.choice(shot_pool, size=n_shots, replace=False)
 
     # for all the shots create sequence prompts
     prompts = []
