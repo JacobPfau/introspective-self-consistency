@@ -73,6 +73,7 @@ geometric_progression = "lambda x: ({} * x) * {}"
 exponential_progression = "lambda x: ({} * x) ** {}"
 power_progression = "lambda x: {} ** ({} * x)"
 bit_or_progression = "lambda x: ({} * x) | {}"
+modular_progression = "lambda x: (x * {}) % ({}+1)"
 
 
 def find_ambiguous_integer_sequences(
@@ -104,6 +105,7 @@ def find_ambiguous_integer_sequences(
         exponential_progression,
         power_progression,
         bit_or_progression,
+        modular_progression,
     ]
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
@@ -191,6 +193,7 @@ def _generate_shot_pool(pool_size: int = 10):
         exponential_progression,
         power_progression,
         bit_or_progression,
+        modular_progression,
     ]
     shot_pool = []
     # we generate a prompt_pool with random parameters
