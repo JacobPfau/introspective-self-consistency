@@ -1,0 +1,17 @@
+Which python function generated the following sequence?
+0,1,2
+1. lambda x: x
+2. lambda x: x ** 420
+3. lambda x: 2 ** x
+4. lambda x: 100 // x
+A: 1
+
+Which python function generated the following sequence?
+1,3,9,27
+1. lambda x: 3 * x
+2. lambda x: 2 ** (4 * x)
+3. lambda x: 3 ** x
+4. lambda x: 21
+A: 3
+
+Which python function generated the following sequence?
