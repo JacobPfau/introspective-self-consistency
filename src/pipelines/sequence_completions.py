@@ -180,12 +180,13 @@ def check_ambiguity(
     for step_a_offset in range(step_offsets):
         for step_b_offset in range(step_offsets):
             completions = []
-            flag = True
+            seq_acceptable = 1  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
+            # 0 if not ambiguous/not disambiguate-able. Otherwise stores index of disambiguating value
             for step in range(num_steps_to_check):
                 fn_a_step = eval(fn_a)(step + step_a_offset)
                 fn_b_step = eval(fn_b)(step + step_b_offset)
                 if fn_a_step != fn_b_step:
-                    flag = False
+                    seq_acceptable = 0
                     break
 
                 completions.append(fn_a_step)
@@ -200,7 +201,7 @@ def check_ambiguity(
             # if we have a sequence that isn't all the same
             # and is more than one we found an ambiguous sequence
             if (
-                flag
+                seq_acceptable
                 and len(set(completions)) > 1
                 and len([comp for comp in completions if comp != 0]) > 1
             ):
@@ -213,11 +214,11 @@ def check_ambiguity(
                         fn_a_step = eval(fn_a)(step + step_a_offset)
                         fn_b_step = eval(fn_b)(step + step_b_offset)
                         if fn_a_step != fn_b_step:
-                            flag = True
+                            seq_acceptable = step
                             break
                         else:
-                            flag = False
-                if flag:
+                            seq_acceptable = 0
+                if seq_acceptable:
                     seq_string = ",".join([str(comp) for comp in completions])
                     if seq_string not in ambiguous_sequences:
                         ambiguous_sequences[seq_string] = []
@@ -234,21 +235,13 @@ def check_ambiguity(
                                     "metadata": metadata_a,
                                     "disambiguating_pair_data": fn_b_item,
                                     "disambiguating_pair_metadata": metadata_b,
+                                    "disambiguating_step": seq_acceptable,
                                 }
                             )
 
                     if fn_b_item not in ambiguous_sequences[seq_string]:
                         if not track_generating_fns:
                             ambiguous_sequences[seq_string].append(fn_b_item)
-                        else:
-                            ambiguous_sequences[seq_string].append(
-                                {
-                                    "data": fn_b_item,
-                                    "metadata": metadata_b,
-                                    "disambiguating_pair_data": fn_a_item,
-                                    "disambiguating_pair_metadata": metadata_a,
-                                }
-                            )
                     if not multiple_offsets:
                         return
 
