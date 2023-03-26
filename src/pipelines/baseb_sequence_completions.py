@@ -1,8 +1,8 @@
 """
-This file contains functions for generating binary ambiguous sequence completition problems.
+This file contains functions for generating base-b ambiguous sequence completition problems.
 
 Differences from integer sequence completion:
-- Uses binary sequences
+- Uses base-b sequences
 - sequence functions does not include indexing
 - Sequences are compared as strings i.e. all sequence elements are concatenated without separators into a string
 - Offsets are handled differently.
@@ -11,25 +11,37 @@ Differences from integer sequence completion:
 
 from typing import Tuple
 
-# Integer sequence functions
-sequence_functions = {
+# Same as integer sequence functions but excluding indexing
+default_sequence_functions = {
     "arithmetic_progression": "lambda x: ({} * x) + {}",
     "geometric_progression": "lambda x: ({} * x) * {}",
     "exponential_progression": "lambda x: ({} * x) ** {}",
     "power_progression": "lambda x: {} ** ({} * x)",
-    "bit_or_progression": "lambda x: ({} * x) | {}",
-    "modular_progression": "lambda x: (x * {}) % ({}+1)",
+    # "bit_or_progression": "lambda x: ({} * x) | {}",
+    # "modular_progression": "lambda x: (x * {}) % ({}+1)",
     "recursive_progression": (
         "(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
     ),
 }
 
 
-def find_ambiguous_binary_sequences(
+def numberToBase(n, b):
+    if n == 0:
+        return "0"
+    digits = []
+    while n:
+        digits.append(str(n % b))
+        n //= b
+    return "".join(digits[::-1])
+
+
+def find_ambiguous_string_sequences(
+    base: int = 2,
     max_constant_term_one: int = 4,
     max_constant_term_two: int = 4,
     len_to_check: int = 8,
     disambiguate_len: int = 8,
+    sequence_functions: dict = default_sequence_functions,
 ) -> dict:
     """
     Find ambiguous_integer_sequences using brute force search
@@ -65,6 +77,7 @@ def find_ambiguous_binary_sequences(
             # check the sequence progressions
             # through n steps and add to ambiguous_sequences if ambiguous
             check_ambiguity(
+                base,
                 len_to_check,
                 ambiguous_sequences,
                 fn_a,
@@ -77,6 +90,7 @@ def find_ambiguous_binary_sequences(
 
 
 def check_ambiguity(
+    base: int,
     ambig_check_len: int,
     ambiguous_sequences: dict,
     fn_a: str,
@@ -104,8 +118,8 @@ def check_ambiguity(
         fn_a_step = eval(fn_a)(step)
         fn_b_step = eval(fn_b)(step)
 
-        str_a += f"{fn_a_step:b}"
-        str_b += f"{fn_b_step:b}"
+        str_a += numberToBase(fn_a_step, base)
+        str_b += numberToBase(fn_b_step, base)
         if len(str_a) >= total_len and len(str_b) >= total_len:
             break
     if (
@@ -137,7 +151,7 @@ def check_ambiguity(
 
 
 def main():
-    ambiguous_sequences = find_ambiguous_binary_sequences()
+    ambiguous_sequences = find_ambiguous_string_sequences()
     print(ambiguous_sequences)
 
 
