@@ -37,6 +37,7 @@ def numberToBase(n, b):
 
 def find_ambiguous_string_sequences(
     base: int = 2,
+    index: int = 0,
     max_constant_term_one: int = 4,
     max_constant_term_two: int = 4,
     len_to_check: int = 8,
@@ -58,19 +59,20 @@ def find_ambiguous_string_sequences(
     - value: list of function_candidates with their offsets.
     """
     progression_base_fns = sequence_functions
-    progressions_to_check = set()
+    progressions_to_check = []
     for const_term_one in range(max_constant_term_one):
         for const_term_two in range(max_constant_term_two):
             for name, progression in progression_base_fns.items():
-                progressions_to_check.add(
+                progressions_to_check.append(
                     (
                         (name, const_term_one, const_term_two),
                         progression.format(const_term_one + 1, const_term_two),
                     )
                 )
     ambiguous_sequences = {}
-    for metadata_a, fn_a in progressions_to_check:
-        for metadata_b, fn_b in progressions_to_check:
+    for ind, pair in enumerate(progressions_to_check):
+        metadata_a, fn_a = pair
+        for metadata_b, fn_b in progressions_to_check[ind:]:
             if metadata_a[0] == metadata_b[0]:
                 continue
 
@@ -78,6 +80,7 @@ def find_ambiguous_string_sequences(
             # through n steps and add to ambiguous_sequences if ambiguous
             check_ambiguity(
                 base,
+                index,
                 len_to_check,
                 ambiguous_sequences,
                 fn_a,
@@ -91,6 +94,7 @@ def find_ambiguous_string_sequences(
 
 def check_ambiguity(
     base: int,
+    index: int,
     ambig_check_len: int,
     ambiguous_sequences: dict,
     fn_a: str,
@@ -113,8 +117,9 @@ def check_ambiguity(
     """
 
     str_a, str_b = "", ""
-    total_len = ambig_check_len + disambiguate_len
-    for step in range(total_len):
+    ambig_check_ind = ambig_check_len + index
+    total_len = disambiguate_len + ambig_check_ind
+    for step in range(index, total_len):
         fn_a_step = eval(fn_a)(step)
         fn_b_step = eval(fn_b)(step)
 

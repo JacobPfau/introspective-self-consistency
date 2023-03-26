@@ -127,8 +127,9 @@ def find_ambiguous_integer_sequences(
                     )
                 )
     ambiguous_sequences = {}
-    for metadata_a, fn_a in progressions_to_check:
-        for metadata_b, fn_b in progressions_to_check:
+    for ind, pair in enumerate(progressions_to_check):
+        metadata_a, fn_a = pair
+        for metadata_b, fn_b in progressions_to_check[ind:]:
             if fn_a == fn_b:
                 continue
 
