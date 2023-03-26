@@ -1,7 +1,8 @@
-import random
 from typing import List
 
 from models.openai_model import generate_chat_completion, generate_completion
+
+DAVINCI_MODEL_NAME = "text-davinci-003"
 
 
 def format_question(
@@ -9,10 +10,10 @@ def format_question(
     target_sequence: str,
     functions: List[str],
 ) -> str:
-    # Shuffles the possible functions, so that the correct function is not always the first one.
-    random.shuffle(functions)
-    formatted_answers = "\n".join([f"{i}. {func}" for i, func in enumerate(functions)])
-    result = f"{prompt}\n{target_sequence}\n{formatted_answers}"
+    formatted_answers = "\n".join(
+        [f"{i+1}. {func}" for i, func in enumerate(functions)]
+    )
+    result = f"{prompt}\n{target_sequence}\n{formatted_answers}\nA:"
     return result
 
 
@@ -29,14 +30,21 @@ def parse_model_response(model_response: str) -> int:
         return -2
     else:
         model_response = model_response[0]
+    # If the answer isn't a number, report an error
+    try:
+        model_response = int(model_response)
+    except ValueError:
+        return -3
+    return model_response
 
 
-def task_capability_check(
+def choose_function(
     possible_functions: List[str],
     correct_function_indices: List[int],
     target_sequence: str,
     prompt: str,
     model_name: str,
+    temperature: float = 0.0,
 ) -> int:
     """
     Prompt a model to chose a function, from a list of possible functions, that generated a target sequence.
@@ -53,13 +61,15 @@ def task_capability_check(
         target_sequence=target_sequence,
         functions=possible_functions,
     )
+    print(formatted_prompt)
     if model_name == "DAVINCI":
+
         # Feed this into the model
         model_response = generate_completion(
             prompt=formatted_prompt,
-            temperature=0,
+            temperature=temperature,
             max_tokens=256,
-            model=model_name,
+            model=DAVINCI_MODEL_NAME,
         )
     elif model_name == "CHAT":
         # Feed this into the model
@@ -67,36 +77,43 @@ def task_capability_check(
             # TODO: make this more general, to include multiple turns
             # for few shot examples
             prompt_turns=[{"text": formatted_prompt}],
-            temperature=0,
+            temperature=temperature,
             max_tokens=256,
             model=model_name,
         )
-
     # Parse the model's response to get the index of the function it chose
     model_response = parse_model_response(model_response)
+    print(model_response)
+    print(correct_function_indices)
 
     # If the model's response is not a valid index, return an error
     if model_response < 0:
         return model_response
-
-    # Otherwise, compare the model's response to the correct function
+    # Compare the model's response to the correct function
     if model_response in correct_function_indices:
         return 1
-    # Otherwise, the model's response is incorrect, return 0
+    # If the model's response is incorrect, return 0
     else:
         return 0
 
 
 if __name__ == "__main__":
-    possible_functions = ["f1", "f2", "f3"]
-    correct_function_indices = [0]
-    target_sequence = "target"
-    prompt = "Choose the function that generated the target sequence."
-    model_name = "DAVINCI"
-    task_capability_check(
-        possible_functions=possible_functions,
-        correct_function_indices=correct_function_indices,
-        target_sequence=target_sequence,
-        prompt=prompt,
-        model_name=model_name,
-    )
+    with open("evals/prompts/choose_function.txt") as f:
+        prompt = f.read()
+        possible_functions = [
+            "lambda x: 2 * x",
+            "lambda x: 3 ** (4 * x)",
+            "lambda x: 2 ** x",
+            "lambda x: 21",
+        ]
+        correct_function_indices = [3]
+        target_sequence = "1,2,4,8"
+        model_name = "DAVINCI"
+        result = choose_function(
+            possible_functions=possible_functions,
+            correct_function_indices=correct_function_indices,
+            target_sequence=target_sequence,
+            prompt=prompt,
+            model_name=model_name,
+        )
+        print(result)
