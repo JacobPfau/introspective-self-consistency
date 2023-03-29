@@ -17,7 +17,7 @@ def generate_wrong_functions(
     """
     if isinstance(sequence, str):
         # Turn the sequence into a list of ints
-        sequence = [int(x) for x in sequence.split(", ")]
+        sequence = [int(x.strip()) for x in sequence.split(",")]
     sequence_length = len(sequence)
     output = []
     i = 0
