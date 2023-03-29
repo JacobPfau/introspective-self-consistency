@@ -44,7 +44,6 @@ def capability_eval(
                     incorrect_functions[i] for i in incorrect_function_indices
                 ]
                 sampled_functions.insert(correct_function_index, correct_function)
-                print(sampled_functions)
                 # Choose the function
                 model_response = choose_function(
                     possible_functions=sampled_functions,
