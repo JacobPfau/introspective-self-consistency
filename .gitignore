@@ -1,6 +1,7 @@
 .history/
 .vscode/
 __pycache__/
+*.pyc
 .mypy_cache/
 .DS_Store
 *.zip
@@ -15,6 +16,7 @@ __pycache__/
 .history/
 docs/
 .cache/*
+
 
 build/credentials.sh
 data/*
