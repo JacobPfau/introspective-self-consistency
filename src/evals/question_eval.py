@@ -61,7 +61,6 @@ def choose_function(
         target_sequence=target_sequence,
         functions=possible_functions,
     )
-    print(formatted_prompt)
     if model_name == "DAVINCI":
 
         # Feed this into the model
@@ -83,8 +82,6 @@ def choose_function(
         )
     # Parse the model's response to get the index of the function it chose
     model_response = parse_model_response(model_response)
-    print(model_response)
-    print(correct_function_indices)
 
     # If the model's response is not a valid index, return an error
     if model_response < 0:

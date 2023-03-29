@@ -6,7 +6,7 @@ import random
 
 from evals.question_eval import choose_function
 from evals.wrong_int_func_generator import generate_wrong_functions
-from pipelines.sequence_completions import all_sequence_functions
+from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
 
 def model_task_evaluation(
@@ -29,9 +29,10 @@ def model_task_evaluation(
     with open(prompt_file) as f:
         prompt = f.read()
         for i in range(num_questions):
+            print("Question: ", i + 1, "/", num_questions, sep="")
             # Generate a function from the class
             target_fn = fn_form.format(random.randint(0, 10), random.randint(0, 10))
-            offset = random.choice(random.randint(0, 10))
+            offset = random.randint(0, 10)
             # Generate a sequence
             target_sequence = [
                 eval(target_fn)(j + offset) for j in range(sequence_length)
@@ -48,7 +49,7 @@ def model_task_evaluation(
             # Prompt the model to choose the correct function
             model_response = choose_function(
                 possible_functions=all_functions,
-                correct_function_indices=[num_functions],
+                correct_function_indices=[num_functions + 1],
                 target_sequence=target_sequence,
                 prompt=prompt,
                 model_name=model_name,
@@ -64,5 +65,16 @@ def model_task_evaluation(
 
 
 if __name__ == "__main__":
-    x = all_sequence_functions
-    print(x)
+    correct, incorrect, invalid = model_task_evaluation(
+        function_class="modular_progression",
+        sequence_functions=all_sequence_functions,
+        sequence_length=5,
+        prompt_file="evals/prompts/choose_function.txt",
+        model_name="DAVINCI",
+        temperature=0.0,
+        num_questions=20,
+        num_functions=5,
+    )
+    print(f"Correct: {correct}")
+    print(f"Incorrect: {incorrect}")
+    print(f"Invalid: {invalid}")
