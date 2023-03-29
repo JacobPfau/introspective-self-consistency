@@ -1,11 +1,11 @@
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from pipelines.sequence_completions import sequence_functions
 
 
 def generate_wrong_functions(
-    sequence: str,
+    sequence: Union[str, List[int]],
     num_functions: int = 5,
     offset_range: Tuple[int, int] = (0, 10),
     num_range: Tuple[int, int] = (0, 10),
@@ -15,27 +15,30 @@ def generate_wrong_functions(
     Given an integer sequence, and a method of generating functions, generate a list of incorrect functions.
     Uses the sequence_functions dictionary in pipelines.sequence_completions, with offsets
     """
-    # Turn the sequence into a list of ints
-    sequence = [int(x) for x in sequence.split(", ")]
+    if isinstance(sequence, str):
+        # Turn the sequence into a list of ints
+        sequence = [int(x) for x in sequence.split(", ")]
     sequence_length = len(sequence)
     output = []
     i = 0
     while i < len(range(num_functions)):
-        fn, offset = _generate_random_function(func_pool, num_range, offset_range)
-        print(fn, offset)
-        print(type(fn))
-        print(type(offset))
-        # check that the candidate is incorrect
-        for step in range(sequence_length):
-            fn_step = eval(fn)(step + offset)
-            print(step, sequence_length)
-            print(sequence)
-            if fn_step != sequence[step]:
-                i += 1
-                output.append((fn, offset))
+        fn, _ = _generate_random_function(func_pool, num_range, offset_range)
+        # TODO: will just check no equivalence for the first ten possible offsets, might want to change this
+        correct = False
+        for offset in range(10):
+            # Check that the candidate is incorrect
+            for step in range(sequence_length):
+                fn_step = eval(fn)(step + offset)
+                if fn_step != sequence[step]:
+                    break
+                elif step == sequence_length - 1:
+                    correct = True
+                    break
+            if correct:
                 break
-            elif step == sequence_length - 1:
-                break
+        if not correct:
+            i += 1
+            output.append(fn)
 
     return output
 
