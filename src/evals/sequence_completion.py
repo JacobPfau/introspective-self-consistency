@@ -183,11 +183,11 @@ def evaluate_sequence_completion_equality(
         match_accs.append(1 if data["generated_completion_matches"] else 0)
         model_match_accs.append(1 if data["model_completion_matches"] else 0)
         model_consistency_accs.append(
-            1 if data["model_self_consistency_evaluation"] == "Y" else 0
+            1 if data["model_self_consistency_evaluation"].strip() == "Y" else 0
         )
         consistent_and_matched.append(
             1
-            if data["model_self_consistency_evaluation"] == "Y"
+            if data["model_self_consistency_evaluation"].strip() == "Y"
             and data["generated_completion_matches"]
             else 0
         )
