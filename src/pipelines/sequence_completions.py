@@ -129,7 +129,7 @@ def find_ambiguous_integer_sequences(
     ambiguous_sequences = {}
     for ind, pair in enumerate(progressions_to_check):
         metadata_a, fn_a = pair
-        for metadata_b, fn_b in progressions_to_check[ind + 1 :]:
+        for metadata_b, fn_b in list(progressions_to_check)[ind + 1 :]:
             if fn_a == fn_b:
                 continue
 
@@ -248,7 +248,7 @@ def check_ambiguity(
 
 
 def _generate_shot_pool(pool_size: int = 10):
-    fn_pool = sequence_functions.values()
+    fn_pool = list(sequence_functions.values())
     shot_pool = []
     # we generate a prompt_pool with random parameters
     # TODO: move these magic strings to somewhere more visible
