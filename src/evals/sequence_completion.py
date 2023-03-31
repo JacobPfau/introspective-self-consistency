@@ -152,6 +152,9 @@ def evaluate_sequence_completion_equality(
 ):
     print("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
+    total_sequences = sum(
+        [len(fns) for fns in ambiguous_sequences.values()]
+    )
     completion_data = []
     for sequence, fns in tqdm(list(ambiguous_sequences.items())):
         for fn in fns:
@@ -192,17 +195,17 @@ def evaluate_sequence_completion_equality(
             else 0
         )
 
-    match_accuracy = round(np.mean(match_accs), 2) * 100
-    model_match_accuracy = round(np.mean(model_match_accs), 2) * 100
-    model_consistency_accuracy = round(np.mean(model_consistency_accs), 2) * 100
+    ground_truth_consistent = round(np.mean(match_accs), 2) * 100
+    self_rule_following_consistency = round(np.mean(model_match_accs), 2) * 100
+    self_comparison_consistency = round(np.mean(model_consistency_accs), 2) * 100
     consistent_and_matched_accuracy = round(np.mean(consistent_and_matched), 2) * 100
     print(
         f"""
-        Evaluated {len(completion_data)} ambiguous sequences.
+        Evaluated {len(completion_data)} ambiguous sequences of {total_sequences} total.
         Resulting in:
-        - {match_accuracy}% correct: next step (evaluated in code) for generated explanation equals completion proposed by model.
-        - {model_match_accuracy}% correct: next step (evaluated by prompting) for generated explanation equals completion proposed by model.
-        - {model_consistency_accuracy}% consistent: model thinks sequence is consistent with explanation.
-        - {consistent_and_matched_accuracy}% consistent and matched (evaluated in code).
+        - {ground_truth_consistent}% ground-truth-consistent
+        - {self_rule_following_consistency}% self-rule-following-consistency
+        - {self_comparison_consistency}% self-comparison-consistency
+        - {consistent_and_matched_accuracy}% self-comparison-consistency and ground-truth-consistent.
         """
     )
