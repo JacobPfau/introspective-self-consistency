@@ -1,0 +1,115 @@
+{
+    "date": "20230331_12-15",
+    "config": {
+        "construction_type": "subject_location",
+        "construction_format": "qa",
+        "n_shots": 3,
+        "n_queries": 20,
+        "prob_of_ambiguous": 50,
+        "needs_instruction": true,
+        "needs_informative": false,
+        "include_ambiguous_examples": false
+    },
+    "examples": [
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The photographer is in the jungle.\nA: X\nQ: The hiker is in the river.\nA: X\nQ: The horse is in the theatre.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The critic is in the canyon.\nA: X\nQ: The hound is in the theatre.\nA: Y\nQ: The worm is in the museum.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The critic is in the meadow.\nA: X\nQ: The snake is in the museum.\nA: Y\nQ: The director is in the prairie.\nA:",
+            "completion": " X",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hawk is in the film studio.\nA: Y\nQ: The hiker is in the canyon.\nA: X\nQ: The mountain lion is in the museum.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the house.\nA: X\nQ: The surveyor is in the woodlands.\nA: Y\nQ: The critic is in the woodlands.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive is in the prairie.\nA: Y\nQ: The snake is in the apartment building.\nA: X\nQ: The surveyor is in the jungle.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The surveyor is in the lagoon.\nA: Y\nQ: The surveyor is in the cave.\nA: Y\nQ: The director is in the cave.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hiker is in the canyon.\nA: X\nQ: The horse is in the courtroom.\nA: Y\nQ: The butterfly is in the theatre.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The critic is in the marsh.\nA: Y\nQ: The mountain lion is in the house.\nA: X\nQ: The critic is in the cave.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The researcher is in the canyon.\nA: X\nQ: The mountain lion is in the laboratory.\nA: Y\nQ: The surveyor is in the meadow.\nA:",
+            "completion": " X",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the hotel lobby.\nA: Y\nQ: The fugitive is in the canyon.\nA: X\nQ: The horse is in the grocery store.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the hotel lobby.\nA: Y\nQ: The hiker is in the woodlands.\nA: X\nQ: The bear is in the restaurant.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The horse is in the museum.\nA: X\nQ: The hiker is in the canyon.\nA: Y\nQ: The reporter is in the meadow.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The firefighter is in the jungle.\nA: X\nQ: The worm is in the film studio.\nA: Y\nQ: The hawk is in the apartment building.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The photographer is in the woodlands.\nA: X\nQ: The firefighter is in the jungle.\nA: X\nQ: The critic is in the canyon.\nA:",
+            "completion": " X",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hawk is in the restaurant.\nA: X\nQ: The director is in the prairie.\nA: Y\nQ: The director is in the pond.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The duck is in the film studio.\nA: Y\nQ: The bear is in the museum.\nA: Y\nQ: The critic is in the cave.\nA:",
+            "completion": " X",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The photographer is in the woodlands.\nA: X\nQ: The researcher is in the cave.\nA: X\nQ: The bear is in the laboratory.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The snake is in the hotel lobby.\nA: Y\nQ: The surveyor is in the meadow.\nA: X\nQ: The surveyor is in the woodlands.\nA:",
+            "completion": " X",
+            "salient_task": "location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The horse is in the laboratory.\nA: X\nQ: The reporter is in the prairie.\nA: Y\nQ: The critic is in the woodlands.\nA:",
+            "completion": " Y",
+            "salient_task": "location"
+        }
+    ]
+}
