@@ -6,12 +6,9 @@ from models.openai_model import CHAT_MODEL_NAME  # , DAVINCI_MODEL_NAME
 
 
 def test_generate_wrong_functions():
-    # Test 1
     sequence = "1, 2, 3, 4, 5"
     output = utils.generate_wrong_functions(sequence)
     print(output)
-
-    # Test 2
 
 
 def test_choose_function():

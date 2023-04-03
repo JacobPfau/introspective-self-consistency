@@ -1,7 +1,9 @@
 import argparse
 
-from evals.function_class_eval import function_class_selection_evaluation
-from evals.single_seq_eval import function_selection_evaluation
+from evals.function_selection_evaluation import (
+    function_class_selection_evaluation,
+    function_selection_evaluation,
+)
 from pipelines.sequence_completions import sequence_functions
 
 
@@ -20,7 +22,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument(
     "--evaluation",
-    default="function_class_selection_evaluation",
+    default="function_selection_evaluation",
     type=str,
     choices=[
         "function_selection_evaluation",
@@ -35,7 +37,9 @@ parser.add_argument(
     default='["lambda x: x", "lambda x: x + 7", "lambda x: x ** 2", "lambda x: x ** 3"]',
     type=list,
 )
-parser.add_argument("--correct-functions", default='["lambda x: x*5"]', type=list)
+parser.add_argument(
+    "--correct-functions", default=["lambda x: x*5"], type=list, nargs="+"
+)
 
 # Function class selection evaluation arguments
 parser.add_argument(
@@ -61,6 +65,7 @@ parser.add_argument("--num-functions", default=4, type=int)
 args = parser.parse_args()
 if __name__ == "__main__":
     if args.evaluation == "function_selection_evaluation":
+        print(args.correct_functions)
         (
             correct_choices,
             incorrect_choices,
@@ -94,6 +99,6 @@ if __name__ == "__main__":
             num_functions=args.num_functions,
         )
 
-        print(f"Correct choices: {correct_choices}")
-        print(f"Incorrect choices: {incorrect_choices}")
-        print(f"Invalid outputs: {invalid_outputs}")
+    print(f"Correct choices: {correct_choices}")
+    print(f"Incorrect choices: {incorrect_choices}")
+    print(f"Invalid outputs: {invalid_outputs}")
