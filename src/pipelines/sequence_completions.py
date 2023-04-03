@@ -269,7 +269,7 @@ def _generate_shot_pool(pool_size: int = 10):
         offset = random.randint(0, 3)
         first_term = random.randint(1, 5)
         second_term = random.randint(0, 4)
-        fn = random.choice(fn_pool)
+        fn = random.choice(list(fn_pool))
         shot_pool.append({"fn": fn.format(first_term, second_term), "offset": offset})
     return shot_pool
 

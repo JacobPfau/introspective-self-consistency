@@ -7,19 +7,21 @@ This allows us to evaluate whether the model is capable of understanding a given
 import random
 from typing import Tuple
 
-from evals.question_eval import choose_function
-from evals.wrong_int_func_generator import generate_wrong_functions
-from pipelines.sequence_completions import sequence_functions as all_sequence_functions
+from evals.prompts.choose_function import function_selection_prompt
+from evals.utils import choose_function, generate_wrong_functions
+
+# from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
 
-def model_task_evaluation(
+def function_class_selection_evaluation(
+    model_name: str,
     function_class: str,
     sequence_functions: dict[str, str],
     sequence_length: int,
-    prompt_file: str,
-    model_name: str,
     temperature: float = 0.0,
-    num_questions: int = 50,
+    num_shots: int = 4,
+    use_cot: bool = False,
+    num_samples: int = 50,
     num_functions: int = 5,
 ) -> Tuple[int, int, int]:
     """
@@ -30,55 +32,45 @@ def model_task_evaluation(
     incorrect = 0
     invalid = 0
     fn_form = sequence_functions[function_class]
-    with open(prompt_file) as f:
-        prompt = f.read()
-        for i in range(num_questions):
-            print("Question: ", i + 1, "/", num_questions, sep="")
-            # Generate a function from the class
-            target_fn = fn_form.format(random.randint(0, 10), random.randint(0, 10))
-            offset = random.randint(0, 10)
-            # Generate a sequence
-            target_sequence = [
-                eval(target_fn)(j + offset) for j in range(sequence_length)
-            ]
+    # Generate a prompt
+    prompt = function_selection_prompt(
+        num_shots=num_shots,
+        num_functions=num_functions,
+        use_cot=use_cot,
+    )
+    for i in range(num_samples):
+        print("Question: ", i + 1, "/", num_samples, sep="")
+        # Generate a function from the class
+        target_fn = fn_form.format(random.randint(0, 10), random.randint(0, 10))
+        offset = random.randint(0, 10)
+        # Generate a sequence
+        target_sequence = [eval(target_fn)(j + offset) for j in range(sequence_length)]
 
-            # Generate incorrect functions
-            incorrect_functions = generate_wrong_functions(
-                target_sequence, num_functions
-            )
+        # Generate incorrect functions
+        incorrect_functions = generate_wrong_functions(target_sequence, num_functions)
 
-            all_functions = incorrect_functions + [target_fn]
+        all_functions = incorrect_functions + [target_fn]
+        # Shuffle the functions
+        random.shuffle(all_functions)
+        # Get the index of the correct function
+        correct_function_index = all_functions.index(target_fn)
 
-            # Load the prompt
-            # Prompt the model to choose the correct function
+        # Load the prompt
+        # Prompt the model to choose the correct function
+        try:
             model_response = choose_function(
                 possible_functions=all_functions,
-                correct_function_indices=[num_functions + 1],
+                correct_function_indices=[correct_function_index + 1],
                 target_sequence=target_sequence,
                 prompt=prompt,
                 model_name=model_name,
                 temperature=temperature,
             )
-            if model_response == 1:
-                correct += 1
-            elif model_response == 0:
-                incorrect += 1
-            elif model_response < 0:
-                invalid += 1
+        except ValueError:
+            invalid += 1
+            continue
+        if model_response == 1:
+            correct += 1
+        elif model_response == 0:
+            incorrect += 1
     return correct, incorrect, invalid
-
-
-if __name__ == "__main__":
-    correct, incorrect, invalid = model_task_evaluation(
-        function_class="modular_progression",
-        sequence_functions=all_sequence_functions,
-        sequence_length=5,
-        prompt_file="evals/prompts/choose_function.txt",
-        model_name="DAVINCI",
-        temperature=0.0,
-        num_questions=20,
-        num_functions=5,
-    )
-    print(f"Correct: {correct}")
-    print(f"Incorrect: {incorrect}")
-    print(f"Invalid: {invalid}")
