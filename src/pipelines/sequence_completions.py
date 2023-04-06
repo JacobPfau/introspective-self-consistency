@@ -9,10 +9,12 @@ Use like:
 >>> ambiguous_integer_sequences = find_ambiguous_integer_sequences()
 
 ToDo:
+(A) Brainstorming sequence
 xth index in a sequence satisfying ORs of one or more criterion
 - add more criteria here (its just module first term or second term)
 Binary sequences (bitshift, codes, ect) (though error detecting / correcting codes might be its own pipeline)
 String sequences (concat, reverasal, rotations, lexicographic, substitions, string progresions, ect.)
+(B) Prompt variation
 Generating few-shot templtes automatticaly with few-shot types:
 - Oracle: Sample the true underlying rule at different non-overlapping steps or different terms.
 - Adversarial
@@ -20,8 +22,19 @@ Generating few-shot templtes automatticaly with few-shot types:
     - Sample sequences that **do not include similar rules**
 - Samples with ambiguity that show potential options.
 Generate CoT:
-- evaluate step by step with doctest
+- evaluate step by step with doctest (try before and after answer)
 - resolve each term
+(C) Evaluation & Experimental Design
+Exact equality 
+- Function generates the next sequence value
+- More capabilties check 
+- Filter out ambigious functions
+- Ambigious functions manually have generate a certain number of steps and check they eventually don't generate functions
+Consistency evaluator - two outputs consistent
+- Non-ambigious rules - success rate - in generateing examples
+- Ambigious rules - success rate - in generating examples 
+
+
 """
 
 import random
