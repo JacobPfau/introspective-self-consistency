@@ -1,0 +1,63 @@
+original_function,sequence,generated_completion_rule,generated_completion,generated_completion_matches
+lambda x: x[::-1],@### => ###@,lambda x: x[-1] + x[1:4] + x[0],###@,False
+lambda x: x[1:] + x[:1],@### => ###@,lambda x: x[-1] + x[1:-1] + x[:1],@###,True
+lambda x: x[-3:] + x[:-3],@### => ###@,lambda x: x[1:] + x[0],##@#,True
+"lambda x: x[:0] + x[0:].replace('@', """", 1) + '@'",@### => ###@,lambda x: x[-3:] + x[:-3],@###,False
+lambda x: x[3:] + x[:3],@### => #@##,lambda x: x[0] + x[2:] + x[1] + '#',"This transformation cannot be achieved using #@##. The given transformation replaces the first character with '@' and the last two characters with '#'. However, the given string '@###' has '@' as the first character and '###' as the last three characters. Therefore, it is not possible to apply the given transformation to the string '@###'.",False
+"lambda x: x[:0] + '#' + x[0:].replace('#', """", 1)",@### => #@##,lambda x: x[0] + x[-2] + x[-1] + x[1],@###,False
+lambda x: x[::-1],#@@@ => @@@#,lambda x: x[1:] + x[:1] + x[2:][::-1],#@@@,False
+lambda x: x[1:] + x[:1],#@@@ => @@@#,lambda x: x[-1] + x[1:4] + x[0],@@#@,False
+lambda x: x[-3:] + x[:-3],#@@@ => @@@#,lambda x: x[3] + x[:3] + x[4:],#@@@,True
+"lambda x: x[:0] + x[0:].replace('#', """", 1) + '#'",#@@@ => @@@#,lambda x: x[1:-1],#@@@,False
+lambda x: x[3:] + x[:3],#@@@ => @#@@,lambda x: x[1] + x[:1] + x[2:],#@@@,True
+"lambda x: x[:0] + '@' + x[0:].replace('@', """", 1)",#@@@ => @#@@,lambda x: x[1] + x[0] + x[2:],#@@@,True
+lambda x: x[-1:] + x[:-1],#@@@ => @#@@,lambda x: x[-3] + x[:-3] + x[-2:],#@@@,True
+lambda x: x[::-1],#@## => ##@#,lambda x: x[2] + x[3] + x[0] + x[1],#@##,False
+lambda x: x[3:] + x[:3],#@## => ##@#,lambda x: x[2:] + x[1] + x[:1],#@##,False
+lambda x: x[-1:] + x[:-1],#@## => ##@#,lambda x: x[1] + x[3:] + x[2] + x[:1],#@##,False
+"lambda x: x[:1] + '#' + x[1:].replace('#', """", 1)",#@## => ##@#,lambda x: x[-1] + x[1:3] + x[0] + x[3:],#@##,False
+lambda x: x[1:] + x[:1],#@## => @###,lambda x: '@' + x[1:] if x[0] == '#' else x,###@,False
+"lambda x: x[:0] + x[0:].replace('#', """", 1) + '#'",#@## => @###,lambda x: x[0] + x[2:],#@##,False
+"lambda x: x[:0] + '@' + x[0:].replace('@', """", 1)",#@## => @###,"lambda x: x.replace('#', '@', 1)",#@##,False
+lambda x: x[-3:] + x[:-3],#@## => @###,lambda x: x[0] + x[2:],#@##,False
+lambda x: x[2:] + x[:2],#@## => ###@,"lambda x: x[1:].replace('@', '') + '#' * 3",###@,False
+"lambda x: x[:0] + x[0:].replace('@', """", 1) + '@'",#@## => ###@,"lambda x: x[1:].replace('@', """") + x[0]",##@#,False
+lambda x: x[-2:] + x[:-2],#@## => ###@,"lambda x: x[2:] + x[:2].replace('#', '@')",###@,False
+lambda x: x[::-1],@#@@ => @@#@,"lambda x: x[1:].replace('@', """", 1) + '@' + x[:1]",@#@@,False
+"lambda x: x[:1] + '@' + x[1:].replace('@', """", 1)",@#@@ => @@#@,lambda x: x[1] + x[3] + x[2] + x[0],@#@@,False
+lambda x: x[1:] + x[:1],@#@@ => #@@@,lambda x: '#' + x[1:],@#@@,False
+"lambda x: x[:0] + x[0:].replace('@', """", 1) + '@'",@#@@ => #@@@,lambda x: x[1:] if x[0] == '@' else x,@#@@,False
+"lambda x: x[:0] + '#' + x[0:].replace('#', """", 1)",@#@@ => #@@@,lambda x: x[1:] if x[0] == '@' else x,@#@@,False
+lambda x: x[-3:] + x[:-3],@#@@ => #@@@,lambda x: '#' + x[1:],@@@#,False
+lambda x: x[2:] + x[:2],@#@@ => @@@#,lambda x: x[0] + x[2] + x[1] + x[3],@@@#,True
+"lambda x: x[:0] + x[0:].replace('#', """", 1) + '#'",@#@@ => @@@#,lambda x: x[0] + x[2:] + x[1],#@@@,False
+"lambda x: x[:1] + x[1:].replace('#', """", 1) + '#'",@#@@ => @@@#,"lambda x: x[0] + x[2:].replace('@', """") + x[1] + '@'",@@@#,False
+lambda x: x[-2:] + x[:-2],@#@@ => @@@#,"lambda x: x.replace('@#', '@@@', 1)",@#@@,False
+lambda x: x[::-1],##@# => #@##,lambda x: x[1] + x[0] + x[2:4] + x[2::-1],#@##,False
+lambda x: x[1:] + x[:1],##@# => #@##,lambda x: x[2] + x[0:2] + x[3] + x[2],##@# => #@##,False
+lambda x: x[-3:] + x[:-3],##@# => #@##,"lambda x: x[2] + x[0:2].replace('#', '@') + x[3:].replace('@', '#')",@##@,False
+"lambda x: x[:0] + x[0:].replace('#', """", 1) + '#'",##@# => #@##,lambda x: x[1] + x[0] + x[3] + x[2],##@#,False
+"lambda x: x[:1] + x[1:].replace('#', """", 1) + '#'",##@# => #@##,lambda x: x[2] + x[0:2] + x[3] + x[4:],#@##,False
+"lambda x: x[:1] + '@' + x[1:].replace('@', """", 1)",##@# => #@##,lambda x: x[1] + x[3:] + x[0] + x[2],##@#,False
+lambda x: x[2:] + x[:2],##@# => @###,"lambda x: x[2] + x[3:].replace('#', '@') + '@' * x[:2].count('#')",##@#,False
+"lambda x: x[:0] + '@' + x[0:].replace('@', """", 1)",##@# => @###,"lambda x: x[2:].replace('#', '@', 1) + x[:2].replace('#', '@', 1)","This transformation cannot be completed using @###. The given transformation changes the characters ##@# to @###, which means that the original string had more characters than the transformed string. Therefore, it is not possible to transform @### to @### by reversing the given transformation.",False
+lambda x: x[-2:] + x[:-2],##@# => @###,"lambda x: x[0] + x[3:].replace('#', '@') + '@'",##@#,False
+lambda x: x[3:] + x[:3],##@# => ###@,lambda x: x[2:] + x[:2],##@#,False
+"lambda x: x[:1] + x[1:].replace('@', """", 1) + '@'",##@# => ###@,"lambda x: x.replace('@', '') + '@'",###@,True
+"lambda x: x[:2] + x[2:].replace('@', """", 1) + '@'",##@# => ###@,lambda x: x[:2] + x[3] + '@',###@,False
+"lambda x: x[:2] + '#' + x[2:].replace('#', """", 1)",##@# => ###@,"lambda x: x[:2] + '#' + x[2:].replace('#', """", 1)",##@#,False
+lambda x: x[-1:] + x[:-1],##@# => ###@,lambda x: x[2:] + '@' + x[:2],##@#,False
+lambda x: x[::-1],@@#@ => @#@@,lambda x: x[1:] + x[:1],@@#@,False
+lambda x: x[1:] + x[:1],@@#@ => @#@@,lambda x: x[1:] + x[:1] if x[2] == '#' else x[2] + x[0:2] + x[3],@#@@,False
+lambda x: x[-3:] + x[:-3],@@#@ => @#@@,lambda x: x[1] + x[2] + x[0] + x[3],@#@@,False
+"lambda x: x[:0] + x[0:].replace('@', """", 1) + '@'",@@#@ => @#@@,lambda x: x[-2:] + x[:-2],@@#@ => @#@@,False
+"lambda x: x[:1] + x[1:].replace('@', """", 1) + '@'",@@#@ => @#@@,lambda x: x[0] + x[3] + x[1:3] + x[4:],@@#@,True
+lambda x: x[2:] + x[:2],@@#@ => #@@@,"lambda x: x.replace('@', '#').replace('#', '@', 1).replace('#', '@')",@@@#,False
+"lambda x: x[:0] + '#' + x[0:].replace('#', """", 1)",@@#@ => #@@@,lambda x: '#' + x[1:] if x[0] == '@' and x[2] == '@' else x,@@#@ => #@@@,False
+lambda x: x[-2:] + x[:-2],@@#@ => #@@@,lambda x: x[0] + x[2:] + x[1],#@@@,True
+lambda x: x[3:] + x[:3],@@#@ => @@@#,"lambda x: x.replace('#', '@', 1)",@@#@,False
+"lambda x: x[:0] + x[0:].replace('#', """", 1) + '#'",@@#@ => @@@#,"lambda x: x.replace('#', '', 1) + '#'",@@#@,False
+"lambda x: x[:1] + x[1:].replace('#', """", 1) + '#'",@@#@ => @@@#,"lambda x: x[0] + x[1:].replace('#', '@') + '#'",@@#@,False
+"lambda x: x[:2] + x[2:].replace('#', """", 1) + '#'",@@#@ => @@@#,"lambda x: x.replace('#', '@', 1) + '#'",@@#@,False
+"lambda x: x[:2] + '@' + x[2:].replace('@', """", 1)",@@#@ => @@@#,"lambda x: x.replace('@', '', 1) + '#'",@@#@ => @@@#,False
+lambda x: x[-1:] + x[:-1],@@#@ => @@@#,"lambda x: x.replace('@#@', '@@@', 1)",@@#@,False
