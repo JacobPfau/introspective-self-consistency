@@ -1,7 +1,6 @@
-
-import time
 import logging
 import os
+import time
 from enum import Enum
 from typing import List, Union
 
@@ -22,7 +21,7 @@ class OpenAITextModels(ExtendedEnum):
     TEXT_DAVINCI_003 = "text-davinci-003"
 
 
-class OpenAIChatModels(ExtendedEnum):
+class OpenAIChatModels(Enum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
     CHAT_GPT_4 = "gpt-4-0314"
 
@@ -72,7 +71,7 @@ def generate_chat_completion(
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
-    # TODO: may want to handle ServiceUnavailableError
+    # TODO: may want to handle ServiceUnavailableError, RateLimitError
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
@@ -92,19 +91,14 @@ def generate_chat_completion(
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
             time.sleep(3)
-        except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
-            n_retries += 1
-            time.sleep(10)
 
-    if response is None:
+    if response is None and n_retries == _MAX_RETRIES:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
 

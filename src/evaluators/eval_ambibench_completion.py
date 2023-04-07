@@ -23,7 +23,11 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
+<<<<<<< HEAD
     generate_text_completion,
+=======
+    generate_completion,
+>>>>>>> f6eaaf3 (add model enums)
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
@@ -77,7 +81,11 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
+<<<<<<< HEAD
     completion_response = generate_text_completion(prompt, model=model)
+=======
+    completion_response = generate_completion(prompt, model=model)
+>>>>>>> f6eaaf3 (add model enums)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
@@ -87,9 +95,15 @@ if __name__ == "__main__":
     # set params
     ambibench_data_dir = "./data/ambi-bench"
     data_file_name = "20230406_12-28_ambibench_examples.json"
+<<<<<<< HEAD
     date = datetime.datetime.now().strftime("%y%m%d")
     output_tsv = f"./results/{date}_ambibench_completions.tsv"
     model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
+=======
+    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
+    output_tsv = f"./results/{date}_ambibench_completions.tsv"
+    model = OpenAIChatModels.CHAT_GPT_35
+>>>>>>> f6eaaf3 (add model enums)
 
     ###
 
@@ -104,7 +118,11 @@ if __name__ == "__main__":
 
     logger.info(f"Start model inference for: {model.value}")
     pred_completions: List[str] = []
+<<<<<<< HEAD
     for prompt in tqdm(formatted_prompts):
+=======
+    for prompt in formatted_prompts:
+>>>>>>> f6eaaf3 (add model enums)
 
         if isinstance(model, OpenAIChatModels):
             completion = get_chat_completion(prompt, model)
@@ -125,7 +143,11 @@ if __name__ == "__main__":
         "acc": round(correct_predictions / len(formatted_prompts), 3),
     }
     logger.info(f"Results: {repr(results)}")
+<<<<<<< HEAD
     df = pd.DataFrame.from_dict([results])
+=======
+    df = pd.DataFrame.from_dict(results, orient="index")
+>>>>>>> f6eaaf3 (add model enums)
 
     if os.path.exists(output_tsv):
         # append
