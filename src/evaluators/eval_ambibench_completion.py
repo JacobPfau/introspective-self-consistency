@@ -14,34 +14,46 @@ We are interested in different metrics of correctness and constistency as follow
 import datetime
 import logging
 import os
-from typing import List
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
-from src.models.openai_model import CHAT_MODEL_NAME, generate_chat_completion
+from src.models.openai_model import (
+    CHAT_PROMPT_TEMPLATE,
+    OpenAIChatModels,
+    OpenAITextModels,
+    generate_chat_completion,
+    generate_completion,
+)
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
-# from src.structures.ambibench import AmbiBenchDataset
-
 logger = logging.getLogger("EvalAmbiBenchCompletions")
-logging.basicConfig(
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    datefmt="%d/%m/%Y %H:%M:%S",
-    level=logging.DEBUG,
-)
 
 
-def format_prompt_for_model_type(prompts, model: str) -> List[dict]:
+def format_completion_prompt_for_model_type(
+    examples, model: str
+) -> Tuple[List[dict], List[str]]:
 
     formatted_prompts: List[dict] = []
+    expected_completions: List[str] = []
 
-    if CHAT_MODEL_NAME == model:
-        # format the original prompt structure to run inference for AmbiBench completions
-        pass
+    if isinstance(model, OpenAIChatModels):
+        # Need to format the original prompt structure to run inference for AmbiBench completions?
+        # E.g.: 'Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the prairie.\nA: Y
+        #   \nQ: The fugitive is in the river.\nA: Y\nQ: The surveyor is in the marsh.\nA:'
+        template = CHAT_PROMPT_TEMPLATE
+        for ex in examples:
+            template["content"] = ex["prompt"]
+            formatted_prompts.append(template)
+            expected_completions.append(ex["completion"].strip())
+    elif isinstance(model, OpenAITextModels):
+        for ex in examples:
+            formatted_prompts.append(ex["prompt"])
+            expected_completions.append(ex["completion"].strip())
     else:
         raise NotImplementedError(f"No formatting method for '{model}'")
 
-    return formatted_prompts
+    return formatted_prompts, expected_completions
 
 
 def eval_completions(
@@ -58,14 +70,26 @@ def eval_completions(
     return correct_predictions
 
 
+def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
+    completion_response = generate_chat_completion([prompt], model=model)
+    # parse predicted completion from response, i.e. last char of the last line
+    return completion_response.strip()
+
+
+def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
+    completion_response = generate_completion(prompt, model=model)
+    # parse predicted completion from response, i.e. last char of the last line
+    return completion_response.strip()
+
+
 if __name__ == "__main__":
 
     # set params
     ambibench_data_dir = "./data/ambi-bench"
     data_file_name = "20230406_12-28_ambibench_examples.json"
-    date = datetime.datetime.now().strftime("%Y%M%D_%H%m")
-    output_csv = f"./results/{date}_ambibench_completions.csv"
-    model = CHAT_MODEL_NAME
+    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
+    output_tsv = f"./results/{date}_ambibench_completions.tsv"
+    model = OpenAIChatModels.CHAT_GPT_35
 
     ###
 
@@ -73,27 +97,39 @@ if __name__ == "__main__":
     dataset = load_ambibench_dataset(os.path.join(ambibench_data_dir, data_file_name))
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
-    formatted_prompts, expected_completions = format_prompt_for_model_type(
+    formatted_prompts, expected_completions = format_completion_prompt_for_model_type(
         dataset.examples, model
     )
     logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
 
-    logger.info("Start model inference")
-    pred_completions = generate_chat_completion(formatted_prompts, model=model)
+    logger.info(f"Start model inference for: {model.value}")
+    pred_completions: List[str] = []
+    for prompt in formatted_prompts:
+
+        if isinstance(model, OpenAIChatModels):
+            completion = get_chat_completion(prompt, model)
+        if isinstance(model, OpenAITextModels):
+            completion = get_text_completion(prompt, model)
+
+        pred_completions.append(completion)
 
     correct_predictions = eval_completions(expected_completions, pred_completions)
 
-    # append to results CSV
+    # store results in TSV
     results = {
         "dataset": data_file_name,
+        "model": model.value,
+        "num_shots": dataset.config.n_shots,
         "num_examples": len(formatted_prompts),
         "num_correct": correct_predictions,
         "acc": round(correct_predictions / len(formatted_prompts), 3),
     }
-    df = pd.DataFrame.from_dict(results)
+    logger.info(f"Results: {repr(results)}")
+    df = pd.DataFrame.from_dict(results, orient="index")
 
-    if os.path.exists(output_csv):
+    if os.path.exists(output_tsv):
         # append
-        df = pd.concat([pd.read_csv(output_csv), df], ignore_index=True)
+        df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
 
-    df.to_csv(output_csv, sep=",", index=False, header=True)
+    os.makedirs(os.path.dirname(output_tsv), exist_ok=True)
+    df.to_csv(output_tsv, sep="\t", index=False, header=True)
