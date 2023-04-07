@@ -1,0 +1,1 @@
+{"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 0}": [1, 4, 0], "{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 0}": [1, 4, 0], "{'fn': 'lambda x: (2 * x) | 1', 'offset': 0}": [5, 0, 0], "{'fn': 'lambda x: (2 * x) + 1', 'offset': 0}": [5, 0, 0]}
