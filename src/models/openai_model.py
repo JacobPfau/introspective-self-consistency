@@ -7,18 +7,17 @@ from typing import List, Union
 
 import openai
 
-from models.utils import INVALID_RESPONSE, ExtendedEnum
-
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
+INVALID_RESPONSE = "INVALID_RESPONSE"
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-class OpenAITextModels(ExtendedEnum):
+class OpenAITextModels(Enum):
     TEXT_DAVINCI_003 = "text-davinci-003"
 
 
@@ -35,18 +34,9 @@ logging.basicConfig(
 )
 
 
-def get_openai_model_from_string(model_name: str) -> Enum:
-    if model_name in OpenAITextModels.list():
-        return OpenAITextModels(model_name)
-    elif model_name in OpenAIChatModels.list():
-        return OpenAIChatModels(model_name)
-    else:
-        raise KeyError(f"Invalid OpenAI model name: {model_name}")
-
-
-def generate_text_completion(
+def generate_completion(
     prompt: str,
-    temperature: float = 0.0,
+    temperature: int = 0,
     max_tokens: int = 256,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
 ) -> str:
@@ -93,7 +83,7 @@ def generate_chat_completion(
             n_retries += 1
             time.sleep(3)
 
-    if response is None:
+    if response is None and n_retries == _MAX_RETRIES:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
