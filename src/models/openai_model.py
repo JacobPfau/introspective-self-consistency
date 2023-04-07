@@ -1,7 +1,6 @@
-
-import time
 import logging
 import os
+import time
 from enum import Enum
 from typing import List, Union
 
@@ -17,17 +16,11 @@ INVALID_RESPONSE = "INVALID_RESPONSE"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-class ExtendedEnum(Enum):
-    @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))
-
-
-class OpenAITextModels(ExtendedEnum):
+class OpenAITextModels(Enum):
     TEXT_DAVINCI_003 = "text-davinci-003"
 
 
-class OpenAIChatModels(ExtendedEnum):
+class OpenAIChatModels(Enum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
     CHAT_GPT_4 = "gpt-4-0314"
 
@@ -40,17 +33,7 @@ logging.basicConfig(
 )
 
 
-def get_openai_model_from_string(model_name: str) -> Enum:
-
-    if model_name in OpenAITextModels.list():
-        return OpenAITextModels(model_name)
-    elif model_name in OpenAIChatModels.list():
-        return OpenAIChatModels(model_name)
-    else:
-        raise KeyError(f"Invalid OpenAI model name: {model_name}")
-
-
-def generate_text_completion(
+def generate_completion(
     prompt: str,
     temperature: int = 0,
     max_tokens: int = 256,
@@ -78,7 +61,7 @@ def generate_chat_completion(
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
-    # TODO: may want to handle ServiceUnavailableError
+    # TODO: may want to handle ServiceUnavailableError, RateLimitError
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
@@ -92,24 +75,18 @@ def generate_chat_completion(
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            break
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
             time.sleep(3)
-        except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
-            n_retries += 1
-            time.sleep(10)
 
-    if response is None:
+    if response is None and n_retries == _MAX_RETRIES:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
 
