@@ -9,10 +9,12 @@ Use like:
 >>> ambiguous_integer_sequences = find_ambiguous_integer_sequences()
 
 ToDo:
+(A) Brainstorming sequence
 xth index in a sequence satisfying ORs of one or more criterion
 - add more criteria here (its just module first term or second term)
 Binary sequences (bitshift, codes, ect) (though error detecting / correcting codes might be its own pipeline)
 String sequences (concat, reverasal, rotations, lexicographic, substitions, string progresions, ect.)
+(B) Prompt variation
 Generating few-shot templtes automatticaly with few-shot types:
 - Oracle: Sample the true underlying rule at different non-overlapping steps or different terms.
 - Adversarial
@@ -20,8 +22,19 @@ Generating few-shot templtes automatticaly with few-shot types:
     - Sample sequences that **do not include similar rules**
 - Samples with ambiguity that show potential options.
 Generate CoT:
-- evaluate step by step with doctest
+- evaluate step by step with doctest (try before and after answer)
 - resolve each term
+(C) Evaluation & Experimental Design
+Exact equality 
+- Function generates the next sequence value
+- More capabilties check 
+- Filter out ambigious functions
+- Ambigious functions manually have generate a certain number of steps and check they eventually don't generate functions
+Consistency evaluator - two outputs consistent
+- Non-ambigious rules - success rate - in generateing examples
+- Ambigious rules - success rate - in generating examples 
+
+
 """
 
 import random
@@ -129,7 +142,7 @@ def find_ambiguous_integer_sequences(
     ambiguous_sequences = {}
     for ind, pair in enumerate(progressions_to_check):
         metadata_a, fn_a = pair
-        for metadata_b, fn_b in progressions_to_check[ind + 1 :]:
+        for metadata_b, fn_b in list(progressions_to_check)[ind + 1 :]:
             if fn_a == fn_b:
                 continue
 
@@ -248,7 +261,7 @@ def check_ambiguity(
 
 
 def _generate_shot_pool(pool_size: int = 10):
-    fn_pool = sequence_functions.values()
+    fn_pool = list(sequence_functions.values())
     shot_pool = []
     # we generate a prompt_pool with random parameters
     # TODO: move these magic strings to somewhere more visible
@@ -256,7 +269,7 @@ def _generate_shot_pool(pool_size: int = 10):
         offset = random.randint(0, 3)
         first_term = random.randint(1, 5)
         second_term = random.randint(0, 4)
-        fn = random.choice(fn_pool)
+        fn = random.choice(list(fn_pool))
         shot_pool.append({"fn": fn.format(first_term, second_term), "offset": offset})
     return shot_pool
 

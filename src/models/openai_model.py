@@ -89,3 +89,28 @@ def generate_chat_completion(
         return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
+
+
+def generate_response_with_turns(
+    model: str,
+    turns: List[dict],
+) -> str:
+    """
+    Helper function to generate a response given a list of turns.
+    Routes to the appropriate model.
+    Turns are collapsed into a single string for the davinci model.
+    """
+    if model == DAVINCI_MODEL_NAME:
+        return generate_completion(
+            prompt="\n".join([turn["content"] for turn in turns]),
+            temperature=0,
+            max_tokens=256,
+        )
+    elif model == CHAT_MODEL_NAME:
+        return generate_chat_completion(
+            prompt_turns=turns,
+            temperature=0,
+            max_tokens=256,
+        )
+    else:
+        raise ValueError(f"Model {model} not supported")
