@@ -11,7 +11,7 @@ correct function and sequence constant, and vary the incorrect options. This all
 us to evaluate whether the model is capable of recoginising a single correct function.
 """
 import random
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from evals.prompts.choose_function import function_selection_prompt
 from evals.utils import choose_function, generate_wrong_functions
@@ -46,6 +46,7 @@ def function_class_selection_evaluation(
         print("Question: ", i + 1, "/", num_samples, sep="")
         # Generate a function from the class
         target_fn = fn_form.format(random.randint(0, 10), random.randint(0, 10))
+
         offset = random.randint(0, 10)
         # Generate a sequence
         target_sequence = [eval(target_fn)(j + offset) for j in range(sequence_length)]
@@ -91,6 +92,7 @@ def function_selection_evaluation(
     generate_functions: bool = False,
     incorrect_functions: List[str] = None,
     correct_functions: List[int] = None,
+    offset: Union[int, None] = None,
 ) -> Tuple[float, int]:
     """
     Given a sequence and some rule which could generate it, evaluate whether a model can discern
