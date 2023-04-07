@@ -82,7 +82,6 @@ def generate_chat_completion(
         model = OpenAIChatModels(model)
 
     response = None
-
     n_retries = 0
     while n_retries < _MAX_RETRIES:
         try:
@@ -109,7 +108,8 @@ def generate_chat_completion(
         return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
 
