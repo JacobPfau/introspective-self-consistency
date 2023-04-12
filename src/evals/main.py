@@ -68,29 +68,36 @@ if __name__ == "__main__":
             ambiguous_sequences = find_ambiguous_integer_sequences()
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
-                total += 1
-
                 # Go through each function and see if the model can select it
                 for fn in ambiguous_sequences[sequence]:
+                    total += 1
+                    print("total is: ", total)
                     func = fn["fn"]
                     offset = fn["offset"]
                     print(f"Function: {func}")
-                    (
-                        correct_choices,
-                        incorrect_choices,
-                        invalid_outputs,
-                    ) = function_selection_evaluation(
-                        model_name=args.model,
-                        target_sequence=sequence,
-                        temperature=0.0,
-                        num_shots=args.num_shots,
-                        use_cot=args.use_cot,
-                        num_samples=args.num_samples,
-                        num_functions=args.num_functions,
-                        generate_functions=True,
-                        incorrect_functions=None,
-                        correct_functions=[func],
-                    )
+                    # Try multiple times (in case the openai api fails)
+                    for _ in range(5):
+                        try:
+                            (
+                                correct_choices,
+                                incorrect_choices,
+                                invalid_outputs,
+                            ) = function_selection_evaluation(
+                                model_name=args.model,
+                                target_sequence=sequence,
+                                temperature=0.0,
+                                num_shots=args.num_shots,
+                                use_cot=args.use_cot,
+                                num_samples=args.num_samples,
+                                num_functions=args.num_functions,
+                                generate_functions=True,
+                                incorrect_functions=None,
+                                correct_functions=[func],
+                            )
+                            break
+                        except Exception as e:
+                            print(e)
+                            continue
                     # If the function already exists, add to the results
                     if func in results:
                         results[func]["correct"] += correct_choices
@@ -102,13 +109,9 @@ if __name__ == "__main__":
                             "incorrect": incorrect_choices,
                             "invalid": invalid_outputs,
                         }
-                if total == 2:
-                    break
-
         else:
             pass
             # TODO: have support for general base sequences here
-    print(f"Total: {total}")
 
     print(f"Correct: {correct_choices}")
     print(f"Incorrect: {incorrect_choices}")
