@@ -1,6 +1,7 @@
 import argparse
 
 from src.evals.sequence_completion import evaluate_sequence_completion_equality
+from src.evals.string_transformation import evaluate_string_transformation_equality
 
 
 def str2bool(v):
@@ -33,6 +34,7 @@ parser.add_argument(
     type=str,
     choices=[
         "sequence_completion_equality",
+        "string_transformation_completion_equality"
     ],
 )
 parser.add_argument("--num-shots", default=8, type=int)
@@ -40,6 +42,10 @@ parser.add_argument("--use-cot", default=True, type=str2bool, nargs="?", const=T
 
 args = parser.parse_args()
 if __name__ == "__main__":
+    if args.evaluation == "string_transformation_completion_equality":
+        evaluate_string_transformation_equality(
+            args.model, num_shots=args.num_shots, cot=args.use_cot
+        )
     if args.evaluation == "sequence_completion_equality":
         evaluate_sequence_completion_equality(
             args.model, num_shots=args.num_shots, cot=args.use_cot
