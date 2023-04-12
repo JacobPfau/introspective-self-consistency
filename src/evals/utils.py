@@ -1,4 +1,5 @@
 import random
+import re
 from typing import List, Tuple, Union
 
 from models.openai_model import (
@@ -155,3 +156,91 @@ def choose_function(
         # If the model's response is incorrect, return 0
         else:
             return 0
+
+
+def identify_function_class(fn: str) -> str:
+    """
+    Given a function, identify its class.
+    Will do this using regex.
+    """
+    # Courtesy of GPT-4, may want to change this
+    sequence_functions_regex = {
+        "arithmetic_progression": re.compile(
+            r"lambda\s*x:\s*\(\s*([\d\w]+)\s*\*\s*x\s*\)\s*\+\s*([\d\w]+)"
+        ),
+        "geometric_progression": re.compile(
+            r"lambda\s*x:\s*\(\s*([\d\w]+)\s*\*\s*x\s*\)\s*\*\s*([\d\w]+)"
+        ),
+        "exponential_progression": re.compile(
+            r"lambda\s*x:\s*\(\s*([\d\w]+)\s*\*\s*x\s*\)\s*\*\*\s*([\d\w]+)"
+        ),
+        "power_progression": re.compile(
+            r"lambda\s*x:\s*([\d\w]+)\s*\*\*\s*\(\s*([\d\w]+)\s*\*\s*x\s*\)"
+        ),
+        "bit_or_progression": re.compile(
+            r"lambda\s*x:\s*\(\s*([\d\w]+)\s*\*\s*x\s*\)\s*\|\s*([\d\w]+)"
+        ),
+        "modular_progression": re.compile(
+            r"lambda\s*x:\s*\(x\s*\*\s*([\d\w]+)\)\s*%\s*\(\s*([\d\w]+)\s*\+\s*1\s*\)"
+        ),
+        "indexing_criteria_progression": re.compile(
+            r"""lambda\s*x:\s*\[i\s*for\s*i\s*in\s*range\s*\(100\)\s*if\s*i\s*%\s*\(\s*([\d\w]+)\s*\+\s*1\s*\)\s*
+            or\s*i\s*%\s*\(\s*([\d\w]+)\s*\+\s*1\s*\)\]\s*\[x\]"""
+        ),
+        "recursive_progression": re.compile(
+            r"""\(lambda\s*a:lambda\s*v:a\(a,v\)\)\(lambda\s*fn,x:1\s*if\s*x==0\s*else\s*([\d\w]+)\s*\*\s*x\s*\*\s*
+            fn\(fn,x-1\)\s*\+\s*([\d\w]+)\)"""
+        ),
+    }
+
+    for function_type, regex_pattern in sequence_functions_regex.items():
+        if regex_pattern.match(fn):
+            return function_type
+    return "Unknown"
+
+
+def reformat_results(results: dict) -> dict:
+    """
+    Take the raw dictionary, reformat it so it's of the form:
+    {
+        "function_type_1": {
+            "results":
+                "fn_1": {
+                    "correct": int,
+                    "incorrect": int,
+                },
+                ...
+            },
+            "average accuracy": float,
+            "total": int,
+        },
+        ...
+    }
+    """
+
+    # First, we need to identify the function types
+    function_types = set()
+    for fn in results.keys():
+        function_types.add(identify_function_class(fn))
+    # Now, we can reformat the results
+    reformatted_results = {}
+    for function_type in function_types:
+        reformatted_results[function_type] = {
+            "results": {},
+            "average accuracy": 0.0,
+            "total": 0,
+        }
+        for fn in results.keys():
+            if identify_function_class(fn) == function_type:
+                reformatted_results[function_type]["results"][fn] = {
+                    "correct": results[fn]["correct"],
+                    "incorrect": results[fn]["incorrect"],
+                }
+                reformatted_results[function_type]["average accuracy"] += results[fn][
+                    "correct"
+                ] / (results[fn]["correct"] + results[fn]["incorrect"])
+                reformatted_results[function_type]["total"] += 1
+        reformatted_results[function_type]["average accuracy"] /= reformatted_results[
+            function_type
+        ]["total"]
+    return reformatted_results
