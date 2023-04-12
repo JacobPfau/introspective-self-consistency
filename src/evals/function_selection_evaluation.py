@@ -117,7 +117,7 @@ def function_selection_evaluation(
         if generate_functions:
             # Generate incorrect functions
             incorrect_functions = generate_wrong_functions(
-                target_sequence, num_functions
+                target_sequence, num_functions - 1
             )
             sampled_functions = incorrect_functions
         else:
