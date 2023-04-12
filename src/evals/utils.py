@@ -239,7 +239,8 @@ def reformat_results(results: dict) -> dict:
                 reformatted_results[function_type]["average accuracy"] += results[fn][
                     "correct"
                 ] / (results[fn]["correct"] + results[fn]["incorrect"])
-                reformatted_results[function_type]["total"] += 1
+                reformatted_results[function_type]["total"] += results[fn]["correct"]
+                reformatted_results[function_type]["total"] += results[fn]["incorrect"]
         reformatted_results[function_type]["average accuracy"] /= reformatted_results[
             function_type
         ]["total"]

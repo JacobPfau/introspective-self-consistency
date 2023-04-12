@@ -86,6 +86,7 @@ def create_question_text(
     num_functions: int, use_cot: bool, sequence_length: int
 ) -> str:
     """
+    Note: We want to generate num_functions - 1 incorrect functions, and 1 correct function.
     Create the question text for a single shot.
     This will look like:
         Which python function generated the following sequence?
@@ -101,8 +102,8 @@ def create_question_text(
     function, offset = _generate_random_function(sequence_functions, (0, 10), (0, 10))
     # Generate a sequence from the function
     sequence = [eval(function)(i + offset) for i in range(sequence_length)]
-    # Generate incorrect functions
-    incorrect_functions = generate_wrong_functions(sequence, num_functions)
+    # Generate incorrect functions (i.e. 1 less than the total number of functions)
+    incorrect_functions = generate_wrong_functions(sequence, (num_functions - 1))
     # Combine all functions
     all_functions = incorrect_functions + [function]
     # Shuffle the functions
