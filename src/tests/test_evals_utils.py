@@ -3,7 +3,7 @@ from pprint import pprint
 
 import evals.utils as utils
 from evals.prompts.choose_function import function_selection_prompt
-from models.openai_model import CHAT_MODEL_NAME  # , DAVINCI_MODEL_NAME
+from models.openai_model import DAVINCI_MODEL_NAME  # , CHAT_MODEL_NAME
 
 # TODO: make these proper tests
 
@@ -43,10 +43,10 @@ def test_choose_function():
 def prompt_test():
     prompt = function_selection_prompt(
         num_shots=5,
-        sequence_length=8,
-        num_functions=6,
+        sequence_length=5,
+        num_functions=4,
         use_cot=False,
-        model_name=CHAT_MODEL_NAME,
+        model_name=DAVINCI_MODEL_NAME,
     )
     print(prompt)
     print("buggo")
@@ -70,6 +70,13 @@ def test_result_reformatting():
     pprint(reformatted_results)
 
 
+def test_view_results():
+    with open(
+        "evals/results/ambiguous_sequences_function_selection_evaluation/2023-04-12-18-53-36/results.json"
+    ) as f:
+        results = json.load(f)
+    pprint(results)
+
+
 if __name__ == "__main__":
-    test_function_identification()
-    test_result_reformatting()
+    test_view_results()
