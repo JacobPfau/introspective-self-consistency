@@ -1,0 +1,1 @@
+{"lambda x: (4 * x) + 3": {"correct": 8, "incorrect": 2, "invalid": 0}, "lambda x: (3 * x) | 3": {"correct": 0, "incorrect": 5, "invalid": 0}, "lambda x: (4 * x) | 3": {"correct": 1, "incorrect": 9, "invalid": 0}}

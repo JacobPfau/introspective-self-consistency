@@ -8,6 +8,7 @@ import argparse
 from evals.function_selection_evaluation import (  # function_class_selection_evaluation,
     function_selection_evaluation,
 )
+from evals.utils import reformat_results
 from pipelines.sequence_completions import find_ambiguous_integer_sequences
 from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
@@ -54,6 +55,7 @@ parser.add_argument("--num-functions", default=4, type=int)
 
 args = parser.parse_args()
 if __name__ == "__main__":
+    total = 0
     sequence_functions = None
     if args.on_ambiguous_sequences:
         if args.sequence_type == "integer":
@@ -64,6 +66,8 @@ if __name__ == "__main__":
             ambiguous_sequences = find_ambiguous_integer_sequences()
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
+                total += 1
+
                 # Go through each function and see if the model can select it
                 for fn in ambiguous_sequences[sequence]:
                     func = fn["fn"]
@@ -85,18 +89,31 @@ if __name__ == "__main__":
                         incorrect_functions=None,
                         correct_functions=[func],
                     )
-                    results[str(fn)] = (
-                        correct_choices,
-                        incorrect_choices,
-                        invalid_outputs,
-                    )
+                    # If the function already exists, add to the results
+                    if func in results:
+                        results[func]["correct"] += correct_choices
+                        results[func]["incorrect"] += incorrect_choices
+                        results[func]["invalid"] += invalid_outputs
+                    else:
+                        results[str(fn["fn"])] = {
+                            "correct": correct_choices,
+                            "incorrect": incorrect_choices,
+                            "invalid": invalid_outputs,
+                        }
+                if total == 2:
+                    break
+
         else:
             pass
             # TODO: have support for general base sequences here
+    print(f"Total: {total}")
 
     print(f"Correct: {correct_choices}")
     print(f"Incorrect: {incorrect_choices}")
     print(f"Invalid: {invalid_outputs}")
+
+    # Reformat results
+    results = reformat_results(results)
 
     # Save the results
     import datetime
@@ -106,12 +123,19 @@ if __name__ == "__main__":
     now = datetime.datetime.now()
     now_str = now.strftime("%Y-%m-%d-%H-%M-%S")
     results_dir = os.path.join(
-        "evals/results", "ambiguous_sequences_function_selection_evaluation"
+        "evals/results/ambiguous_sequences_function_selection_evaluation", f"{now_str}"
     )
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
-    results_path = os.path.join(results_dir, f"{now_str}.json")
+    results_path = os.path.join(results_dir, "results.json")
     with open(results_path, "w") as f:
         json.dump(results, f)
+
+    # Save command line arguments
+    args_path = os.path.join(results_dir, "args.json")
+    args_dict = vars(args)
+    args_dict["sequence_functions"] = all_sequence_functions
+    with open(args_path, "w") as f:
+        json.dump(args_dict, f)
 
     print(f"Results saved to {results_path}")
