@@ -25,14 +25,14 @@ Generate CoT:
 - evaluate step by step with doctest (try before and after answer)
 - resolve each term
 (C) Evaluation & Experimental Design
-Exact equality 
+Exact equality
 - Function generates the next sequence value
-- More capabilties check 
+- More capabilties check
 - Filter out ambigious functions
 - Ambigious functions manually have generate a certain number of steps and check they eventually don't generate functions
 Consistency evaluator - two outputs consistent
 - Non-ambigious rules - success rate - in generateing examples
-- Ambigious rules - success rate - in generating examples 
+- Ambigious rules - success rate - in generating examples
 
 
 """
@@ -142,7 +142,7 @@ def find_ambiguous_integer_sequences(
     ambiguous_sequences = {}
     for ind, pair in enumerate(progressions_to_check):
         metadata_a, fn_a = pair
-        for metadata_b, fn_b in list(progressions_to_check)[ind + 1:]:
+        for metadata_b, fn_b in list(progressions_to_check)[ind + 1 :]:
             if fn_a == fn_b:
                 continue
 
@@ -237,8 +237,16 @@ def check_ambiguity(
                     if seq_string not in ambiguous_sequences:
                         ambiguous_sequences[seq_string] = []
 
-                    fn_a_item = {"fn": fn_a, "offset": step_a_offset}
-                    fn_b_item = {"fn": fn_b, "offset": step_b_offset}
+                    fn_a_item = {
+                        "fn": fn_a,
+                        "offset": step_a_offset,
+                        "metadata": metadata_a,
+                    }
+                    fn_b_item = {
+                        "fn": fn_b,
+                        "offset": step_b_offset,
+                        "metadata": metadata_b,
+                    }
                     if fn_a_item not in ambiguous_sequences[seq_string]:
                         if not track_generating_fns:
                             ambiguous_sequences[seq_string].append(fn_a_item)
@@ -260,17 +268,57 @@ def check_ambiguity(
                         return
 
 
-def _generate_shot_pool(pool_size: int = 10):
-    fn_pool = list(sequence_functions.values())
+def _generate_shot_pool(
+    n_shots: int = 8,
+    base_fn: dict = None,
+    shot_type: Literal[
+        "random", "same_fn", "same_class", "ambigious", "exclude_class"
+    ] = "random",
+    ambiguous_sequences: dict = None,
+):
+    fn_pool = []
+    if shot_type == "random":
+        fn_pool = list(sequence_functions.values())
+    elif shot_type == "same_class":
+        fn_pool = list(
+            seq_fn
+            for seq_key, seq_fn in sequence_functions.items()
+            if seq_key == base_fn["metadata"][0]
+        )
+    elif shot_type == "exclude_class":
+        fn_pool = list(
+            seq_fn
+            for seq_key, seq_fn in sequence_functions.items()
+            if seq_key != base_fn["metadata"][0]
+        )
+
     shot_pool = []
     # we generate a prompt_pool with random parameters
     # TODO: move these magic strings to somewhere more visible
-    for _ in range(pool_size):
-        offset = random.randint(0, 3)
-        first_term = random.randint(1, 5)
-        second_term = random.randint(0, 4)
-        fn = random.choice(list(fn_pool))
-        shot_pool.append({"fn": fn.format(first_term, second_term), "offset": offset})
+    pool_size = 2 * n_shots
+    if shot_type in ["random", "same_class", "exclude_class"]:
+        for _ in range(pool_size):
+            offset = random.randint(0, 3)
+            first_term = random.randint(1, 5)
+            second_term = random.randint(0, 4)
+            fn = random.choice(list(fn_pool))
+            shot_pool.append(
+                {"fn": fn.format(first_term, second_term), "offset": offset}
+            )
+    elif shot_type == "same_fn":
+        for _ in range(pool_size):
+            offset = random.randint(0, 10)
+            shot_pool.append({"fn": base_fn["fn"], "offset": offset})
+    elif shot_type == "ambigious":
+        while len(shot_pool) < pool_size:
+            fn_item = random.choice(list(ambiguous_sequences.items()))
+            fns = np.random.choice(fn_item[1], 2, replace=False)
+            shot_pool.extend(fns)
+
+    shots = np.random.choice(shot_pool, size=n_shots, replace=False)
+    # continue to draw if fn_item in shots
+    while base_fn in shots:
+        shots = np.random.choice(shot_pool, size=n_shots, replace=False)
     return shot_pool
 
 
@@ -340,18 +388,21 @@ def _sample_shots(
     n_shots: int,
     prompt_type: Literal["completion", "explanation"] = "completion",
     use_cot: bool = False,
+    shot_type: Literal[
+        "random", "same_fn", "same_class", "ambigious", "exclude_class"
+    ] = "few_shot",
+    ambiguous_sequences: dict = None,
 ):
     """
     Sample `:n_shots` number of shots.
     Initially we randomly generate `:_generate_shot_pool` the shots.
     """
-    # TODO: implement "oracle", "adversarial", "ambigious" few shot strategies
-    shot_pool = _generate_shot_pool(pool_size=n_shots * 2)
-    shots = np.random.choice(shot_pool, size=n_shots, replace=False)
-    # continue to draw if fn_item in shots
-    while fn_item in shots:
-        shots = np.random.choice(shot_pool, size=n_shots, replace=False)
-
+    shots = _generate_shot_pool(
+        n_shots=n_shots,
+        base_fn=fn_item,
+        shot_type=shot_type,
+        ambiguous_sequences=ambiguous_sequences,
+    )
     # for all the shots create sequence prompts
     prompts = []
     for shot in shots:
@@ -372,6 +423,10 @@ def generate_sequence_completion_prompt(
     prompt_type: Literal["completion", "explanation"] = "completion",
     use_cot: bool = False,
     n_shots: int = 0,
+    shot_type: Literal[
+        "random", "same_fn", "same_class", "ambigious", "exclude_class"
+    ] = "random",
+    ambiguous_sequences: dict = None,
 ) -> dict:
     """
     Generate sequence completion prompts
@@ -390,7 +445,13 @@ def generate_sequence_completion_prompt(
     ]
 
     shots = _sample_shots(
-        sequence, fn_item, prompt_type=prompt_type, n_shots=n_shots, use_cot=use_cot
+        sequence,
+        fn_item,
+        prompt_type=prompt_type,
+        n_shots=n_shots,
+        use_cot=use_cot,
+        shot_type=shot_type,
+        ambiguous_sequences=ambiguous_sequences,
     )
 
     for shot in shots:
