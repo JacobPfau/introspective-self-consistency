@@ -15,6 +15,7 @@ from typing import List, Tuple, Union
 
 from evals.prompts.choose_function import function_selection_prompt
 from evals.utils import choose_function, generate_wrong_functions
+from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 
 
 def function_class_selection_evaluation(
@@ -41,6 +42,7 @@ def function_class_selection_evaluation(
         num_shots=num_shots,
         num_functions=num_functions,
         use_cot=use_cot,
+        model_name=model_name,
     )
     for i in range(num_samples):
         print("Question: ", i + 1, "/", num_samples, sep="")
@@ -104,12 +106,28 @@ def function_selection_evaluation(
     correct_choices = 0
     incorrect_choices = 0
     invalid_outputs = 0
-    # Generate a prompt
-    prompt = function_selection_prompt(
-        num_shots=num_shots,
-        num_functions=num_functions,
-        use_cot=use_cot,
-    )
+    # print("Ole troubleshooting: ")
+    # print(model_name)
+    if model_name == "CHAT":
+        # Generate a prompt
+        prompt = function_selection_prompt(
+            num_shots=num_shots,
+            num_functions=num_functions,
+            use_cot=use_cot,
+            model_name=CHAT_MODEL_NAME,
+        )
+    elif model_name == "DAVINCI":
+        # Generate a prompt
+        prompt = function_selection_prompt(
+            num_shots=num_shots,
+            num_functions=num_functions,
+            use_cot=use_cot,
+            model_name=DAVINCI_MODEL_NAME,
+        )
+    else:
+        raise ValueError("Model name not recognised")
+    # print("Ole troubleshooting: ")
+    # print(prompt)
     for i in range(num_samples):
         # Randomly choose one of the correct functions
         correct_function = random.choice(correct_functions)
