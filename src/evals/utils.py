@@ -1,8 +1,9 @@
 import random
 import re
-from typing import List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from models.openai_model import (
+    CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
     generate_chat_completion,
     generate_text_completion,
@@ -66,14 +67,26 @@ def _generate_random_function(
 
 
 def format_question(
-    prompt: str,
+    prompt: Union[str, List[Dict[str, str]]],
     target_sequence: str,
     functions: List[str],
+    model_name: str = "DAVINCI",
 ) -> str:
+    """
+    Take the given few-shot prompt, add the question for the sequence, and the list of functions.
+    """
     formatted_answers = "\n".join(
         [f"{i+1}. {func}" for i, func in enumerate(functions)]
     )
-    result = f"{prompt}\n{target_sequence}\n{formatted_answers}\nA:"
+    question_text = f"What function generated the following sequence?\n{target_sequence}\n{formatted_answers}\nA:"
+    if model_name == "DAVINCI":
+        result = f"{prompt}\n{question_text}"
+    elif model_name == "CHAT":
+        result = prompt
+        result.append({"role": "user", "content": question_text})
+    else:
+        raise ValueError(f"Invalid model name: {model_name}")
+
     return result
 
 
@@ -81,6 +94,7 @@ def parse_model_response(model_response: str) -> int:
     """
     Parse the model's response to get the index of the function it chose.
     """
+    # print("model response is: ", model_response)
     model_response = model_response.strip()
     if model_response == "":
         raise ValueError("Model response is empty")
@@ -121,9 +135,9 @@ def choose_function(
         prompt=prompt,
         target_sequence=target_sequence,
         functions=possible_functions,
+        model_name=model_name,
     )
     if model_name == "DAVINCI":
-
         # Feed this into the model
         model_response = generate_text_completion(
             prompt=formatted_prompt,
@@ -132,15 +146,16 @@ def choose_function(
             model=DAVINCI_MODEL_NAME,
         )
     elif model_name == "CHAT":
+        # print("coooeeee")
+        # print("input to model is: ", formatted_prompt)
         # Feed this into the model
         model_response = generate_chat_completion(
-            # TODO: make this more general, to include multiple turns
-            # for few shot examples
-            prompt_turns=[{"text": formatted_prompt}],
+            prompt_turns=formatted_prompt,
             temperature=temperature,
             max_tokens=256,
-            model=model_name,
+            model=CHAT_MODEL_NAME,
         )
+        # print("model response is: ", model_response)
     # Parse the model's response to get the index of the function it chose
     try:
         model_response = parse_model_response(model_response)
@@ -184,8 +199,8 @@ def identify_function_class(fn: str) -> str:
             r"lambda\s*x:\s*\(x\s*\*\s*([\d\w]+)\)\s*%\s*\(\s*([\d\w]+)\s*\+\s*1\s*\)"
         ),
         "indexing_criteria_progression": re.compile(
-            r"""lambda\s*x:\s*\[i\s*for\s*i\s*in\s*range\s*\(100\)\s*if\s*i\s*%\s*\(\s*([\d\w]+)\s*\+\s*1\s*\)\s*
-            or\s*i\s*%\s*\(\s*([\d\w]+)\s*\+\s*1\s*\)\]\s*\[x\]"""
+            r"""\s*lambda\s+x\s*:\s*\[i\s+for\s+i\s+in\s+range\(\s*100\s*\)\s+if\s+i\s*%\s*
+            \(\s*\d+\s*\+\s*1\s*\)\s+or\s+i\s*%\s*\(\s*\d+\s*\+\s*1\s*\)\]\s*\[\s*x\s*\]\s*"""
         ),
         "recursive_progression": re.compile(
             r"""\(lambda\s*a:lambda\s*v:a\(a,v\)\)\(lambda\s*fn,x:1\s*if\s*x==0\s*else\s*([\d\w]+)\s*\*\s*x\s*\*\s*
@@ -216,6 +231,8 @@ def reformat_results(results: dict) -> dict:
         },
         ...
     }
+
+    Where total is the sum of correct and incorrect for that function type.
     """
 
     # First, we need to identify the function types
@@ -225,23 +242,23 @@ def reformat_results(results: dict) -> dict:
     # Now, we can reformat the results
     reformatted_results = {}
     for function_type in function_types:
-        reformatted_results[function_type] = {
-            "results": {},
-            "average accuracy": 0.0,
-            "total": 0,
-        }
+        reformatted_results[function_type] = {"results": {}, "total": 0}
         for fn in results.keys():
             if identify_function_class(fn) == function_type:
-                reformatted_results[function_type]["results"][fn] = {
-                    "correct": results[fn]["correct"],
-                    "incorrect": results[fn]["incorrect"],
-                }
-                reformatted_results[function_type]["average accuracy"] += results[fn][
-                    "correct"
-                ] / (results[fn]["correct"] + results[fn]["incorrect"])
-                reformatted_results[function_type]["total"] += results[fn]["correct"]
-                reformatted_results[function_type]["total"] += results[fn]["incorrect"]
-        reformatted_results[function_type]["average accuracy"] /= reformatted_results[
-            function_type
-        ]["total"]
+                reformatted_results[function_type]["results"][fn] = results[fn]
+                reformatted_results[function_type]["total"] += sum(results[fn].values())
+    # Now, we can calculate the average accuracy
+    for function_type in reformatted_results.keys():
+        total_correct = 0
+        total_incorrect = 0
+        for fn in reformatted_results[function_type]["results"].keys():
+            total_correct += reformatted_results[function_type]["results"][fn][
+                "correct"
+            ]
+            total_incorrect += reformatted_results[function_type]["results"][fn][
+                "incorrect"
+            ]
+        reformatted_results[function_type]["average accuracy"] = total_correct / (
+            total_correct + total_incorrect
+        )
     return reformatted_results

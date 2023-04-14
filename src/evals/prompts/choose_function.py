@@ -61,7 +61,7 @@ def function_selection_prompt(
             # Add answer
             prompt_turns.append(
                 {
-                    "role": "user",
+                    "role": "assistant",
                     "content": f"{correct_index + 1}",
                 }
             )
