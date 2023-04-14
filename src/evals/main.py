@@ -14,8 +14,9 @@ from evals.utils import reformat_results
 from pipelines.sequence_completions import find_ambiguous_integer_sequences
 from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
-# Removing this class of function as they cause errors
-all_sequence_functions.pop("indexing_criteria_progression")
+# Note: sometimes the "indexing_criteria_progression" function class
+# Raises an error, as we may index a list which is too small.
+# all_sequence_functions.pop("indexing_criteria_progression")
 
 
 def str2bool(v):
@@ -76,7 +77,8 @@ if __name__ == "__main__":
                     offset = fn["offset"]
                     print(f"Function: {func}")
                     # Try multiple times (in case the openai api fails)
-                    for _ in range(5):
+                    # May be another error with certain function, mentioned at top
+                    for _ in range(2):
                         try:
                             (
                                 correct_choices,
@@ -94,28 +96,28 @@ if __name__ == "__main__":
                                 incorrect_functions=None,
                                 correct_functions=[func],
                             )
-                            break
                         except Exception as e:
+                            print("oopies")
                             print(e)
-                            continue
-                    # If the function already exists, add to the results
-                    if func in results:
-                        results[func]["correct"] += correct_choices
-                        results[func]["incorrect"] += incorrect_choices
-                        results[func]["invalid"] += invalid_outputs
-                    else:
-                        results[str(fn["fn"])] = {
-                            "correct": correct_choices,
-                            "incorrect": incorrect_choices,
-                            "invalid": invalid_outputs,
-                        }
+                            error = True
+                        else:
+                            # If the function already exists, add to the results
+                            if func in results:
+                                results[func]["correct"] += correct_choices
+                                results[func]["incorrect"] += incorrect_choices
+                                results[func]["invalid"] += invalid_outputs
+                            else:
+                                results[str(fn["fn"])] = {
+                                    "correct": correct_choices,
+                                    "incorrect": incorrect_choices,
+                                    "invalid": invalid_outputs,
+                                }
+                            break
         else:
             pass
             # TODO: have support for general base sequences here
 
-    print(f"Correct: {correct_choices}")
-    print(f"Incorrect: {incorrect_choices}")
-    print(f"Invalid: {invalid_outputs}")
+    print(total)
 
     # Reformat results
     results = reformat_results(results)

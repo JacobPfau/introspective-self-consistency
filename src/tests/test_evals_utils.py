@@ -78,5 +78,20 @@ def test_view_results():
     pprint(results)
 
 
+def test_indexing_criteria_regex():
+    import re
+
+    pattern = r"""\s*lambda\s+x\s*:\s*\[i\s+for\s+i\s+in\s+range\(\s*100\s*\)\s+if\s+i\s*%\s*\(\s*\d+
+        \s*\+\s*1\s*\)\s+or\s+i\s*%\s*\(\s*\d+\s*\+\s*1\s*\)\]\s*\[\s*x\s*\]\s*"""
+    string_to_check = (
+        "lambda x: [i for i in range(100) if i % (7 + 1) or i % (3 + 1)][x]"
+    )
+
+    if re.fullmatch(pattern, string_to_check):
+        print("The string matches the pattern")
+    else:
+        print("The string does not match the pattern")
+
+
 if __name__ == "__main__":
-    test_view_results()
+    test_indexing_criteria_regex()

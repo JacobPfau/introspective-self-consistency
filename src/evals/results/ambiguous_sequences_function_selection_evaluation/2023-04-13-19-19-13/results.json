@@ -1,0 +1,1 @@
+{"geometric_progression": {"results": {"lambda x: (2 * x) * 3": {"correct": 11, "incorrect": 4, "invalid": 0}, "lambda x: (3 * x) * 2": {"correct": 15, "incorrect": 0, "invalid": 0}}, "average accuracy": 0.8666666666666667, "total": 2}}
