@@ -275,3 +275,13 @@ def convert_numbers_to_base_b(string, base):
         return str(numberToBase(number, base))
 
     return re.sub(r"\d+", replace_number, string)
+
+
+def reformat_ambiguous_sequences(ambiguous_sequences):
+    """
+    Currently of the form {key: [{'data': ..., 'metadata': ..., 'disambiguating_pair_data': ...,
+    'disambiguating_pair_metadata': ..., 'disambiguating_step': ...}, ...], ...}
+
+    Want to reformat to {key: [{'data_1': ... }]
+    """
+    pass

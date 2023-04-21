@@ -39,7 +39,7 @@ def str2bool(v):
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--sequence-type",
-    default="integer",
+    default="binary",
     type=str,
     choices=["binary", "integer"],
 )
@@ -52,7 +52,7 @@ parser.add_argument(
 parser.add_argument("--on-ambiguous-sequences", default="True", type=str2bool)
 parser.add_argument(
     "--model",
-    default="CHAT",
+    default="DAVINCI",
     type=str,
     choices=["CHAT", "DAVINCI"],
 )
@@ -78,6 +78,8 @@ if __name__ == "__main__":
                 ambiguous_sequences = find_ambiguous_integer_sequences()
             else:
                 ambiguous_sequences = find_ambiguous_string_sequences(base=base)
+                # ambiguous_sequences = reformat_amiguous_sequences(ambiguous_sequences)
+                print(ambiguous_sequences)
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
                 # Go through each function and see if the model can select it
