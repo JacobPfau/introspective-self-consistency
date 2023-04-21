@@ -14,8 +14,13 @@ import random
 from typing import List, Tuple, Union
 
 from evals.prompts.choose_function import function_selection_prompt
-from evals.utils import choose_function, generate_wrong_functions
+from evals.utils import (
+    choose_function,
+    convert_numbers_to_base_b,
+    generate_wrong_functions,
+)
 from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
+from pipelines.baseb_sequence_completions import numberToBase
 
 
 def function_class_selection_evaluation(
@@ -95,6 +100,8 @@ def function_selection_evaluation(
     incorrect_functions: List[str] = None,
     correct_functions: List[int] = None,
     offset: Union[int, None] = None,
+    base: int = 10,
+    number_format: str = "None",
 ) -> Tuple[float, int]:
     """
     Given a sequence and some rule which could generate it, evaluate whether a model can discern
@@ -106,15 +113,18 @@ def function_selection_evaluation(
     correct_choices = 0
     incorrect_choices = 0
     invalid_outputs = 0
-    # print("Ole troubleshooting: ")
-    # print(model_name)
+    print("Ole troubleshooting: ")
+    print(model_name)
     if model_name == "CHAT":
         # Generate a prompt
+        print("huzzah")
         prompt = function_selection_prompt(
             num_shots=num_shots,
             num_functions=num_functions,
             use_cot=use_cot,
             model_name=CHAT_MODEL_NAME,
+            base=base,
+            num_format=number_format,
         )
     elif model_name == "DAVINCI":
         # Generate a prompt
@@ -123,6 +133,8 @@ def function_selection_evaluation(
             num_functions=num_functions,
             use_cot=use_cot,
             model_name=DAVINCI_MODEL_NAME,
+            base=base,
+            num_format=number_format,
         )
     else:
         raise ValueError("Model name not recognised")
@@ -148,8 +160,16 @@ def function_selection_evaluation(
                 incorrect_functions[i] for i in incorrect_function_indices
             ]
         sampled_functions.insert(correct_function_index, correct_function)
+        # Convert target sequence and functions to base b
+        if base != 10:
+            target_sequence = [numberToBase(x, base) for x in target_sequence]
+            sampled_functions = [
+                convert_numbers_to_base_b(x, base) for x in sampled_functions
+            ]
+
         # Choose the function
         try:
+            print("trying to get a response")
             model_response = choose_function(
                 possible_functions=sampled_functions,
                 correct_function_indices=[correct_function_index + 1],
@@ -158,6 +178,7 @@ def function_selection_evaluation(
                 model_name=model_name,
                 temperature=temperature,
             )
+            print("got a response")
         except ValueError:
             invalid_outputs += 1
             continue
