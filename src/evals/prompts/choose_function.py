@@ -11,10 +11,21 @@ SYSTEM_PROMPT + (BASE_PROMPT + BASE_PROMPT_COMPLETION (including answer)
 
 """
 import random
+
+# import re
 from typing import Dict, List, Union
 
-from evals.utils import _generate_random_function, generate_wrong_functions
+from evals.prompts.tokenisers import number_format_dict
+from evals.utils import (
+    _generate_random_function,
+    convert_numbers_to_base_b,
+    generate_wrong_functions,
+)
 from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
+from pipelines.baseb_sequence_completions import (
+    default_sequence_functions as baseb_sequence_functions,
+)
+from pipelines.baseb_sequence_completions import numberToBase
 from pipelines.sequence_completions import (  # BASE_PROMPT,; COT_PROMPT,; COT_STEP,
     SYSTEM_PROMPT,
     sequence_functions,
@@ -27,6 +38,8 @@ def function_selection_prompt(
     num_functions: int = 4,
     use_cot: bool = False,
     model_name: str = DAVINCI_MODEL_NAME,
+    base: int = 10,
+    num_format: str = "None",
 ) -> Union[str, List[Dict[str, str]]]:
     """
     Create start of prompt for function selection task.
@@ -34,6 +47,7 @@ def function_selection_prompt(
     """
     # TODO: refactor this to reduce duplication
     if model_name == CHAT_MODEL_NAME:
+        print("base is: ", base)
         prompt_turns = [
             {
                 "role": "system",
@@ -42,7 +56,7 @@ def function_selection_prompt(
         ]
         for i in range(num_shots):
             question_text, function, sequence, correct_index = create_question_text(
-                num_functions, use_cot, sequence_length
+                num_functions, use_cot, sequence_length, base, num_format
             )
             prompt_turns.append(
                 {
@@ -66,11 +80,12 @@ def function_selection_prompt(
                 }
             )
         prompt = prompt_turns
+        print("prompt be: ", prompt)
     elif model_name == DAVINCI_MODEL_NAME:
         prompt = SYSTEM_PROMPT + "\n"
         for i in range(num_shots):
             question_text, function, sequence, correct_index = create_question_text(
-                num_functions, use_cot, sequence_length
+                num_functions, use_cot, sequence_length, base, num_format
             )
             prompt += question_text
             if use_cot:
@@ -83,7 +98,11 @@ def function_selection_prompt(
 
 
 def create_question_text(
-    num_functions: int, use_cot: bool, sequence_length: int
+    num_functions: int,
+    use_cot: bool,
+    sequence_length: int,
+    base: int = 10,
+    num_format: str = "None",
 ) -> str:
     """
     Note: We want to generate num_functions - 1 incorrect functions, and 1 correct function.
@@ -97,9 +116,17 @@ def create_question_text(
         4. lambda x: 100 // x
         A: 1
     """
-    output = "Which python function generated the following sequence?\n"
-    # Generate a target function
-    function, offset = _generate_random_function(sequence_functions, (0, 10), (0, 10))
+
+    output = f"Which python function generated the following base-{base} sequence?\n"
+    # Generate a target function (we use different functions for base 10 and base b)
+    if base == 10:
+        function, offset = _generate_random_function(
+            sequence_functions, (0, 10), (0, 10)
+        )
+    else:
+        function, offset = _generate_random_function(
+            baseb_sequence_functions, (0, 10), (0, 10)
+        )
     # Generate a sequence from the function
     sequence = [eval(function)(i + offset) for i in range(sequence_length)]
     # Generate incorrect functions (i.e. 1 less than the total number of functions)
@@ -110,6 +137,18 @@ def create_question_text(
     random.shuffle(all_functions)
     # Get the index of the correct function
     correct_index = all_functions.index(function)
+    # Load the formatter we need
+    try:
+        formatter = number_format_dict[num_format]
+    except KeyError:
+        raise KeyError(f"Invalid number format: {num_format}")
+    # Convert the sequence to base b
+    sequence = [formatter(numberToBase(i, base)) for i in sequence]
+    # Convert every number in the function to base b
+    all_functions = [
+        formatter(convert_numbers_to_base_b(fn, base)) for fn in all_functions
+    ]
+
     # Add the sequence to the output
     output += ",".join([str(i) for i in sequence]) + "\n"
     # Add the incorrect functions to the output

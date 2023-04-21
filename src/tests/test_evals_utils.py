@@ -2,7 +2,11 @@ import json
 from pprint import pprint
 
 import evals.utils as utils
-from evals.prompts.choose_function import function_selection_prompt
+from evals.prompts.choose_function import (
+    convert_numbers_to_base_b,
+    create_question_text,
+    function_selection_prompt,
+)
 from models.openai_model import DAVINCI_MODEL_NAME  # , CHAT_MODEL_NAME
 
 # TODO: make these proper tests
@@ -93,5 +97,18 @@ def test_indexing_criteria_regex():
         print("The string does not match the pattern")
 
 
+def test_base_conversion():
+    stringo = "lambda x: x ** 420 69 69 16 81"
+    base = 10
+    print(convert_numbers_to_base_b(stringo, base))
+
+
+def test_create_question_text_baseb():
+    # stringo = "lambda x: x ** 420 69 69 16 81"
+    base = 2
+    print(create_question_text(5, False, 6, base))
+
+
 if __name__ == "__main__":
-    test_indexing_criteria_regex()
+    test_base_conversion()
+    test_create_question_text_baseb()

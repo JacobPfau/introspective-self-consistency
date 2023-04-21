@@ -9,12 +9,18 @@ from evals.function_selection_evaluation import (  # function_class_selection_ev
     function_selection_evaluation,
 )
 from evals.utils import reformat_results
+from pipelines.baseb_sequence_completions import find_ambiguous_string_sequences
 from pipelines.sequence_completions import find_ambiguous_integer_sequences
 from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
 # Note: sometimes the "indexing_criteria_progression" function class
 # Raises an error, as we may index a list which is too small.
 # all_sequence_functions.pop("indexing_criteria_progression")
+
+string_to_base = {
+    "binary": 2,
+    "integer": 10,
+}
 
 
 def str2bool(v):
@@ -44,7 +50,7 @@ parser.add_argument(
 parser.add_argument("--on-ambiguous-sequences", default="True", type=str2bool)
 parser.add_argument(
     "--model",
-    default="DAVINCI",
+    default="CHAT",
     type=str,
     choices=["CHAT", "DAVINCI"],
 )
@@ -59,12 +65,17 @@ if __name__ == "__main__":
     total = 0
     sequence_functions = None
     if args.on_ambiguous_sequences:
-        if args.sequence_type == "integer":
+        if args.sequence_type == "integer" or args.sequence_type == "binary":
+            # Get inetegr value for base
+            base = string_to_base[args.sequence_type]
             sequence_functions = all_sequence_functions
             # Get the ambiguous sequences
             # Use default parameters for now
             results = {}
-            ambiguous_sequences = find_ambiguous_integer_sequences()
+            if args.sequence_type == "integer":
+                ambiguous_sequences = find_ambiguous_integer_sequences()
+            else:
+                ambiguous_sequences = find_ambiguous_string_sequences(base=base)
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
                 # Go through each function and see if the model can select it
@@ -93,6 +104,7 @@ if __name__ == "__main__":
                                 generate_functions=True,
                                 incorrect_functions=None,
                                 correct_functions=[func],
+                                base=base,
                             )
                         except Exception as e:
                             print("oopies")
@@ -111,6 +123,8 @@ if __name__ == "__main__":
                                     "invalid": invalid_outputs,
                                 }
                             break
+                if total > 10:
+                    break
         else:
             pass
             # TODO: have support for general base sequences here
