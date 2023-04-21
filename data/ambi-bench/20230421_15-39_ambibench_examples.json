@@ -1,0 +1,169 @@
+{
+    "date": "20230421_15-39",
+    "config": {
+        "construction_format": "qa",
+        "n_shots": 4,
+        "n_queries": 10,
+        "prob_of_ambiguous": 50,
+        "needs_instruction": true,
+        "needs_informative": false,
+        "include_ambiguous_examples": false,
+        "construction_types": [
+            "location",
+            "subject",
+            "negation"
+        ]
+    },
+    "examples": [
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The surveyor is in the apartment building.\nA: X\nQ: The director is in the courtroom.\nA: X\nQ: The duck is in the river.\nA: Y\nQ: The mountain lion is in the jungle.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The photographer is in the hotel lobby.\nA: X\nQ: The duck is in the woodlands.\nA: Y\nQ: The fugitive is in the courtroom.\nA: X\nQ: The duck is in the prairie.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The butterfly is in the museum.\nA: Y\nQ: The surveyor is in the cave.\nA: X\nQ: The student is in the prairie.\nA: X\nQ: The surveyor is in the restaurant.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hawk is in the hotel lobby.\nA: X\nQ: The hound is in the prairie.\nA: Y\nQ: The bear is in the restaurant.\nA: X\nQ: The critic is in the canyon.\nA:",
+            "completion": " Y",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The student is in the theatre.\nA: X\nQ: The snake is in the courtroom.\nA: X\nQ: The surveyor is in the film studio.\nA: X\nQ: The director is in the lagoon.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The snake is in the courtroom.\nA: X\nQ: The hiker is in the house.\nA: X\nQ: The critic is in the courtroom.\nA: X\nQ: The director is in the marsh.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The surveyor is in the cave.\nA: Y\nQ: The mountain lion is in the river.\nA: Y\nQ: The student is in the pond.\nA: Y\nQ: The mountain lion is in the restaurant.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hiker is in the river.\nA: Y\nQ: The hawk is in the marsh.\nA: Y\nQ: The researcher is in the film studio.\nA: X\nQ: The hawk is in the laboratory.\nA:",
+            "completion": " X",
+            "salient_category": "urban_location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the meadow.\nA: Y\nQ: The firefighter is in the pond.\nA: Y\nQ: The hiker is in the courtroom.\nA: X\nQ: The hiker is in the house.\nA:",
+            "completion": " X",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The mountain lion is in the film studio.\nA: X\nQ: The hound is in the grocery store.\nA: X\nQ: The bear is in the apartment building.\nA: X\nQ: The critic is in the laboratory.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The firefighter is in the courtroom.\nA: Y\nQ: The butterfly is in the courtroom.\nA: X\nQ: The boar is in the courtroom.\nA: X\nQ: The horse is in the lagoon.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hawk is in the film studio.\nA: Y\nQ: The reporter is in the laboratory.\nA: X\nQ: The boar is in the pond.\nA: Y\nQ: The fugitive is in the film studio.\nA:",
+            "completion": " X",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The duck is in the laboratory.\nA: Y\nQ: The hawk is in the hotel lobby.\nA: Y\nQ: The director is in the laboratory.\nA: X\nQ: The hiker is in the film studio.\nA:",
+            "completion": " X",
+            "salient_category": "urban_location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive is in the prairie.\nA: Y\nQ: The hound is in the lagoon.\nA: X\nQ: The firefighter is in the hotel lobby.\nA: Y\nQ: The bear is in the river.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The boar is in the theatre.\nA: X\nQ: The reporter is in the pond.\nA: Y\nQ: The butterfly is in the marsh.\nA: X\nQ: The photographer is in the house.\nA:",
+            "completion": " Y",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the laboratory.\nA: X\nQ: The fugitive is in the canyon.\nA: Y\nQ: The bear is in the marsh.\nA: X\nQ: The director is in the marsh.\nA:",
+            "completion": " Y",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive is in the museum.\nA: X\nQ: The researcher is in the cave.\nA: X\nQ: The critic is in the courtroom.\nA: X\nQ: The hound is in the laboratory.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The firefighter is in the jungle.\nA: Y\nQ: The critic is in the lagoon.\nA: Y\nQ: The bear is in the grocery store.\nA: X\nQ: The critic is in the pond.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The photographer is in the film studio.\nA: X\nQ: The hound is in the river.\nA: Y\nQ: The director is in the marsh.\nA: X\nQ: The mountain lion is in the canyon.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The duck is in the river.\nA: X\nQ: The hiker is in the laboratory.\nA: Y\nQ: The hiker is in the marsh.\nA: Y\nQ: The snake is in the marsh.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Paul Atreides has been in the restaurant.\nA: Y\nQ: Bernie Sanders was not in the restaurant.\nA: X\nQ: The director has not been in the film studio.\nA: X\nQ: The director has been in the theatre.\nA:",
+            "completion": " Y",
+            "salient_category": "negation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The director is in the courtroom.\nA: Y\nQ: Paul Atreides could be in the theatre.\nA: Y\nQ: Paul Atreides was in the restaurant.\nA: Y\nQ: The hiker is in the laboratory.\nA:",
+            "completion": " Y",
+            "salient_category": "negation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Lebron James is in the museum.\nA: X\nQ: The researcher has been in the restaurant.\nA: X\nQ: Serena Williams is not in the hotel lobby.\nA: Y\nQ: Margot Robbie could be in the house.\nA:",
+            "completion": " X",
+            "salient_category": "affirmation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Serena Williams could be in the museum.\nA: Y\nQ: The hiker was in the hotel lobby.\nA: Y\nQ: Noam Chomsky was not in the film studio.\nA: X\nQ: Jane Goodall could not be in the apartment building.\nA:",
+            "completion": " X",
+            "salient_category": "negation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Noam Chomsky could be in the courtroom.\nA: Y\nQ: The researcher has not been in the house.\nA: X\nQ: The surveyor may be in the hotel lobby.\nA: Y\nQ: The photographer could be in the hotel lobby.\nA:",
+            "completion": " Y",
+            "salient_category": "negation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Lebron James could not be in the laboratory.\nA: X\nQ: The hiker could be in the museum.\nA: Y\nQ: The researcher was not in the film studio.\nA: X\nQ: Paul Atreides may not be in the courtroom.\nA:",
+            "completion": " X",
+            "salient_category": "negation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The surveyor is not in the courtroom.\nA: Y\nQ: Alexandria Ocasio-Cortez may be in the laboratory.\nA: X\nQ: The hiker was in the restaurant.\nA: X\nQ: The surveyor is in the laboratory.\nA:",
+            "completion": " X",
+            "salient_category": "affirmation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hiker could be in the apartment building.\nA: X\nQ: Paul Atreides may be in the courtroom.\nA: X\nQ: Noam Chomsky may be in the restaurant.\nA: X\nQ: The hiker is not in the house.\nA:",
+            "completion": " Y",
+            "salient_category": "affirmation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Serena Williams is not in the courtroom.\nA: X\nQ: Bernie Sanders was not in the apartment building.\nA: X\nQ: The director was in the film studio.\nA: Y\nQ: Margot Robbie was in the apartment building.\nA:",
+            "completion": " Y",
+            "salient_category": "negation"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The critic may not be in the laboratory.\nA: Y\nQ: The photographer may be in the hotel lobby.\nA: X\nQ: Lebron James was not in the hotel lobby.\nA: Y\nQ: Christopher Nolan may not be in the theatre.\nA:",
+            "completion": " Y",
+            "salient_category": "affirmation"
+        }
+    ]
+}
