@@ -162,7 +162,8 @@ def function_selection_evaluation(
         sampled_functions.insert(correct_function_index, correct_function)
         # Convert target sequence and functions to base b
         if base != 10:
-            target_sequence = [numberToBase(x, base) for x in target_sequence]
+            print("target sequence: ", target_sequence)
+            target_sequence = [numberToBase(int(x), base) for x in target_sequence]
             sampled_functions = [
                 convert_numbers_to_base_b(x, base) for x in sampled_functions
             ]

@@ -282,6 +282,23 @@ def reformat_ambiguous_sequences(ambiguous_sequences):
     Currently of the form {key: [{'data': ..., 'metadata': ..., 'disambiguating_pair_data': ...,
     'disambiguating_pair_metadata': ..., 'disambiguating_step': ...}, ...], ...}
 
-    Want to reformat to {key: [{'data_1': ... }]
+    Want to reformat to {key: [{'fn': ... }, {'fn': ...}, ...], ...}, where the fn keys are either the
+    function or the disambiguating pair function.
     """
-    pass
+    print(ambiguous_sequences)
+    reformatted_ambiguous_sequences = {}
+    for key, value in ambiguous_sequences.items():
+        print(key)
+        print(value)
+        reformatted_ambiguous_sequences[key] = []
+        for pair in value:
+            reformatted_ambiguous_sequences[key].append(
+                {"fn": pair["data"], "offset": pair["disambiguating_step"]}
+            )
+            reformatted_ambiguous_sequences[key].append(
+                {
+                    "fn": pair["disambiguating_pair_data"],
+                    "offset": pair["disambiguating_step"],
+                }
+            )
+    return reformatted_ambiguous_sequences

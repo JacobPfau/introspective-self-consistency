@@ -8,7 +8,7 @@ import argparse
 from evals.function_selection_evaluation import (  # function_class_selection_evaluation,
     function_selection_evaluation,
 )
-from evals.utils import reformat_results
+from evals.utils import reformat_ambiguous_sequences, reformat_results
 from pipelines.baseb_sequence_completions import find_ambiguous_string_sequences
 from pipelines.sequence_completions import find_ambiguous_integer_sequences
 from pipelines.sequence_completions import sequence_functions as all_sequence_functions
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                 ambiguous_sequences = find_ambiguous_integer_sequences()
             else:
                 ambiguous_sequences = find_ambiguous_string_sequences(base=base)
-                # ambiguous_sequences = reformat_amiguous_sequences(ambiguous_sequences)
+                ambiguous_sequences = reformat_ambiguous_sequences(ambiguous_sequences)
                 print(ambiguous_sequences)
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
@@ -85,6 +85,7 @@ if __name__ == "__main__":
                     total += 1
                     print("total is: ", total)
                     func = fn["fn"]
+                    print("func is: ", func)
                     offset = fn["offset"]
                     print(f"Function: {func}")
                     # Try multiple times (in case the openai api fails)
@@ -110,7 +111,7 @@ if __name__ == "__main__":
                             )
                         except Exception as e:
                             print("oopies")
-                            print(e)
+                            raise e
                             error = True
                         else:
                             # If the function already exists, add to the results
