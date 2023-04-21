@@ -113,11 +113,11 @@ def function_selection_evaluation(
     correct_choices = 0
     incorrect_choices = 0
     invalid_outputs = 0
-    print("Ole troubleshooting: ")
+    # print("Ole troubleshooting: ")
     print(model_name)
     if model_name == "CHAT":
         # Generate a prompt
-        print("huzzah")
+        # print("huzzah")
         prompt = function_selection_prompt(
             num_shots=num_shots,
             num_functions=num_functions,
@@ -169,7 +169,7 @@ def function_selection_evaluation(
 
         # Choose the function
         try:
-            print("trying to get a response")
+            # print("trying to get a response")
             model_response = choose_function(
                 possible_functions=sampled_functions,
                 correct_function_indices=[correct_function_index + 1],
@@ -178,7 +178,7 @@ def function_selection_evaluation(
                 model_name=model_name,
                 temperature=temperature,
             )
-            print("got a response")
+            # print("got a response")
         except ValueError:
             invalid_outputs += 1
             continue
