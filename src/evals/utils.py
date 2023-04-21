@@ -8,6 +8,7 @@ from models.openai_model import (
     generate_chat_completion,
     generate_text_completion,
 )
+from pipelines.baseb_sequence_completions import numberToBase
 from pipelines.sequence_completions import sequence_functions
 
 
@@ -146,8 +147,8 @@ def choose_function(
             model=DAVINCI_MODEL_NAME,
         )
     elif model_name == "CHAT":
-        # print("coooeeee")
-        # print("input to model is: ", formatted_prompt)
+        print("coooeeee")
+        print("input to model is: ", formatted_prompt)
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=formatted_prompt,
@@ -155,7 +156,7 @@ def choose_function(
             max_tokens=256,
             model=CHAT_MODEL_NAME,
         )
-        # print("model response is: ", model_response)
+        print("model response is: ", model_response)
     # Parse the model's response to get the index of the function it chose
     try:
         model_response = parse_model_response(model_response)
@@ -262,3 +263,15 @@ def reformat_results(results: dict) -> dict:
             total_correct + total_incorrect
         )
     return reformatted_results
+
+
+def convert_numbers_to_base_b(string, base):
+    """
+    Convert all numbers in a string to base b.
+    """
+
+    def replace_number(match):
+        number = int(match.group(0))
+        return str(numberToBase(number, base))
+
+    return re.sub(r"\d+", replace_number, string)
