@@ -14,13 +14,8 @@ import random
 from typing import List, Tuple, Union
 
 from evals.prompts.choose_function import function_selection_prompt
-from evals.utils import (
-    choose_function,
-    convert_numbers_to_base_b,
-    generate_wrong_functions,
-)
+from evals.utils import choose_function, generate_wrong_functions
 from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
-from pipelines.baseb_sequence_completions import numberToBase
 
 
 def function_class_selection_evaluation(
@@ -161,12 +156,9 @@ def function_selection_evaluation(
             ]
         sampled_functions.insert(correct_function_index, correct_function)
         # Convert target sequence and functions to base b
-        if base != 10:
-            print("target sequence: ", target_sequence)
-            target_sequence = [numberToBase(int(x), base) for x in target_sequence]
-            sampled_functions = [
-                convert_numbers_to_base_b(x, base) for x in sampled_functions
-            ]
+        # if base != 10:
+        #     print("target sequence: ", target_sequence)
+        #     target_sequence = convert_numbers_to_base_b(target_sequence, base)
 
         # Choose the function
         try:
@@ -178,6 +170,7 @@ def function_selection_evaluation(
                 prompt=prompt,
                 model_name=model_name,
                 temperature=temperature,
+                base=base,
             )
             # print("got a response")
         except ValueError:

@@ -11,7 +11,6 @@ from evals.function_selection_evaluation import (  # function_class_selection_ev
     function_selection_evaluation,
 )
 from evals.utils import reformat_ambiguous_sequences, reformat_results
-from pipelines.baseb_sequence_completions import find_ambiguous_string_sequences
 from pipelines.sequence_completions import find_ambiguous_integer_sequences
 from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
@@ -74,12 +73,10 @@ if __name__ == "__main__":
             # Get the ambiguous sequences
             # Use default parameters for now
             results = {}
-            if args.sequence_type == "integer":
-                ambiguous_sequences = find_ambiguous_integer_sequences()
-            else:
-                ambiguous_sequences = find_ambiguous_string_sequences(base=base)
+            ambiguous_sequences = find_ambiguous_integer_sequences()
+            if args.sequence_type != "integer":
+                # Change the base of the ambiguous sequences
                 ambiguous_sequences = reformat_ambiguous_sequences(ambiguous_sequences)
-                print(ambiguous_sequences)
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
                 # Go through each function and see if the model can select it
@@ -113,8 +110,7 @@ if __name__ == "__main__":
                             )
                         except Exception as e:
                             print("oopies")
-                            raise e
-                            error = True
+                            print(e)
                         else:
                             # If the function already exists, add to the results
                             if func in results:
@@ -128,8 +124,6 @@ if __name__ == "__main__":
                                     "invalid": invalid_outputs,
                                 }
                             break
-                if total > 10:
-                    break
         else:
             pass
             # TODO: have support for general base sequences here
