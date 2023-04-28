@@ -17,6 +17,7 @@ import os
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from tqdm import tqdm
 
 from src.models.openai_model import (
     CHAT_PROMPT_TEMPLATE,
@@ -87,9 +88,9 @@ if __name__ == "__main__":
     # set params
     ambibench_data_dir = "./data/ambi-bench"
     data_file_name = "20230406_12-28_ambibench_examples.json"
-    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
+    date = datetime.datetime.now().strftime("%y%m%d")
     output_tsv = f"./results/{date}_ambibench_completions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35
+    model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
 
     ###
 
@@ -104,7 +105,7 @@ if __name__ == "__main__":
 
     logger.info(f"Start model inference for: {model.value}")
     pred_completions: List[str] = []
-    for prompt in formatted_prompts:
+    for prompt in tqdm(formatted_prompts):
 
         if isinstance(model, OpenAIChatModels):
             completion = get_chat_completion(prompt, model)
@@ -125,7 +126,7 @@ if __name__ == "__main__":
         "acc": round(correct_predictions / len(formatted_prompts), 3),
     }
     logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict(results, orient="index")
+    df = pd.DataFrame.from_dict([results])
 
     if os.path.exists(output_tsv):
         # append
