@@ -4,6 +4,7 @@ functions. Looking directly at ambiguous functions generated in pipelines.sequen
 """
 
 import argparse
+import logging
 
 from evals.function_selection_evaluation import (  # function_class_selection_evaluation,
     function_selection_evaluation,
@@ -15,6 +16,12 @@ from pipelines.sequence_completions import sequence_functions as all_sequence_fu
 # Note: sometimes the "indexing_criteria_progression" function class
 # Raises an error, as we may index a list which is too small.
 # all_sequence_functions.pop("indexing_criteria_progression")
+
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logging.info("This message will be displayed in the console")
 
 string_to_base = {
     "binary": 2,
@@ -49,7 +56,7 @@ parser.add_argument(
 parser.add_argument("--on-ambiguous-sequences", default="True", type=str2bool)
 parser.add_argument(
     "--model",
-    default="DAVINCI",
+    default="CHAT",
     type=str,
     choices=["CHAT", "DAVINCI"],
 )
@@ -84,7 +91,6 @@ if __name__ == "__main__":
                     func = fn["fn"]
                     print("func is: ", func)
                     offset = fn["offset"]
-                    print(f"Function: {func}")
                     # Try multiple times (in case the openai api fails)
                     # May be another error with certain function, mentioned at top
                     for _ in range(2):

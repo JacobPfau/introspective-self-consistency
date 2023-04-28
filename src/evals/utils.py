@@ -81,7 +81,7 @@ def format_question(
         [f"{i+1}. {func}" for i, func in enumerate(functions)]
     )
     question_text = f"""Which python function generated the following sequence?
-        Note that the sequence is now represented in base-{base}.\n{target_sequence}\n{formatted_answers}\nA:"""
+Note that the sequence is now represented in base-{base}.\n{target_sequence}\n{formatted_answers}\n"""
     if model_name == "DAVINCI":
         result = f"{prompt}\n{question_text}"
     elif model_name == "CHAT":
@@ -152,8 +152,7 @@ def choose_function(
             model=DAVINCI_MODEL_NAME,
         )
     elif model_name == "CHAT":
-        print("coooeeee")
-        print("input to model is: ", formatted_prompt)
+        # print("input to model is: ", formatted_prompt)
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=formatted_prompt,
@@ -161,7 +160,7 @@ def choose_function(
             max_tokens=256,
             model=CHAT_MODEL_NAME,
         )
-        print("model response is: ", model_response)
+        # print("model response is: ", model_response)
     # Parse the model's response to get the index of the function it chose
     try:
         model_response = parse_model_response(model_response)
