@@ -1,6 +1,5 @@
 import logging
 import os
-import time
 from enum import Enum
 from typing import List, Union
 
@@ -65,25 +64,15 @@ def generate_chat_completion(
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
-    response = None
-    try:
-        response = openai.ChatCompletion.create(
-            model=model.value,
-            messages=prompt_turns,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-    except openai.APIError:
-        logger.warning("API Error. Sleep and try again.")
-        time.sleep(3)
-
-    if response is None:
-        logger.error("Reached retry limit and did not obtain proper response")
-        return INVALID_RESPONSE
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=prompt_turns,
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
 
     if len(response["choices"]) == 0:
-        logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
+        raise KeyError("Response did not return enough `choices`")
 
     return response["choices"][0]["message"]["content"]
 
