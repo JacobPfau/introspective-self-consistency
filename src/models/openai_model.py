@@ -66,21 +66,18 @@ def generate_chat_completion(
         model = OpenAIChatModels(model)
 
     response = None
-    n_retries = 0
-    while n_retries < _MAX_RETRIES:
-        try:
-            response = openai.ChatCompletion.create(
-                model=model.value,
-                messages=prompt_turns,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-        except openai.APIError:
-            logger.warning("API Error. Sleep and try again.")
-            n_retries += 1
-            time.sleep(3)
+    try:
+        response = openai.ChatCompletion.create(
+            model=model.value,
+            messages=prompt_turns,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+    except openai.APIError:
+        logger.warning("API Error. Sleep and try again.")
+        time.sleep(3)
 
-    if response is None and n_retries == _MAX_RETRIES:
+    if response is None:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
