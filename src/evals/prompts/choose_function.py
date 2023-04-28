@@ -44,7 +44,6 @@ def function_selection_prompt(
     # question_base = base
     # TODO: refactor this to reduce duplication
     if model_name == CHAT_MODEL_NAME:
-        print("base is: ", base)
         prompt_turns = [
             {
                 "role": "system",
@@ -90,7 +89,7 @@ def function_selection_prompt(
                 prompt += cot_text
             # Add answer
             prompt += f"A: {correct_index + 1}\n\n"
-    # print(prompt)
+    # print("prompt returned by function_selection_prompt: ", prompt)
     return prompt
 
 
