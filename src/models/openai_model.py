@@ -83,7 +83,7 @@ def generate_chat_completion(
             n_retries += 1
             time.sleep(3)
 
-    if response is None and n_retries == _MAX_RETRIES:
+    if response is None:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
