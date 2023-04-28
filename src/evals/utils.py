@@ -72,6 +72,7 @@ def format_question(
     target_sequence: str,
     functions: List[str],
     model_name: str = "DAVINCI",
+    base: int = 10,
 ) -> str:
     """
     Take the given few-shot prompt, add the question for the sequence, and the list of functions.
@@ -79,7 +80,8 @@ def format_question(
     formatted_answers = "\n".join(
         [f"{i+1}. {func}" for i, func in enumerate(functions)]
     )
-    question_text = f"What function generated the following sequence?\n{target_sequence}\n{formatted_answers}\nA:"
+    question_text = f"""Which python function generated the following sequence?
+        Note that the sequence is now represented in base-{base}.\n{target_sequence}\n{formatted_answers}\nA:"""
     if model_name == "DAVINCI":
         result = f"{prompt}\n{question_text}"
     elif model_name == "CHAT":
@@ -121,6 +123,7 @@ def choose_function(
     prompt: str,
     model_name: str,
     temperature: float = 0.0,
+    base: int = 10,
 ) -> int:
     """
     Prompt a model to chose a function, from a list of possible functions, that generated a target sequence.
@@ -137,7 +140,9 @@ def choose_function(
         target_sequence=target_sequence,
         functions=possible_functions,
         model_name=model_name,
+        base=base,
     )
+    # print(formatted_prompt)
     if model_name == "DAVINCI":
         # Feed this into the model
         model_response = generate_text_completion(
@@ -247,7 +252,10 @@ def reformat_results(results: dict) -> dict:
         for fn in results.keys():
             if identify_function_class(fn) == function_type:
                 reformatted_results[function_type]["results"][fn] = results[fn]
-                reformatted_results[function_type]["total"] += sum(results[fn].values())
+                # Change total to be in terms of number of successful examples
+                reformatted_results[function_type]["total"] += (
+                    results[fn]["correct"] + results[fn]["incorrect"]
+                )
     # Now, we can calculate the average accuracy
     for function_type in reformatted_results.keys():
         total_correct = 0
@@ -277,28 +285,20 @@ def convert_numbers_to_base_b(string, base):
     return re.sub(r"\d+", replace_number, string)
 
 
-def reformat_ambiguous_sequences(ambiguous_sequences):
+def reformat_ambiguous_sequences(ambiguous_sequences, base=2, max_length=30):
     """
-    Currently of the form {key: [{'data': ..., 'metadata': ..., 'disambiguating_pair_data': ...,
-    'disambiguating_pair_metadata': ..., 'disambiguating_step': ...}, ...], ...}
+    Reformat the keys of the ambiguous_sequences dictionary to be in an arbitrary base.
 
-    Want to reformat to {key: [{'fn': ... }, {'fn': ...}, ...], ...}, where the fn keys are either the
-    function or the disambiguating pair function.
+    Then, remove the ambiguous sequences that are too long.
     """
-    print(ambiguous_sequences)
+
     reformatted_ambiguous_sequences = {}
-    for key, value in ambiguous_sequences.items():
-        print(key)
-        print(value)
-        reformatted_ambiguous_sequences[key] = []
-        for pair in value:
-            reformatted_ambiguous_sequences[key].append(
-                {"fn": pair["data"], "offset": pair["disambiguating_step"]}
-            )
-            reformatted_ambiguous_sequences[key].append(
-                {
-                    "fn": pair["disambiguating_pair_data"],
-                    "offset": pair["disambiguating_step"],
-                }
-            )
+    for ambiguous_sequence in ambiguous_sequences.keys():
+        reformatted_ambiguous_sequence = convert_numbers_to_base_b(
+            ambiguous_sequence, base
+        )
+        if len(reformatted_ambiguous_sequence) <= max_length:
+            reformatted_ambiguous_sequences[
+                reformatted_ambiguous_sequence
+            ] = ambiguous_sequences[ambiguous_sequence]
     return reformatted_ambiguous_sequences
