@@ -1,6 +1,7 @@
+
+import time
 import logging
 import os
-import time
 from enum import Enum
 from typing import List, Union
 
@@ -103,8 +104,7 @@ def generate_chat_completion(
         return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
+        raise KeyError("Response did not return enough `choices`")
 
     return response["choices"][0]["message"]["content"]
 
