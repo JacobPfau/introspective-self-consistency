@@ -11,6 +11,7 @@ correct function and sequence constant, and vary the incorrect options. This all
 us to evaluate whether the model is capable of recoginising a single correct function.
 """
 import random
+from copy import deepcopy
 from typing import List, Tuple, Union
 
 from evals.prompts.choose_function import function_selection_prompt
@@ -112,7 +113,7 @@ def function_selection_evaluation(
     print(model_name)
     if model_name == "CHAT":
         # Generate a prompt
-        # print("huzzah")
+        print("huzzah")
         prompt = function_selection_prompt(
             num_shots=num_shots,
             num_functions=num_functions,
@@ -162,12 +163,13 @@ def function_selection_evaluation(
 
         # Choose the function
         try:
+            new_prompt = deepcopy(prompt)
             # print("trying to get a response")
             model_response = choose_function(
                 possible_functions=sampled_functions,
                 correct_function_indices=[correct_function_index + 1],
                 target_sequence=target_sequence,
-                prompt=prompt,
+                prompt=new_prompt,
                 model_name=model_name,
                 temperature=temperature,
                 base=base,
