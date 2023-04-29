@@ -1,5 +1,9 @@
 import logging
 import os
+<<<<<<< HEAD
+=======
+import time
+>>>>>>> a5581ad (fix while loop)
 from enum import Enum
 from typing import List, Union
 
@@ -64,15 +68,29 @@ def generate_chat_completion(
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=prompt_turns,
-        temperature=temperature,
-        max_tokens=max_tokens,
-    )
+    response = None
+    n_retries = 0
+    while n_retries < _MAX_RETRIES:
+        try:
+            response = openai.ChatCompletion.create(
+                model=model.value,
+                messages=prompt_turns,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            break
+        except openai.APIError:
+            logger.warning("API Error. Sleep and try again.")
+            n_retries += 1
+            time.sleep(3)
+
+    if response is None and n_retries == _MAX_RETRIES:
+        logger.error("Reached retry limit and did not obtain proper response")
+        return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
 
@@ -87,7 +105,7 @@ def generate_response_with_turns(
     Turns are collapsed into a single string for the davinci model.
     """
     if model == DAVINCI_MODEL_NAME:
-        return generate_text_completion(
+        return generate_completion(
             prompt="\n".join([turn["content"] for turn in turns]),
             temperature=0,
             max_tokens=256,
