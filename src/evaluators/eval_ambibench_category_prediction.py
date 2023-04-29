@@ -20,7 +20,7 @@ from src.structures.ambibench import AmbiBenchDataset
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
 
-ALL_CATEGORIES_PROMPT = "Valid options for [category withheld] are the following. Please select only one value when prompted:\n"
+ALL_CATEGORIES_PROMPT = "Possible options for [category withheld] are the following. Please select one of these labels when prompted:\n"
 CATEGORY_PREDICTION_PROMPT = (
     "What is your best guess for the [category withheld] above?\nCategory:"
 )
@@ -40,41 +40,48 @@ def _get_prompt_for_all_categories(categories: List[str], order_type="shuffle") 
     return prompt
 
 
+def _get_prompt_for_multi_choice_categories(categories_string: str) -> str:
+    return ALL_CATEGORIES_PROMPT + categories_string
+
+
 def format_prompt_for_prediction_for_model_type(
-    dataset: AmbiBenchDataset, model: str
+    dataset: AmbiBenchDataset, model: str, use_multiple_choice: bool
 ) -> Tuple[List[dict], List[str]]:
 
     formatted_prompts: List[dict] = []
     expected_category: List[str] = []
 
-    if isinstance(model, OpenAIChatModels):
-        # Need to format the original prompt structure to run inference for AmbiBench completions?
-        # E.g.: 'Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the prairie.\nA: Y
-        #   \nQ: The fugitive is in the river.\nA: Y\nQ: The surveyor is in the marsh.\nA:'
-        template = CHAT_PROMPT_TEMPLATE
-        for ex in dataset.examples:
+    # construct the prompt, which includes
+    # Instruction
+    # Set of examples with their completion
+    # Possible categories: either multiple choice or all valid categories
+    # Prompt for category prediction
+    for ex in dataset.examples:
+        example_set = ex["prompt"] + ex["completion"] + "\n"
 
-            # construct the prompt, which includes
-            # Instruction
-            # Set of examples with their completion
-            # Possible categories: either multiple choice or all valid categories
-            # Prompt for category prediction
-            example_set = ex["prompt"] + ex["completion"] + "\n"
+        if use_multiple_choice and dataset.config.n_multiple_choices > 0:
+            possible_cats = _get_prompt_for_multi_choice_categories(
+                ex["multiple_choice_category"]
+            )
+        else:
+
             possible_cats = _get_prompt_for_all_categories(dataset.candidate_categories)
-            # TOOD: multiple choice case
-            category_pred = dataset.assistance_prompts["category_prediction"]
 
-            template["content"] = example_set + possible_cats + category_pred
+        category_pred = dataset.assistance_prompts["category_prediction"]
+        prompt = example_set + possible_cats + category_pred
 
+        if isinstance(model, OpenAIChatModels):
+            template = CHAT_PROMPT_TEMPLATE.copy()
+            template["content"] = prompt
             formatted_prompts.append(template)
-            expected_category.append(ex["salient_category"].strip())
 
-    elif isinstance(model, OpenAITextModels):
-        for ex in dataset.examples:
-            formatted_prompts.append(ex["prompt"])
-            expected_category.append(ex["salient_category"].strip())
-    else:
-        raise NotImplementedError(f"No formatting method for '{model}'")
+        elif isinstance(model, OpenAITextModels):
+            formatted_prompts.append(prompt)
+
+        else:
+            raise NotImplementedError(f"No formatting method for '{model}'")
+
+        expected_category.append(ex["salient_category"].strip())
 
     return formatted_prompts, expected_category
 
@@ -85,10 +92,11 @@ def eval_category_predictions(
     # compare predictions to ground truth
     correct_predictions = 0
     for (y, pred) in zip(expected_completions, pred_completions):
-        if pred in [y, y.lower(), y.upper()]:
+        # prediction may contain enumeration
+        if pred.split(" ")[-1] in [y, y.lower(), y.upper()]:
             correct_predictions += 1
         else:
-            logger.debug(f"'{pred}' != '{y}'")
+            logger.info(f"'{pred}' != '{y}'")
 
     return correct_predictions
 
@@ -113,6 +121,7 @@ if __name__ == "__main__":
     date = datetime.datetime.now().strftime("%y%m%d")
     output_tsv = f"./results/{date}_ambibench_category_predictions.tsv"
     model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
+    use_multiple_choice = True
 
     ###
 
@@ -120,10 +129,16 @@ if __name__ == "__main__":
     dataset = load_ambibench_dataset(os.path.join(ambibench_data_dir, data_file_name))
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
+    if dataset.config.n_multiple_choices < 1:
+        logger.warning(
+            "No multiple choice options in the dataset, will use default of all possible categories."
+        )
+        use_multiple_choice = False
+
     (
         formatted_prompts,
         expected_categories,
-    ) = format_prompt_for_prediction_for_model_type(dataset, model)
+    ) = format_prompt_for_prediction_for_model_type(dataset, model, use_multiple_choice)
     logger.info(
         f"No. prompts for AmbiBench category prediction: {len(formatted_prompts)}"
     )
@@ -148,6 +163,7 @@ if __name__ == "__main__":
         "dataset": data_file_name,
         "model": model.value,
         "num_shots": dataset.config.n_shots,
+        "multiple_choice": int(use_multiple_choice),
         "num_examples": len(formatted_prompts),
         "num_correct": correct_predictions,
         "acc": round(correct_predictions / len(formatted_prompts), 3),
