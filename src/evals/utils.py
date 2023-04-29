@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 from models.openai_model import (
     DAVINCI_MODEL_NAME,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
 from pipelines.sequence_completions import sequence_functions
 
@@ -124,7 +124,7 @@ def choose_function(
     if model_name == "DAVINCI":
 
         # Feed this into the model
-        model_response = generate_completion(
+        model_response = generate_text_completion(
             prompt=formatted_prompt,
             temperature=temperature,
             max_tokens=256,

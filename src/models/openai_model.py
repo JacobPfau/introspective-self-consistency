@@ -33,7 +33,7 @@ logging.basicConfig(
 )
 
 
-def generate_completion(
+def generate_text_completion(
     prompt: str,
     temperature: int = 0,
     max_tokens: int = 256,
@@ -75,6 +75,7 @@ def generate_chat_completion(
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
+            break
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
@@ -101,7 +102,7 @@ def generate_response_with_turns(
     Turns are collapsed into a single string for the davinci model.
     """
     if model == DAVINCI_MODEL_NAME:
-        return generate_completion(
+        return generate_text_completion(
             prompt="\n".join([turn["content"] for turn in turns]),
             temperature=0,
             max_tokens=256,
