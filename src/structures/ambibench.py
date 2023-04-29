@@ -8,10 +8,12 @@ class AmbiBenchConfig:
     construction_format: str
     n_shots: int
     n_queries: int
+    n_multiple_choices: int
     prob_of_ambiguous: float
 
     needs_instruction: bool = False
     needs_informative: bool = False
+    no_salient_task: bool = False
     include_ambiguous_examples: bool = False
     construction_types: List[str] = field(
         default_factory=list,
@@ -35,6 +37,16 @@ class AmbiBenchDataset:
         default_factory=list, metadata={"help": "List of query-completion tuple"}
     )
 
+    candidate_categories: List[str] = field(
+        default_factory=list,
+        metadata={"help": "List of possible categories that could generate examples."},
+    )
+
+    assistance_prompts: Dict[str, str] = field(
+        default_factory=dict,
+        metadata={"help": "Additional prompts for COT, clarification, verbalisation"},
+    )
+
     @classmethod
     def from_dict(cls, params):
         class_fields = {f.name for f in fields(cls)}
@@ -42,4 +54,4 @@ class AmbiBenchDataset:
 
     def __post_init__(self):
         if isinstance(self.config, dict):
-            self.config = AmbiBenchConfig.from_dict(self.config)
+            self.config = AmbiBenchConfig(**self.config)
