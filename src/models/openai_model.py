@@ -61,11 +61,12 @@ def generate_chat_completion(
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
-    # TODO: may want to handle ServiceUnavailableError, RateLimitError
+    # TODO: may want to handle ServiceUnavailableError
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
     response = None
+
     n_retries = 0
     while n_retries < _MAX_RETRIES:
         try:
@@ -80,6 +81,12 @@ def generate_chat_completion(
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
             time.sleep(3)
+        except openai.error.RateLimitError:
+            logger.error(
+                "Rate limiting, Sleep and try again."
+            )  # TBD: how long to wait?
+            n_retries += 1
+            time.sleep(10)
 
     if response is None and n_retries == _MAX_RETRIES:
         logger.error("Reached retry limit and did not obtain proper response")
