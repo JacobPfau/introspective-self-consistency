@@ -16,11 +16,17 @@ INVALID_RESPONSE = "INVALID_RESPONSE"
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-class OpenAITextModels(Enum):
+class ExtendedEnum(Enum):
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.value, cls))
+
+
+class OpenAITextModels(ExtendedEnum):
     TEXT_DAVINCI_003 = "text-davinci-003"
 
 
-class OpenAIChatModels(Enum):
+class OpenAIChatModels(ExtendedEnum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
     CHAT_GPT_4 = "gpt-4-0314"
 
@@ -31,6 +37,16 @@ logging.basicConfig(
     datefmt="%d/%m/%Y %H:%M:%S",
     level=logging.INFO,
 )
+
+
+def get_openai_model_from_string(model_name: str) -> Enum:
+
+    if model_name in OpenAITextModels.list():
+        return OpenAITextModels(model_name)
+    elif model_name in OpenAIChatModels.list():
+        return OpenAIChatModels(model_name)
+    else:
+        raise KeyError(f"Invalid OpenAI model name: {model_name}")
 
 
 def generate_text_completion(
