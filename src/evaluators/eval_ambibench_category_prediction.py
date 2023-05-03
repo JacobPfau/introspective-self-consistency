@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import logging
 import os
@@ -13,6 +14,7 @@ from src.models.openai_model import (
     OpenAITextModels,
     generate_chat_completion,
     generate_text_completion,
+    get_openai_model_from_string,
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 from src.structures.ambibench import AmbiBenchDataset
@@ -113,20 +115,74 @@ def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
     return text_response.strip()
 
 
+def _get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--ambibench_data_path",
+        type=str,
+        required=True,
+        default="./data/ambi-bench/dataset.json",
+        help="File path to dataset",
+    )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        required=True,
+        default="gpt-3.5-turbo",
+        help="Model name for which to run evals",
+    )
+
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        required=False,
+        default="./results",
+        help="Directory where to store results",
+    )
+
+    parser.add_argument(
+        "--output_tsv",
+        type=str,
+        required=False,
+        default="ambibench_category_prediction.tsv",
+        help="TSV file name where results are stored.",
+    )
+
+    parser.add_argument(
+        "--use_multiple_choice",
+        action="store_true",
+        help="Use multiple choice for category prediction if available. If not set will use all categories by default.",
+    )
+
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
 
-    # set params
-    ambibench_data_dir = "./data/ambi-bench"
-    data_file_name = "20230429_12-14_ambibench_examples.json"
+    # set arguments
+    args = _get_args()
+
+    model = get_openai_model_from_string(args.model)
+
     date = datetime.datetime.now().strftime("%y%m%d")
-    output_tsv = f"./results/{date}_ambibench_category_predictions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
-    use_multiple_choice = True
+    if args.output_tsv is not None:
+        output_tsv = os.path.join(args.output_dir, f"{date}_" + args.output_tsv)
+    else:
+        # use dataset name for results file
+        tsv_name = (
+            str(args.ambibench_data_path)
+            .split("/")[-1]
+            .replace(".json", "_results.tsv")
+        )
+        output_tsv = os.path.join(args.output_dir, f"{date}_" + tsv_name)
 
     ###
 
-    #
-    dataset = load_ambibench_dataset(os.path.join(ambibench_data_dir, data_file_name))
+    # get data
+    dataset = load_ambibench_dataset(args.ambibench_data_path)
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
     if dataset.config.n_multiple_choices < 1:
@@ -160,7 +216,7 @@ if __name__ == "__main__":
 
     # store results in TSV
     results = {
-        "dataset": data_file_name,
+        "dataset": output_tsv,
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "multiple_choice": int(use_multiple_choice),
