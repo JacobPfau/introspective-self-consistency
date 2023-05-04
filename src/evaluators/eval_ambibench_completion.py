@@ -1,7 +1,6 @@
 """This module provides methods to evaluate the correctness and consistency of predicitons
  on basic AmbiBench-style examples. The model is given a prompt with few-shot examples and tested for the following cases:
     1. uninformative completion: predict a binary output {X; Y} on whether or not the last question contains the [category withheld]
-    2. uninformative multiple-choice category prediction: predict which category out of multiple choices explains the examples
 
 Here 'uninformative' refers to [category withheld] in the instruction, i.e. the model is not informed about the category
 
@@ -17,13 +16,14 @@ import os
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from tqdm import tqdm
 
 from src.models.openai_model import (
     CHAT_PROMPT_TEMPLATE,
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
@@ -77,7 +77,7 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
-    completion_response = generate_completion(prompt, model=model)
+    completion_response = generate_text_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
@@ -87,9 +87,9 @@ if __name__ == "__main__":
     # set params
     ambibench_data_dir = "./data/ambi-bench"
     data_file_name = "20230406_12-28_ambibench_examples.json"
-    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
+    date = datetime.datetime.now().strftime("%y%m%d")
     output_tsv = f"./results/{date}_ambibench_completions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35
+    model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
 
     ###
 
@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     logger.info(f"Start model inference for: {model.value}")
     pred_completions: List[str] = []
-    for prompt in formatted_prompts:
+    for prompt in tqdm(formatted_prompts):
 
         if isinstance(model, OpenAIChatModels):
             completion = get_chat_completion(prompt, model)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         "acc": round(correct_predictions / len(formatted_prompts), 3),
     }
     logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict(results, orient="index")
+    df = pd.DataFrame.from_dict([results])
 
     if os.path.exists(output_tsv):
         # append

@@ -1,0 +1,279 @@
+{
+    "date": "20230429_12-14",
+    "config": {
+        "construction_format": "qa",
+        "n_shots": 4,
+        "n_queries": 10,
+        "n_multiple_choices": 4,
+        "prob_of_ambiguous": 50,
+        "needs_instruction": true,
+        "needs_informative": false,
+        "no_salient_task": false,
+        "include_ambiguous_examples": false,
+        "construction_types": [
+            "location",
+            "subject",
+            "negation",
+            "pronoun"
+        ]
+    },
+    "examples": [
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive is in the apartment building.\nA: Y\nQ: The hound is in the restaurant.\nA: Y\nQ: The critic is in the pond.\nA: X\nQ: The duck is in the apartment building.\nA:",
+            "completion": " Y",
+            "salient_category": "natural_location",
+            "multiple_choice_category": "1. female_pronoun\n2. proper_noun\n3. negation\n4. natural_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The director is in the theatre.\nA: X\nQ: The duck is in the meadow.\nA: Y\nQ: The student is in the cave.\nA: Y\nQ: The butterfly is in the cave.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location",
+            "multiple_choice_category": "1. urban_location\n2. male_pronoun\n3. secular_leader\n4. affirmation\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The director is in the canyon.\nA: X\nQ: The hiker is in the lagoon.\nA: X\nQ: The student is in the marsh.\nA: X\nQ: The director is in the film studio.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. human_subject\n2. proper_noun\n3. negation\n4. male_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The reporter is in the courtroom.\nA: X\nQ: The firefighter is in the river.\nA: Y\nQ: The snake is in the grocery store.\nA: X\nQ: The butterfly is in the museum.\nA:",
+            "completion": " X",
+            "salient_category": "urban_location",
+            "multiple_choice_category": "1. natural_location\n2. religious_leader\n3. urban_location\n4. secular_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The duck is in the grocery store.\nA: X\nQ: The firefighter is in the woodlands.\nA: Y\nQ: The snake is in the house.\nA: X\nQ: The horse is in the house.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject",
+            "multiple_choice_category": "1. affirmation\n2. animal_subject\n3. male_pronoun\n4. negation\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The director is in the prairie.\nA: X\nQ: The hound is in the canyon.\nA: X\nQ: The critic is in the jungle.\nA: X\nQ: The butterfly is in the courtroom.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. secular_leader\n2. human_subject\n3. affirmation\n4. religious_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The student is in the hotel lobby.\nA: X\nQ: The photographer is in the theatre.\nA: X\nQ: The boar is in the marsh.\nA: Y\nQ: The mountain lion is in the prairie.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location",
+            "multiple_choice_category": "1. urban_location\n2. male_pronoun\n3. human_subject\n4. proper_noun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hawk is in the marsh.\nA: Y\nQ: The surveyor is in the marsh.\nA: Y\nQ: The boar is in the museum.\nA: X\nQ: The hound is in the cave.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location",
+            "multiple_choice_category": "1. negation\n2. affirmation\n3. affirmation\n4. urban_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The critic is in the prairie.\nA: Y\nQ: The worm is in the river.\nA: Y\nQ: The hound is in the museum.\nA: X\nQ: The worm is in the woodlands.\nA:",
+            "completion": " Y",
+            "salient_category": "animal_subject",
+            "multiple_choice_category": "1. proper_noun\n2. animal_subject\n3. proper_noun\n4. male_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The photographer is in the marsh.\nA: X\nQ: The reporter is in the theatre.\nA: Y\nQ: The firefighter is in the grocery store.\nA: Y\nQ: The boar is in the cave.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject",
+            "multiple_choice_category": "1. urban_location\n2. natural_location\n3. proper_noun\n4. animal_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the prairie.\nA: Y\nQ: The fugitive is in the river.\nA: X\nQ: The student is in the restaurant.\nA: X\nQ: The duck is in the house.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. human_subject\n2. male_pronoun\n3. secular_leader\n4. urban_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The mountain lion is in the museum.\nA: X\nQ: The surveyor is in the theatre.\nA: Y\nQ: The hawk is in the house.\nA: X\nQ: The mountain lion is in the hotel lobby.\nA:",
+            "completion": " X",
+            "salient_category": "animal_subject",
+            "multiple_choice_category": "1. animal_subject\n2. affirmation\n3. natural_location\n4. male_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive is in the grocery store.\nA: X\nQ: The researcher is in the pond.\nA: X\nQ: The boar is in the house.\nA: Y\nQ: The critic is in the laboratory.\nA:",
+            "completion": " X",
+            "salient_category": "natural_location",
+            "multiple_choice_category": "1. male_pronoun\n2. urban_location\n3. negation\n4. natural_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The mountain lion is in the courtroom.\nA: X\nQ: The surveyor is in the prairie.\nA: Y\nQ: The hawk is in the woodlands.\nA: X\nQ: The surveyor is in the house.\nA:",
+            "completion": " Y",
+            "salient_category": "animal_subject",
+            "multiple_choice_category": "1. natural_location\n2. female_pronoun\n3. human_subject\n4. animal_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The surveyor is in the film studio.\nA: Y\nQ: The worm is in the apartment building.\nA: X\nQ: The hawk is in the pond.\nA: X\nQ: The hiker is in the museum.\nA:",
+            "completion": " Y",
+            "salient_category": "animal_subject",
+            "multiple_choice_category": "1. animal_subject\n2. urban_location\n3. urban_location\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The mountain lion is in the grocery store.\nA: Y\nQ: The duck is in the theatre.\nA: Y\nQ: The fugitive is in the courtroom.\nA: X\nQ: The researcher is in the pond.\nA:",
+            "completion": " X",
+            "salient_category": "urban_location",
+            "multiple_choice_category": "1. urban_location\n2. religious_leader\n3. animal_subject\n4. religious_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The reporter is in the lagoon.\nA: X\nQ: The firefighter is in the river.\nA: X\nQ: The hiker is in the house.\nA: X\nQ: The surveyor is in the prairie.\nA:",
+            "completion": " X",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. proper_noun\n2. human_subject\n3. religious_leader\n4. natural_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The mountain lion is in the marsh.\nA: X\nQ: The bear is in the grocery store.\nA: X\nQ: The critic is in the jungle.\nA: Y\nQ: The firefighter is in the restaurant.\nA:",
+            "completion": " Y",
+            "salient_category": "urban_location",
+            "multiple_choice_category": "1. negation\n2. urban_location\n3. human_subject\n4. animal_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The duck is in the museum.\nA: Y\nQ: The hiker is in the lagoon.\nA: X\nQ: The snake is in the house.\nA: Y\nQ: The firefighter is in the pond.\nA:",
+            "completion": " X",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. religious_leader\n2. proper_noun\n3. human_subject\n4. religious_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The reporter is in the river.\nA: X\nQ: The student is in the meadow.\nA: X\nQ: The fugitive is in the woodlands.\nA: X\nQ: The butterfly is in the meadow.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. male_pronoun\n2. affirmation\n3. male_pronoun\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The critic may be in the courtroom.\nA: Y\nQ: Bernie Sanders was not in the laboratory.\nA: X\nQ: The firefighter could be in the grocery store.\nA: Y\nQ: The photographer was not in the theatre.\nA:",
+            "completion": " X",
+            "salient_category": "proper_noun",
+            "multiple_choice_category": "1. proper_noun\n2. negation\n3. animal_subject\n4. urban_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive is not in the laboratory.\nA: X\nQ: The surveyor has been in the grocery store.\nA: Y\nQ: The photographer was not in the hotel lobby.\nA: X\nQ: The fugitive may be in the house.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. proper_noun\n2. proper_noun\n3. female_pronoun\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The hiker may be in the hotel lobby.\nA: X\nQ: The director may be in the grocery store.\nA: X\nQ: The student was in the restaurant.\nA: X\nQ: Margot Robbie has not been in the theatre.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. female_pronoun\n2. male_pronoun\n3. human_subject\n4. affirmation\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Bernie Sanders may be in the apartment building.\nA: Y\nQ: The student could be in the theatre.\nA: Y\nQ: The researcher was in the hotel lobby.\nA: Y\nQ: Margot Robbie is not in the laboratory.\nA:",
+            "completion": " X",
+            "salient_category": "negation",
+            "multiple_choice_category": "1. negation\n2. human_subject\n3. natural_location\n4. female_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The fugitive could be in the museum.\nA: X\nQ: Hermione Granger has not been in the restaurant.\nA: Y\nQ: The reporter may not be in the apartment building.\nA: Y\nQ: Lebron James was in the apartment building.\nA:",
+            "completion": " X",
+            "salient_category": "affirmation",
+            "multiple_choice_category": "1. affirmation\n2. proper_noun\n3. negation\n4. urban_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Noam Chomsky is not in the museum.\nA: Y\nQ: Margot Robbie has not been in the house.\nA: Y\nQ: The researcher has been in the film studio.\nA: X\nQ: Noam Chomsky may not be in the theatre.\nA:",
+            "completion": " Y",
+            "salient_category": "affirmation",
+            "multiple_choice_category": "1. proper_noun\n2. secular_leader\n3. affirmation\n4. female_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Noam Chomsky may not be in the grocery store.\nA: Y\nQ: Noam Chomsky has not been in the laboratory.\nA: Y\nQ: The reporter has been in the hotel lobby.\nA: X\nQ: Noam Chomsky has not been in the museum.\nA:",
+            "completion": " Y",
+            "salient_category": "affirmation",
+            "multiple_choice_category": "1. female_pronoun\n2. affirmation\n3. negation\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Jane Goodall is not in the restaurant.\nA: X\nQ: The director has not been in the film studio.\nA: X\nQ: The hiker was not in the restaurant.\nA: X\nQ: The hiker has not been in the hotel lobby.\nA:",
+            "completion": " X",
+            "salient_category": "negation",
+            "multiple_choice_category": "1. negation\n2. proper_noun\n3. proper_noun\n4. female_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Serena Williams is not in the restaurant.\nA: X\nQ: Christopher Nolan is not in the hotel lobby.\nA: X\nQ: Paul Atreides could not be in the restaurant.\nA: X\nQ: Paul Atreides was in the courtroom.\nA:",
+            "completion": " Y",
+            "salient_category": "proper_noun",
+            "multiple_choice_category": "1. urban_location\n2. proper_noun\n3. animal_subject\n4. secular_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: Jane Goodall has been in the house.\nA: Y\nQ: Noam Chomsky may not be in the house.\nA: X\nQ: Paul Atreides was in the film studio.\nA: Y\nQ: The critic could be in the laboratory.\nA:",
+            "completion": " Y",
+            "salient_category": "human_subject",
+            "multiple_choice_category": "1. secular_leader\n2. secular_leader\n3. religious_leader\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the hotel lobby with the prime minister.\nA: X\nQ: She is in the house with the sheriff.\nA: X\nQ: He is in the theatre with the CEO.\nA: Y\nQ: He is in the restaurant with the officer.\nA:",
+            "completion": " Y",
+            "salient_category": "religious_leader",
+            "multiple_choice_category": "1. religious_leader\n2. female_pronoun\n3. affirmation\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: He is in the courtroom with the reverend.\nA: X\nQ: She is in the hotel lobby with the cardinal.\nA: Y\nQ: She is in the apartment building with the bishop.\nA: Y\nQ: He is in the laboratory with the pastor.\nA:",
+            "completion": " X",
+            "salient_category": "secular_leader",
+            "multiple_choice_category": "1. affirmation\n2. religious_leader\n3. secular_leader\n4. urban_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: He is in the courtroom with the reverend.\nA: Y\nQ: He is in the house with the CEO.\nA: Y\nQ: She is in the laboratory with the principal.\nA: X\nQ: She is in the house with the officer.\nA:",
+            "completion": " X",
+            "salient_category": "secular_leader",
+            "multiple_choice_category": "1. natural_location\n2. secular_leader\n3. male_pronoun\n4. proper_noun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the theatre with the deacon.\nA: Y\nQ: She is in the theatre with the officer.\nA: Y\nQ: She is in the museum with the reverend.\nA: Y\nQ: He is in the apartment building with the prime minister.\nA:",
+            "completion": " X",
+            "salient_category": "secular_leader",
+            "multiple_choice_category": "1. female_pronoun\n2. urban_location\n3. secular_leader\n4. urban_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the museum with the rabbi.\nA: X\nQ: He is in the house with the pastor.\nA: Y\nQ: He is in the museum with the pope.\nA: Y\nQ: She is in the laboratory with the sheriff.\nA:",
+            "completion": " X",
+            "salient_category": "secular_leader",
+            "multiple_choice_category": "1. secular_leader\n2. human_subject\n3. human_subject\n4. natural_location\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the restaurant with the pope.\nA: Y\nQ: He is in the grocery store with the prime minister.\nA: X\nQ: He is in the apartment building with the ambassador.\nA: X\nQ: He is in the apartment building with the CEO.\nA:",
+            "completion": " X",
+            "salient_category": "secular_leader",
+            "multiple_choice_category": "1. religious_leader\n2. affirmation\n3. secular_leader\n4. female_pronoun\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the courtroom with the president.\nA: X\nQ: He is in the museum with the rabbi.\nA: Y\nQ: She is in the museum with the imam.\nA: X\nQ: She is in the house with the CEO.\nA:",
+            "completion": " X",
+            "salient_category": "female_pronoun",
+            "multiple_choice_category": "1. male_pronoun\n2. religious_leader\n3. female_pronoun\n4. religious_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: He is in the courtroom with the president.\nA: Y\nQ: He is in the hotel lobby with the imam.\nA: Y\nQ: He is in the laboratory with the Dalai Lama.\nA: Y\nQ: She is in the restaurant with the imam.\nA:",
+            "completion": " X",
+            "salient_category": "female_pronoun",
+            "multiple_choice_category": "1. human_subject\n2. female_pronoun\n3. male_pronoun\n4. religious_leader\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the hotel lobby with the colonel.\nA: Y\nQ: He is in the house with the sheriff.\nA: X\nQ: She is in the house with the ayatollah.\nA: Y\nQ: He is in the restaurant with the cardinal.\nA:",
+            "completion": " X",
+            "salient_category": "male_pronoun",
+            "multiple_choice_category": "1. male_pronoun\n2. female_pronoun\n3. human_subject\n4. human_subject\n"
+        },
+        {
+            "prompt": "Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: She is in the hotel lobby with the Dalai Lama.\nA: Y\nQ: He is in the courtroom with the pastor.\nA: X\nQ: He is in the courtroom with the bishop.\nA: X\nQ: He is in the courtroom with the CEO.\nA:",
+            "completion": " X",
+            "salient_category": "religious_leader",
+            "multiple_choice_category": "1. secular_leader\n2. natural_location\n3. religious_leader\n4. affirmation\n"
+        }
+    ],
+    "candidate_categories": [
+        "urban_location",
+        "natural_location",
+        "human_subject",
+        "animal_subject",
+        "religious_leader",
+        "secular_leader",
+        "proper_noun",
+        "negation",
+        "affirmation",
+        "female_pronoun",
+        "male_pronoun"
+    ],
+    "assistance_prompts": {
+        "clarify": "Ask a clarifying question if you are unsure what to output in the following task.\nTask:\n",
+        "category_prediction": "What is your best guess for the [category withheld] above?"
+    }
+}
