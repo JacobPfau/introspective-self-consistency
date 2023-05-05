@@ -7,6 +7,7 @@ DISTRIBUTION_PROMPT.
 Sequence
 
 A:
+
 --------------------------
 
 The sequences will be taken from the list of ambiguous sequences.
