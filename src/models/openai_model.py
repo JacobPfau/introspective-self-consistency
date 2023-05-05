@@ -39,6 +39,10 @@ logging.basicConfig(
 )
 
 
+def get_all_model_strings() -> List[str]:
+    return OpenAITextModels.list() + OpenAIChatModels.list()
+
+
 def get_openai_model_from_string(model_name: str) -> Enum:
 
     if model_name in OpenAITextModels.list():
@@ -60,12 +64,36 @@ def generate_text_completion(
     if isinstance(model, str):
         model = OpenAITextModels(model)
 
-    response = openai.Completion.create(
-        model=model.value, prompt=prompt, temperature=temperature, max_tokens=max_tokens
-    )
+    response = None
+
+    n_retries = 0
+    while n_retries < _MAX_RETRIES:
+        try:
+            response = openai.Completion.create(
+                model=model.value,
+                prompt=prompt,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            break
+        except openai.APIError:
+            logger.warning("API Error. Sleep and try again.")
+            n_retries += 1
+            time.sleep(3)
+        except openai.error.RateLimitError:
+            logger.error(
+                "Rate limiting, Sleep and try again."
+            )  # TBD: how long to wait?
+            n_retries += 1
+            time.sleep(10)
+
+    if response is None and n_retries == _MAX_RETRIES:
+        logger.error("Reached retry limit and did not obtain proper response")
+        return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["text"]
 
@@ -109,7 +137,8 @@ def generate_chat_completion(
         return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
 
