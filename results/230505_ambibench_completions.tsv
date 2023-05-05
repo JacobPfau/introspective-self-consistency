@@ -1,0 +1,13 @@
+dataset	model	num_shots	num_examples	num_correct	acc
+20230503_15-19_n6_amb75_examples.json	text-davinci-003	6	60	38	0.633
+20230503_15-14_n4_amb50_examples.json	text-davinci-003	4	60	42	0.7
+20230503_15-43_n4_amb75_examples.json	text-davinci-003	4	60	39	0.65
+20230503_15-17_n6_amb50_examples.json	text-davinci-003	6	60	40	0.667
+20230503_15-19_n6_amb75_examples.json	gpt-3.5-turbo	6	60	34	0.567
+20230503_15-14_n4_amb50_examples.json	gpt-3.5-turbo	4	60	30	0.5
+20230503_15-43_n4_amb75_examples.json	gpt-3.5-turbo	4	60	30	0.5
+20230503_15-17_n6_amb50_examples.json	gpt-3.5-turbo	6	60	34	0.567
+20230503_15-19_n6_amb75_examples.json	gpt-4-0314	6	60	27	0.45
+20230503_15-14_n4_amb50_examples.json	gpt-4-0314	4	60	30	0.5
+20230503_15-43_n4_amb75_examples.json	gpt-4-0314	4	60	30	0.5
+20230503_15-17_n6_amb50_examples.json	gpt-4-0314	6	60	26	0.433
