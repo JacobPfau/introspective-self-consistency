@@ -28,7 +28,7 @@ class OpenAITextModels(ExtendedEnum):
 
 class OpenAIChatModels(ExtendedEnum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
-    CHAT_GPT_4 = "gpt-4-0314"
+    CHAT_GPT_4 = "gpt-4"
 
 
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ def generate_text_completion(
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
-            time.sleep(3)
+            time.sleep(10)
         except openai.error.RateLimitError:
             logger.error(
                 "Rate limiting, Sleep and try again."
@@ -124,7 +124,7 @@ def generate_chat_completion(
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
-            time.sleep(3)
+            time.sleep(10)
         except openai.error.RateLimitError:
             logger.error(
                 "Rate limiting, Sleep and try again."

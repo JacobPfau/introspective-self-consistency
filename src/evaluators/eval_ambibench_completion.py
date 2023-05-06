@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
         pred_completions.append(completion)
 
-    correct_predictions = eval_completions(expected_completions, pred_completions)
+    num_correct_predictions = eval_completions(expected_completions, pred_completions)
 
     # store results in TSV
     results = {
@@ -171,8 +171,8 @@ if __name__ == "__main__":
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
+        "num_correct": num_correct_predictions,
+        "acc": round(num_correct_predictions / len(expected_completions), 3),
     }
     logger.info(f"Results: {repr(results)}")
     df = pd.DataFrame.from_dict([results])

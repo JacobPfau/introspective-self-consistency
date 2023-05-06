@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
         pred_categories.append(prediction)
 
-    correct_predictions = eval_category_predictions(
+    num_correct_predictions = eval_category_predictions(
         expected_categories, pred_categories
     )
 
@@ -226,8 +226,8 @@ if __name__ == "__main__":
         "num_shots": dataset.config.n_shots,
         "multiple_choice": int(use_multiple_choice),
         "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
+        "num_correct": num_correct_predictions,
+        "acc": round(num_correct_predictions / len(expected_categories), 3),
     }
     logger.info(f"Results: {repr(results)}")
     df = pd.DataFrame.from_dict([results])
