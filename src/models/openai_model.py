@@ -9,20 +9,15 @@ from typing import List, Union
 
 import openai
 
+from models.utils import INVALID_RESPONSE, ExtendedEnum
+
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
-INVALID_RESPONSE = "INVALID_RESPONSE"
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-
-class ExtendedEnum(Enum):
-    @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))
 
 
 class OpenAITextModels(ExtendedEnum):

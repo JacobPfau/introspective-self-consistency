@@ -6,17 +6,12 @@ from typing import Dict, List, Union
 
 from anthropic import AI_PROMPT, HUMAN_PROMPT, ApiException, Client
 
+from models.utils import INVALID_RESPONSE, ExtendedEnum
+
 CHAT_PROMPT_TEMPLATE = {"role": "Human", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string
 _MAX_RETRIES = 3
 _RETRY_TIMEOUT = 3
-INVALID_RESPONSE = "INVALID_RESPONSE"
-
-
-class ExtendedEnum(Enum):
-    @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))
 
 
 class AnthropicTextModels(ExtendedEnum):
@@ -122,7 +117,9 @@ def format_chat_prompt(
     if any(
         (role := turn["role"]) not in ["Human", "Assistant"] for turn in prompt_turns
     ):
-        raise ValueError(f"Invalid role {role} in prompt_turns")  # noqa: F821  # flakes8 thinks `role` is undefined
+        raise ValueError(
+            f"Invalid role {role} in prompt_turns"  # noqa: F821  # flakes8 thinks `role` is undefined
+        )
 
     chat_prompt = (
         "\n\n"
