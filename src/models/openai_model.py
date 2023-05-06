@@ -51,7 +51,7 @@ def get_openai_model_from_string(model_name: str) -> Enum:
 
 def generate_text_completion(
     prompt: str,
-    temperature: int = 0,
+    temperature: float = 0.0,
     max_tokens: int = 256,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
 ) -> str:
@@ -72,7 +72,7 @@ def generate_text_completion(
 
 def generate_chat_completion(
     prompt_turns: List[dict],
-    temperature: int = 0,
+    temperature: float = 0.0,
     max_tokens: int = 256,
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
@@ -103,7 +103,7 @@ def generate_chat_completion(
             n_retries += 1
             time.sleep(10)
 
-    if response is None and n_retries == _MAX_RETRIES:
+    if response is None:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
