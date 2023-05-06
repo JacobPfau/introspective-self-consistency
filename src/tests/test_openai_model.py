@@ -1,3 +1,4 @@
+import openai
 import pytest
 import tiktoken
 
@@ -8,6 +9,13 @@ from models.openai_model import (
     generate_response_with_turns,
     generate_text_completion,
 )
+
+
+def test_all_openai_models_found():
+    ours = set(OpenAIChatModels.list() + OpenAITextModels.list())
+    theirs = {m["id"] for m in openai.Model.list().data}
+    missing = ours - theirs
+    assert not missing, f"Missing models: {missing}"
 
 
 @pytest.mark.parametrize("model", OpenAITextModels.list())
