@@ -3,8 +3,11 @@ Generate a prompt which asks the model to choose from some distribution of funct
 """
 
 SELF_CONTINUATION_PROMPT = (
-    "In your opinion, what is the most likely continuation of the following sequence?"
+    "In your opinion, what is the most likely continuation of the following sequence? Give your response as a number, with no additional commentary."
 )
 
 SELF_EXPLANATION_PROMPT = """In your opinion, what is the most likely explanation for how the following sequence was generated?
-Give your response as a function."""
+Give your response in the format:
+Explanation: <function>
+Offset: <offset>
+"""

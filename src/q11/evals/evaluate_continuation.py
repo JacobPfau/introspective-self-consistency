@@ -1,3 +1,12 @@
+from typing import List, Union
+
+from models.openai_model import (
+    DAVINCI_MODEL_NAME,
+    CHAT_MODEL_NAME,
+    generate_chat_completion,
+    generate_text_completion,
+)
+
 def valid_continuation(
     model_continuation: str,
 ) -> bool:
@@ -12,3 +21,32 @@ def valid_continuation(
         return False
     else:
         return True
+    
+def generate_continuation(
+    prompt: Union[str, List[str]],
+    model_name: str,
+    temperature: int,
+) -> str:
+    """
+    Given a prompt, generate a continuation from the model.
+    """
+    if model_name == "DAVINCI":
+        # Feed this into the model
+        model_response = generate_text_completion(
+            prompt= prompt,
+            temperature=temperature,
+            max_tokens=256,
+            model=DAVINCI_MODEL_NAME,
+        )
+    elif model_name == "CHAT":
+        # Feed this into the model
+        model_response = generate_chat_completion(
+            prompt_turns=prompt,
+            temperature=temperature,
+            max_tokens=256,
+            model=CHAT_MODEL_NAME,
+        )
+    else:
+        raise ValueError(f"Invalid model name: {model_name}")
+    
+    return model_response

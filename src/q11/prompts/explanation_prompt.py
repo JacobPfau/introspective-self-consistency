@@ -3,23 +3,6 @@ Create a prompt to continue a sequence of numbers, in an arbitrary base.
 
 Prompts will take the form:
 --------------------------
-
-    Here are some examples of sequence continuations.
-    Q: 2, 4, 6,
-    A: 8
-
-    Q: 1, 2, 3, 4, 5,
-    A: 6
-
-    Q: 9, 16, 25, 36
-    A: 49
-
-    ***CONTINUATION_PROMPT***
-
-    A:
---------------------------
-    For (text) explanations, this will be of the form:
---------------------------
     Here are some examples of sequence explanations, i.e. python functions
     which could have generated the preceding sequences, with associated offset.
     Sequence: 2, 4, 6
@@ -38,14 +21,9 @@ Prompts will take the form:
 
     Explanation:
 
-
---------------------------
-
-The sequences will be taken from the list of ambiguous sequences.
-
 """
 
-# import random
+
 from typing import List, Union
 
 from evals.utils import _generate_random_function
@@ -55,17 +33,7 @@ from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 from pipelines.sequence_completions import sequence_functions
 from q11.prompts.distributions import DISTRIBUTIONS
 
-# from pipelines.sequence_completions import (  # BASE_PROMPT,; COT_PROMPT,; COT_STEP,
-#     SYSTEM_PROMPT,
-#     sequence_functions,
-# )
-
-
-
-
-
-
-def create_continuation_prompt(
+def create_explanation_prompt(
     sequence: List[int],
     distribution: str,
     model_name: str = DAVINCI_MODEL_NAME,
@@ -82,42 +50,45 @@ def create_continuation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_cont_shot_prompt(shot_method, sequence_length, model_name)
+            shot_prompt = generate_exp_shot_prompt(shot_method, sequence_length, model_name)
             prompt_text += shot_prompt
 
     # TODO: Need to fix!!
 
-    text = DISTRIBUTIONS[distribution]["continuation"]
+    text = DISTRIBUTIONS[distribution]["explanation"]
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
     text += ",".join([str(x) for x in sequence])
+    pre_prompt = (
+    """Here are some examples of sequence explanations, i.e. python functions 
+    which could have generated the preceding sequences, with associated offset."""
+    )
     if model_name == "DAVINCI":
         # Prepend to the shots
-        pretext = "Here are some examples of sequence continuations."
+        pretext = pre_prompt + "\n"
         pretext += "\n"
         text = pretext + prompt_text + text
         text += "\n"
-        text += "A: "
         return text
     elif model_name == "CHAT":
         pretext = [
             {
                 "role": "system",
-                "content": "Here are some examples of sequence continuations.",
+                "content": pre_prompt,
             }
         ]
         whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}]
         return whole_prompt
     else:
         raise ValueError(f"Invalid model name: {model_name}")
+    
 
-
-def generate_cont_shot_prompt(
+def generate_exp_shot_prompt(
     shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME
 ):
     """
-    Generate a single shot prompt for a continuation.
+    Generate a single shot prompt for a explanation.
     """
     if shot_method == "random":
         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
@@ -129,18 +100,47 @@ def generate_cont_shot_prompt(
         text = "Q: "
         text += ",".join([str(x) for x in sequence])
         text += "\n"
-        text += "A: "
-        text += str(eval(fn)(sequence_length + offset))
+        text += "Explanation: "
+        text += fn
+        text += "\n"
+        text += "Offset: "
+        text += str(offset)
         text += "\n"
         return text
 
     elif model_name == "CHAT":
         q_text = ",".join([str(x) for x in sequence])
         response = [{"role": "user", "content": q_text}]
-        a_text = str(eval(fn)(sequence_length + offset))
+        a_text = "Explanation: " + fn
+        a_text += "\n"
+        a_text += "Offset: " + str(offset)
         response += [{"role": "assistant", "content": a_text}]
-        # print("responseo be: ", response)
         return response
 
     else:
         raise ValueError(f"Invalid model name: {model_name}")
+
+def parse_explanation(model_response: str) -> tuple[str, str]:
+    """
+    Parse an explanation into a function and offset.
+    """
+    # Splitting the string into lines
+    lines = model_response.split('\n')
+    
+    # Initializing the variables with None
+    x = ""
+    y = ""
+    
+    # Looping over the lines
+    for line in lines:
+        # Splitting the line into key and value
+        parts = line.split(': ', 1)
+        if len(parts) == 2:
+            key, value = parts
+            # Saving the value based on the key
+            if key == 'Explanation':
+                x = value
+            elif key == 'Offset':
+                y = value
+    print(x,y)
+    return x, y
