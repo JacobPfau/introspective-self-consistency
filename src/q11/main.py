@@ -1,21 +1,15 @@
 """
-Script for seeing if the model can select the correct function from a list of
-functions. Looking directly at ambiguous functions generated in pipelines.sequence_completions
+Conducting a self-consistency check, using integer sequences.
 """
-
-# TODO: worried this is not the most recent version of this file!!
-
 import argparse
 
-from evals.function_selection_evaluation import (  # function_class_selection_evaluation,
-    function_selection_evaluation,
-)
 from pipelines.sequence_completions import find_ambiguous_integer_sequences
 from pipelines.sequence_completions import sequence_functions as all_sequence_functions
 
+from q11.evals.check_self_consistency import self_consistency_evaluation
+
 # Removing this class of function as they cause errors
 all_sequence_functions.pop("indexing_criteria_progression")
-
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -35,12 +29,7 @@ parser.add_argument(
     type=str,
     choices=["binary", "integer"],
 )
-parser.add_argument(
-    "--evaluation",
-    default="function_selection",
-    type=str,
-    choices=["function_class_selection", "function_selection"],
-)
+
 parser.add_argument("--on-ambiguous-sequences", default="True", type=str2bool)
 parser.add_argument(
     "--model",
@@ -51,7 +40,6 @@ parser.add_argument(
 parser.add_argument("--num-shots", default=4, type=int)
 parser.add_argument("--use-cot", default=False, type=str2bool, nargs="?", const=True)
 parser.add_argument("--num-samples", default=5, type=int)
-parser.add_argument("--num-functions", default=4, type=int)
 
 
 args = parser.parse_args()
@@ -66,32 +54,24 @@ if __name__ == "__main__":
             ambiguous_sequences = find_ambiguous_integer_sequences()
             for sequence in ambiguous_sequences:
                 print(f"Sequence: {sequence}")
-                # Go through each function and see if the model can select it
-                for fn in ambiguous_sequences[sequence]:
-                    func = fn["fn"]
-                    offset = fn["offset"]
-                    print(f"Function: {func}")
-                    (
-                        correct_choices,
-                        incorrect_choices,
-                        invalid_outputs,
-                    ) = function_selection_evaluation(
-                        model_name=args.model,
-                        target_sequence=sequence,
-                        temperature=0.0,
-                        num_shots=args.num_shots,
-                        use_cot=args.use_cot,
-                        num_samples=args.num_samples,
-                        num_functions=args.num_functions,
-                        generate_functions=True,
-                        incorrect_functions=None,
-                        correct_functions=[func],
-                    )
-                    results[str(fn)] = (
-                        correct_choices,
-                        incorrect_choices,
-                        invalid_outputs,
-                    )
+                (
+                    correct_choices,
+                    incorrect_choices,
+                    invalid_outputs,
+                ) = self_consistency_evaluation(
+                    model_name=args.model,
+                    sequence=sequence,
+                    distribution="default",
+                    shots=args.num_shots,
+                    shot_method="random",
+                    temperature=0.0,
+                    samples=args.num_samples,
+                )
+                results[sequence] = {
+                    "correct": correct_choices,
+                    "incorrect": incorrect_choices,
+                    "invalid": invalid_outputs,
+                }
         else:
             pass
             # TODO: have support for general base sequences here
