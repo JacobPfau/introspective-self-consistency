@@ -1,8 +1,8 @@
 from typing import List, Union
 
 from models.openai_model import (
-    CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
+    CHAT_MODEL_NAME,
     generate_chat_completion,
     generate_text_completion,
 )
@@ -74,6 +74,8 @@ def generate_explanation(
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
+    print("explain prompt: ", prompt)
+    print("model_response: ", model_response)
 
     return model_response
 

@@ -10,6 +10,11 @@ from q11.evals.evaluate_explanation import (
 from q11.prompts.continuation_prompt import create_continuation_prompt
 from q11.prompts.explanation_prompt import create_explanation_prompt, parse_explanation
 
+from q11.prompts.continuation_prompt import create_continuation_prompt
+from q11.prompts.explanation_prompt import create_explanation_prompt, parse_explanation
+from q11.evals.evaluate_continuation import valid_continuation, generate_continuation
+from q11.evals.evaluate_explanation import valid_explanation, generate_explanation, generate_implied_continuation
+
 
 def self_consistency_evaluation(
     model_name: str,
@@ -51,19 +56,19 @@ def self_consistency_evaluation(
     )
 
     for _ in range(samples):
+        print("eyo")
         # Generate a continuation
         continuation = generate_continuation(
             prompt=continuation_prompt,
             model_name=model_name,
             temperature=temperature,
         )
-        if base == 2:
-            continuation = int(continuation, 2)
 
         if not valid_continuation(continuation):
-            print("bugsnack, ", continuation)
             invalid_responses += 1
             continue
+        else:
+            int_response = int(continuation)
 
         # Generate an explanation
         explanation = generate_explanation(
@@ -75,14 +80,13 @@ def self_consistency_evaluation(
         # Parse explanation
         try:
             fn, offset = parse_explanation(explanation)
-        except Exception:
+        except:
             invalid_responses += 1
             continue
 
         offset = int(offset)
 
         if not valid_explanation(fn, offset, len(sequence)):
-            print("bugsnax")
             invalid_responses += 1
             continue
         else:

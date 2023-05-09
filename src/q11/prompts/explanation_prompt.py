@@ -29,7 +29,7 @@ from typing import List, Union
 from evals.utils import _generate_random_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
-from models.openai_model import DAVINCI_MODEL_NAME
+from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 from pipelines.sequence_completions import sequence_functions
 from q11.prompts.distributions import DISTRIBUTIONS
 
@@ -51,9 +51,7 @@ def create_explanation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_exp_shot_prompt(
-                shot_method, sequence_length, model_name, base
-            )
+            shot_prompt = generate_exp_shot_prompt(shot_method, sequence_length, model_name)
             prompt_text += shot_prompt
 
     # TODO: Need to fix!!
@@ -62,14 +60,11 @@ def create_explanation_prompt(
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
-    if base == 10:
-        text += ",".join([str(x) for x in sequence])
-    elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
-    else:
-        raise ValueError(f"Invalid base: {base}")
-    pre_prompt = """Here are some examples of sequence explanations, i.e. python functions
+    text += ",".join([str(x) for x in sequence])
+    pre_prompt = (
+        """Here are some examples of sequence explanations, i.e. python functions 
     which could have generated the preceding sequences, with associated offset."""
+    )
     if model_name == "DAVINCI":
         # Prepend to the shots
         pretext = pre_prompt + "\n"
@@ -91,7 +86,7 @@ def create_explanation_prompt(
 
 
 def generate_exp_shot_prompt(
-    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10
+    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME
 ):
     """
     Generate a single shot prompt for a explanation.
@@ -104,21 +99,10 @@ def generate_exp_shot_prompt(
 
     if model_name == "DAVINCI":
         text = "Q: "
-        if base == 10:
-            text += ",".join([str(x) for x in sequence])
-        elif base == 2:
-            text += ",".join([bin(x) for x in sequence])
+        text += ",".join([str(x) for x in sequence])
         text += "\n"
         text += "Explanation: "
-        if base == 10:
-            text += fn
-        elif base == 2:
-            # Need to convert the function to binary.
-            # Current approach: replace all occurences of x with int(x, 2),
-            # Except the first x (i.e. lambda x: int(x, 2) ** 2)
-            # TODO: Implement this / decide how to.
-            # fn = fn.replace("x", "int(x, 2)", 1)
-            text += fn
+        text += fn
         text += "\n"
         text += "Offset: "
         text += str(offset)
@@ -126,21 +110,9 @@ def generate_exp_shot_prompt(
         return text
 
     elif model_name == "CHAT":
-        if base == 10:
-            q_text = ",".join([str(x) for x in sequence])
-        elif base == 2:
-            q_text = ",".join([bin(x) for x in sequence])
+        q_text = ",".join([str(x) for x in sequence])
         response = [{"role": "user", "content": q_text}]
-        if base == 10:
-            fn_text = fn
-        elif base == 2:
-            # Need to convert the function to binary.
-            # Current approach: replace all occurences of x with int(x, 2),
-            # Except the first x (i.e. lambda x: int(x, 2) ** 2)
-            # fn_text = fn.replace("x", "int(x, 2)", 1)
-            # TODO: Implement this / decide how to.
-            fn_text = fn
-        a_text = "Explanation: " + fn_text
+        a_text = "Explanation: " + fn
         a_text += "\n"
         a_text += "Offset: " + str(offset)
         response += [{"role": "assistant", "content": a_text}]
@@ -155,7 +127,7 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
     Parse an explanation into a function and offset.
     """
     # Splitting the string into lines
-    lines = model_response.split("\n")
+    lines = model_response.split('\n')
 
     # Initializing the variables with None
     x = ""
@@ -164,12 +136,13 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
     # Looping over the lines
     for line in lines:
         # Splitting the line into key and value
-        parts = line.split(": ", 1)
+        parts = line.split(': ', 1)
         if len(parts) == 2:
             key, value = parts
             # Saving the value based on the key
-            if key == "Explanation":
+            if key == 'Explanation':
                 x = value
-            elif key == "Offset":
+            elif key == 'Offset':
                 y = value
+    print(x, y)
     return x, y
