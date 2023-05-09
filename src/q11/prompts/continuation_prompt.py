@@ -77,9 +77,7 @@ def create_continuation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_cont_shot_prompt(
-                shot_method, sequence_length, model_name, base
-            )
+            shot_prompt = generate_cont_shot_prompt(shot_method, sequence_length, model_name)
             prompt_text += shot_prompt
 
     # TODO: Need to fix!!
@@ -88,12 +86,7 @@ def create_continuation_prompt(
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
-    if base == 10:
-        text += ",".join([str(x) for x in sequence])
-    elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
-    else:
-        raise ValueError(f"Invalid base: {base}")
+    text += ",".join([str(x) for x in sequence])
     if model_name == "DAVINCI":
         # Prepend to the shots
         pretext = "Here are some examples of sequence continuations."
@@ -122,7 +115,7 @@ def generate_cont_shot_prompt(
     Generate a single shot prompt for a continuation.
     """
     if shot_method == "random":
-        fn, offset = _generate_random_function(sequence_functions, (0, 5), (0, 5))
+        fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
         sequence = [eval(fn)(x + offset) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
@@ -142,12 +135,7 @@ def generate_cont_shot_prompt(
         return text
 
     elif model_name == "CHAT":
-        if base == 10:
-            q_text = ",".join([str(x) for x in sequence])
-            a_text = str(eval(fn)(sequence_length + offset))
-        elif base == 2:
-            q_text = ",".join([bin(x) for x in sequence])
-            a_text = bin(eval(fn)(sequence_length + offset))
+        q_text = ",".join([str(x) for x in sequence])
         response = [{"role": "user", "content": q_text}]
         response += [{"role": "assistant", "content": a_text}]
         # print("responseo be: ", response)
