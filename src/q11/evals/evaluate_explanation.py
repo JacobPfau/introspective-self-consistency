@@ -1,11 +1,12 @@
 from typing import List, Union
 
 from models.openai_model import (
-    DAVINCI_MODEL_NAME,
     CHAT_MODEL_NAME,
+    DAVINCI_MODEL_NAME,
     generate_chat_completion,
     generate_text_completion,
 )
+
 
 def valid_explanation(
     fn_form: str,
@@ -45,6 +46,7 @@ def correct_explanation(
         eval(fn_form.format(i + offset)) == sequence[i] for i in range(sequence_length)
     )
 
+
 def generate_explanation(
     prompt: Union[str, List[str]],
     model_name: str,
@@ -57,7 +59,7 @@ def generate_explanation(
     if model_name == "DAVINCI":
         # Feed this into the model
         model_response = generate_text_completion(
-            prompt= prompt,
+            prompt=prompt,
             temperature=temperature,
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
@@ -72,10 +74,9 @@ def generate_explanation(
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
-    print("explain prompt: ", prompt)
-    print("model_response: ", model_response)
-    
+
     return model_response
+
 
 def generate_implied_continuation(
     fn_form: str,

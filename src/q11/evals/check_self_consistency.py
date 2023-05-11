@@ -57,8 +57,11 @@ def self_consistency_evaluation(
             model_name=model_name,
             temperature=temperature,
         )
+        if base == 2:
+            continuation = int(continuation, 2)
 
         if not valid_continuation(continuation):
+            print("bugsnack, ", continuation)
             invalid_responses += 1
             continue
 
@@ -79,6 +82,7 @@ def self_consistency_evaluation(
         offset = int(offset)
 
         if not valid_explanation(fn, offset, len(sequence)):
+            print("bugsnax")
             invalid_responses += 1
             continue
         else:

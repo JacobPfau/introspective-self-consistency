@@ -14,4 +14,5 @@ Where <function> refers to the function used to generate the sequence,
 and <offset> refers to the first integer used to generate the sequence.
 Furthermore, assume that the function is applied to a sequence of consecutive integers, starting at the offset.
 For example, if the sequence is 1, 2, 3, 4, 5, then the function is lambda x: x, then the offset is 1.
+The output of the function should be the number expressed as a decimal integer.
 """
