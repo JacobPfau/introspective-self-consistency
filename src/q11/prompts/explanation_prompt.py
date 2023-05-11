@@ -29,9 +29,10 @@ from typing import List, Union
 from evals.utils import _generate_random_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
-from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
+from models.openai_model import DAVINCI_MODEL_NAME
 from pipelines.sequence_completions import sequence_functions
 from q11.prompts.distributions import DISTRIBUTIONS
+
 
 def create_explanation_prompt(
     sequence: List[int],
@@ -50,7 +51,9 @@ def create_explanation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_exp_shot_prompt(shot_method, sequence_length, model_name)
+            shot_prompt = generate_exp_shot_prompt(
+                shot_method, sequence_length, model_name
+            )
             prompt_text += shot_prompt
 
     # TODO: Need to fix!!
@@ -60,10 +63,8 @@ def create_explanation_prompt(
     text += f"The sequence is in base {base}."
     text += "\nQ: "
     text += ",".join([str(x) for x in sequence])
-    pre_prompt = (
-    """Here are some examples of sequence explanations, i.e. python functions 
+    pre_prompt = """Here are some examples of sequence explanations, i.e. python functions
     which could have generated the preceding sequences, with associated offset."""
-    )
     if model_name == "DAVINCI":
         # Prepend to the shots
         pretext = pre_prompt + "\n"
@@ -82,7 +83,7 @@ def create_explanation_prompt(
         return whole_prompt
     else:
         raise ValueError(f"Invalid model name: {model_name}")
-    
+
 
 def generate_exp_shot_prompt(
     shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME
@@ -120,27 +121,27 @@ def generate_exp_shot_prompt(
     else:
         raise ValueError(f"Invalid model name: {model_name}")
 
+
 def parse_explanation(model_response: str) -> tuple[str, str]:
     """
     Parse an explanation into a function and offset.
     """
     # Splitting the string into lines
-    lines = model_response.split('\n')
-    
+    lines = model_response.split("\n")
+
     # Initializing the variables with None
     x = ""
     y = ""
-    
+
     # Looping over the lines
     for line in lines:
         # Splitting the line into key and value
-        parts = line.split(': ', 1)
+        parts = line.split(": ", 1)
         if len(parts) == 2:
             key, value = parts
             # Saving the value based on the key
-            if key == 'Explanation':
+            if key == "Explanation":
                 x = value
-            elif key == 'Offset':
+            elif key == "Offset":
                 y = value
-    print(x,y)
     return x, y

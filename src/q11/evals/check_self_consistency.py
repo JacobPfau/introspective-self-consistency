@@ -1,11 +1,14 @@
-from typing import List, Union
+from typing import List
 
-from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
-
+# from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
+from q11.evals.evaluate_continuation import generate_continuation, valid_continuation
+from q11.evals.evaluate_explanation import (
+    generate_explanation,
+    generate_implied_continuation,
+    valid_explanation,
+)
 from q11.prompts.continuation_prompt import create_continuation_prompt
 from q11.prompts.explanation_prompt import create_explanation_prompt, parse_explanation
-from q11.evals.evaluate_continuation import valid_continuation, generate_continuation
-from q11.evals.evaluate_explanation import valid_explanation, generate_explanation, generate_implied_continuation
 
 
 def self_consistency_evaluation(
@@ -47,9 +50,7 @@ def self_consistency_evaluation(
         shot_method=shot_method,
     )
 
-
     for _ in range(samples):
-        print("eyo")
         # Generate a continuation
         continuation = generate_continuation(
             prompt=continuation_prompt,
@@ -60,9 +61,6 @@ def self_consistency_evaluation(
         if not valid_continuation(continuation):
             invalid_responses += 1
             continue
-        else:
-            int_response = int(continuation)
-        
 
         # Generate an explanation
         explanation = generate_explanation(
@@ -74,7 +72,7 @@ def self_consistency_evaluation(
         # Parse explanation
         try:
             fn, offset = parse_explanation(explanation)
-        except:
+        except Exception:
             invalid_responses += 1
             continue
 
@@ -97,6 +95,5 @@ def self_consistency_evaluation(
             consistent_explanations += 1
         else:
             inconsistent_explanations += 1
-    
-    return consistent_explanations, inconsistent_explanations, invalid_responses
 
+    return consistent_explanations, inconsistent_explanations, invalid_responses
