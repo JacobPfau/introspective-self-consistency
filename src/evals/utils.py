@@ -2,14 +2,12 @@ import random
 import re
 from typing import Dict, List, Tuple, Union
 
-from models.openai_model import (
-    CHAT_MODEL_NAME,
+from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     generate_chat_completion,
-    generate_text_completion,
+    generate_completion,
 )
-from pipelines.baseb_sequence_completions import numberToBase
-from pipelines.sequence_completions import sequence_functions
+from src.pipelines.sequence_completions import sequence_functions
 
 
 def generate_wrong_functions(
@@ -142,17 +140,16 @@ def choose_function(
         model_name=model_name,
         base=base,
     )
-    # print(formatted_prompt)
-    if model_name == "DAVINCI":
+    if model_name == "text-davinci-003":
+
         # Feed this into the model
-        model_response = generate_text_completion(
+        model_response = generate_completion(
             prompt=formatted_prompt,
             temperature=temperature,
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
         )
-    elif model_name == "CHAT":
-        # print("input to model is: ", formatted_prompt)
+    elif model_name == "gpt-3.5-turbo":
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=formatted_prompt,

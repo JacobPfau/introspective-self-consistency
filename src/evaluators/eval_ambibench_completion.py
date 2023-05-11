@@ -23,7 +23,7 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_text_completion
+    generate_completion
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
@@ -77,7 +77,7 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
-    completion_response = generate_text_completion(prompt, model=model)
+    completion_response = generate_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
