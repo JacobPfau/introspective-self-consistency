@@ -34,11 +34,11 @@ parser.add_argument(
 parser.add_argument("--on-ambiguous-sequences", default="True", type=str2bool)
 parser.add_argument(
     "--model",
-    default="CHAT",
+    default="DAVINCI",
     type=str,
     choices=["CHAT", "DAVINCI"],
 )
-parser.add_argument("--num-shots", default=8, type=int)
+parser.add_argument("--num-shots", default=16, type=int)
 parser.add_argument("--use-cot", default=False, type=str2bool, nargs="?", const=True)
 parser.add_argument("--num-samples", default=1, type=int)
 
