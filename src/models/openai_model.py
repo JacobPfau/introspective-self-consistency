@@ -1,7 +1,6 @@
 import logging
 import os
 import time
-
 from enum import Enum
 from typing import List, Union
 
@@ -106,7 +105,7 @@ def generate_response_with_turns(
     Turns are collapsed into a single string for non-chat model.
     """
     if model in OpenAITextModels.list():
-        return generate_text_completion(
+        return generate_completion(
             prompt="\n".join([turn["content"] for turn in turns]),
             temperature=temperature,
             max_tokens=max_tokens,
