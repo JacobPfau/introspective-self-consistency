@@ -51,7 +51,6 @@ from typing import List, Union
 from evals.utils import _generate_random_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
-from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 from pipelines.sequence_completions import sequence_functions
 from q11.prompts.distributions import DISTRIBUTIONS
 
@@ -61,14 +60,10 @@ from q11.prompts.distributions import DISTRIBUTIONS
 # )
 
 
-
-
-
-
 def create_continuation_prompt(
     sequence: List[int],
     distribution: str,
-    model_name: str = DAVINCI_MODEL_NAME,
+    model_name: str = "DAVINCI",
     base: int = 10,
     shots: int = 0,
     shot_method: str = "random",
@@ -82,7 +77,9 @@ def create_continuation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_cont_shot_prompt(shot_method, sequence_length, model_name)
+            shot_prompt = generate_cont_shot_prompt(
+                shot_method, sequence_length, model_name, base
+            )
             prompt_text += shot_prompt
 
     # TODO: Need to fix!!
@@ -91,7 +88,12 @@ def create_continuation_prompt(
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
-    text += ",".join([str(x) for x in sequence])
+    if base == 10:
+        text += ",".join([str(x) for x in sequence])
+    elif base == 2:
+        text += ",".join([bin(x) for x in sequence])
+    else:
+        raise ValueError(f"Invalid base: {base}")
     if model_name == "DAVINCI":
         # Prepend to the shots
         pretext = "Here are some examples of sequence continuations."
@@ -114,30 +116,39 @@ def create_continuation_prompt(
 
 
 def generate_cont_shot_prompt(
-    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME
+    shot_method, sequence_length, model_name="DAVINCI", base=10
 ):
     """
     Generate a single shot prompt for a continuation.
     """
     if shot_method == "random":
-        fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
+        fn, offset = _generate_random_function(sequence_functions, (0, 5), (0, 5))
         sequence = [eval(fn)(x + offset) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
 
     if model_name == "DAVINCI":
         text = "Q: "
-        text += ",".join([str(x) for x in sequence])
+        if base == 10:
+            text += ",".join([str(x) for x in sequence])
+            a_text = str(eval(fn)(sequence_length + offset))
+        elif base == 2:
+            text += ",".join([bin(x) for x in sequence])
+            a_text = bin(eval(fn)(sequence_length + offset))
         text += "\n"
         text += "A: "
-        text += str(eval(fn)(sequence_length + offset))
+        text += a_text
         text += "\n"
         return text
 
     elif model_name == "CHAT":
-        q_text = ",".join([str(x) for x in sequence])
+        if base == 10:
+            q_text = ",".join([str(x) for x in sequence])
+            a_text = str(eval(fn)(sequence_length + offset))
+        elif base == 2:
+            q_text = ",".join([bin(x) for x in sequence])
+            a_text = bin(eval(fn)(sequence_length + offset))
         response = [{"role": "user", "content": q_text}]
-        a_text = str(eval(fn)(sequence_length + offset))
         response += [{"role": "assistant", "content": a_text}]
         # print("responseo be: ", response)
         return response
