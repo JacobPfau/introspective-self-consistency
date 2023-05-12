@@ -1,5 +1,10 @@
 import functools
 import logging
+from typing import Any
+
+import git  # installed with `pip install gitpython`
+from hydra.experimental.callback import Callback
+from omegaconf import DictConfig
 
 
 def log_exceptions(logger: logging.Logger):
@@ -21,6 +26,41 @@ def log_exceptions(logger: logging.Logger):
         return decorated
 
     return decorator
+
+
+class LogGitHashCallback(Callback):
+    """
+    LogGitHashCallback logs, on the start of every run, the git hash of the current commit and changed files (if any).
+
+    To use it include the following in your config:
+        ```yaml
+        hydra:
+          callbacks:
+            git_logging:
+              _target_: callbacks.hydra.LogGitHashCallback
+        ```
+
+    (adapted from https://stackoverflow.com/a/74133166)
+    """
+
+    def on_job_start(self, config: DictConfig, **kwargs: Any) -> None:
+        _log_git_sha()
+
+
+def _log_git_sha():
+    log = logging.getLogger(__name__)
+
+    repo = git.Repo(search_parent_directories=True)
+    sha = repo.head.object.hexsha
+    log.info(f"Git sha: {sha}")
+
+    changed_files = [item.a_path for item in repo.index.diff(None)]
+    if changed_files:
+        log.info(f"Changed files: {changed_files}")
+
+    diff = repo.git.diff()
+    if diff:
+        log.info(f"Git diff:\n{diff}")
 
 
 def reformat_self_consistency_results(results):
