@@ -6,20 +6,15 @@ from typing import List, Union
 
 import openai
 
+from models.utils import INVALID_RESPONSE, ExtendedEnum
+
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
-INVALID_RESPONSE = "INVALID_RESPONSE"
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-
-class ExtendedEnum(Enum):
-    @classmethod
-    def list(cls):
-        return list(map(lambda c: c.value, cls))
 
 
 class OpenAITextModels(ExtendedEnum):
@@ -44,7 +39,6 @@ def get_all_model_strings() -> List[str]:
 
 
 def get_openai_model_from_string(model_name: str) -> Enum:
-
     if model_name in OpenAITextModels.list():
         return OpenAITextModels(model_name)
     elif model_name in OpenAIChatModels.list():
@@ -55,7 +49,7 @@ def get_openai_model_from_string(model_name: str) -> Enum:
 
 def generate_text_completion(
     prompt: str,
-    temperature: int = 0,
+    temperature: float = 0.0,
     max_tokens: int = 256,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
 ) -> str:
@@ -100,7 +94,7 @@ def generate_text_completion(
 
 def generate_chat_completion(
     prompt_turns: List[dict],
-    temperature: int = 0,
+    temperature: float = 0.0,
     max_tokens: int = 256,
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
@@ -120,7 +114,8 @@ def generate_chat_completion(
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            break
+            if response is not None:
+                break
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
@@ -132,7 +127,7 @@ def generate_chat_completion(
             n_retries += 1
             time.sleep(10)
 
-    if response is None and n_retries == _MAX_RETRIES:
+    if response is None:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
@@ -146,23 +141,27 @@ def generate_chat_completion(
 def generate_response_with_turns(
     model: str,
     turns: List[dict],
+    temperature: float = 0.0,
+    max_tokens: int = 256,
 ) -> str:
     """
     Helper function to generate a response given a list of turns.
     Routes to the appropriate model.
-    Turns are collapsed into a single string for the davinci model.
+    Turns are collapsed into a single string for non-chat model.
     """
-    if model == DAVINCI_MODEL_NAME:
+    if model in OpenAITextModels.list():
         return generate_text_completion(
             prompt="\n".join([turn["content"] for turn in turns]),
-            temperature=0,
-            max_tokens=256,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            model=model,
         )
-    elif model == CHAT_MODEL_NAME:
+    elif model in OpenAIChatModels.list():
         return generate_chat_completion(
             prompt_turns=turns,
-            temperature=0,
-            max_tokens=256,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            model=model,
         )
     else:
         raise ValueError(f"Model {model} not supported")

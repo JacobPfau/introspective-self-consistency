@@ -65,17 +65,31 @@ def sequence_completion_equality(
     sequence: str,
     fn: str,
     model: str,
-    max_offset=MAX_OFFSET,
-    num_shots=NUM_SHOTS,
-    cot=COT,
-    evaluate_model_completion=True,
-    evaluate_model_consistency=True,
+    max_offset: int = MAX_OFFSET,
+    num_shots: int = NUM_SHOTS,
+    cot: bool = COT,
+    evaluate_model_completion: bool = True,
+    evaluate_model_consistency: bool = True,
+    ambiguous_sequences: dict = None,
+    few_shot_prompt_type: str = "random",
 ):
     completion_prompt = generate_sequence_completion_prompt(
-        sequence, fn, n_shots=num_shots, use_cot=cot
+        sequence,
+        fn,
+        n_shots=num_shots,
+        use_cot=cot,
+        ambiguous_sequences=ambiguous_sequences,
+        shot_type=few_shot_prompt_type,
     )
+
     explanation_prompt = generate_sequence_completion_prompt(
-        sequence, fn, n_shots=num_shots, use_cot=cot, prompt_type="explanation"
+        sequence,
+        fn,
+        n_shots=num_shots,
+        use_cot=cot,
+        prompt_type="explanation",
+        ambiguous_sequences=ambiguous_sequences,
+        shot_type=few_shot_prompt_type,
     )
 
     completion_resp = generate_response_with_turns(
@@ -134,7 +148,6 @@ def sequence_completion_equality(
         }
 
     last_completion = eval(explanation)(last_completion_step + 1)
-
     return {
         "original_function": fn,
         "sequence": sequence,
@@ -148,13 +161,15 @@ def sequence_completion_equality(
 
 
 def evaluate_sequence_completion_equality(
-    model, max_offset=MAX_OFFSET, num_shots=NUM_SHOTS, cot=COT
+    model,
+    max_offset=MAX_OFFSET,
+    num_shots=NUM_SHOTS,
+    cot=COT,
+    few_shot_prompt_type="random",
 ):
     print("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
-    total_sequences = sum(
-        [len(fns) for fns in ambiguous_sequences.values()]
-    )
+    total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())
     completion_data = []
     for sequence, fns in tqdm(list(ambiguous_sequences.items())):
         for fn in fns:
@@ -167,6 +182,8 @@ def evaluate_sequence_completion_equality(
                         max_offset=max_offset,
                         num_shots=num_shots,
                         cot=cot,
+                        ambiguous_sequences=ambiguous_sequences,
+                        few_shot_prompt_type=few_shot_prompt_type,
                     )
                 )
             except Exception as e:

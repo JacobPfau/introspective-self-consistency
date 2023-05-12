@@ -11,10 +11,12 @@ correct function and sequence constant, and vary the incorrect options. This all
 us to evaluate whether the model is capable of recoginising a single correct function.
 """
 import random
+from copy import deepcopy
 from typing import List, Tuple, Union
 
 from evals.prompts.choose_function import function_selection_prompt
 from evals.utils import choose_function, generate_wrong_functions
+from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 
 
 def function_class_selection_evaluation(
@@ -41,6 +43,7 @@ def function_class_selection_evaluation(
         num_shots=num_shots,
         num_functions=num_functions,
         use_cot=use_cot,
+        model_name=model_name,
     )
     for i in range(num_samples):
         print("Question: ", i + 1, "/", num_samples, sep="")
@@ -93,6 +96,8 @@ def function_selection_evaluation(
     incorrect_functions: List[str] = None,
     correct_functions: List[int] = None,
     offset: Union[int, None] = None,
+    base: int = 10,
+    number_format: str = "None",
 ) -> Tuple[float, int]:
     """
     Given a sequence and some rule which could generate it, evaluate whether a model can discern
@@ -104,12 +109,33 @@ def function_selection_evaluation(
     correct_choices = 0
     incorrect_choices = 0
     invalid_outputs = 0
-    # Generate a prompt
-    prompt = function_selection_prompt(
-        num_shots=num_shots,
-        num_functions=num_functions,
-        use_cot=use_cot,
-    )
+    # print("Ole troubleshooting: ")
+    print(model_name)
+    if model_name == "CHAT":
+        # Generate a prompt
+        print("huzzah")
+        prompt = function_selection_prompt(
+            num_shots=num_shots,
+            num_functions=num_functions,
+            use_cot=use_cot,
+            model_name=CHAT_MODEL_NAME,
+            base=base,
+            num_format=number_format,
+        )
+    elif model_name == "DAVINCI":
+        # Generate a prompt
+        prompt = function_selection_prompt(
+            num_shots=num_shots,
+            num_functions=num_functions,
+            use_cot=use_cot,
+            model_name=DAVINCI_MODEL_NAME,
+            base=base,
+            num_format=number_format,
+        )
+    else:
+        raise ValueError("Model name not recognised")
+    # print("Ole troubleshooting: ")
+    # print(prompt)
     for i in range(num_samples):
         # Randomly choose one of the correct functions
         correct_function = random.choice(correct_functions)
@@ -117,7 +143,7 @@ def function_selection_evaluation(
         if generate_functions:
             # Generate incorrect functions
             incorrect_functions = generate_wrong_functions(
-                target_sequence, num_functions
+                target_sequence, num_functions - 1
             )
             sampled_functions = incorrect_functions
         else:
@@ -130,16 +156,25 @@ def function_selection_evaluation(
                 incorrect_functions[i] for i in incorrect_function_indices
             ]
         sampled_functions.insert(correct_function_index, correct_function)
+        # Convert target sequence and functions to base b
+        # if base != 10:
+        #     print("target sequence: ", target_sequence)
+        #     target_sequence = convert_numbers_to_base_b(target_sequence, base)
+
         # Choose the function
         try:
+            new_prompt = deepcopy(prompt)
+            # print("trying to get a response")
             model_response = choose_function(
                 possible_functions=sampled_functions,
                 correct_function_indices=[correct_function_index + 1],
                 target_sequence=target_sequence,
-                prompt=prompt,
+                prompt=new_prompt,
                 model_name=model_name,
                 temperature=temperature,
+                base=base,
             )
+            # print("got a response")
         except ValueError:
             invalid_outputs += 1
             continue
