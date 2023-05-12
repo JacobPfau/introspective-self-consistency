@@ -38,7 +38,7 @@ Consistency evaluator - two outputs consistent
 """
 
 import random
-from typing import Literal, Tuple
+from typing import Dict, List, Literal, Tuple, Union
 
 import numpy as np
 
@@ -105,7 +105,7 @@ def find_ambiguous_integer_sequences(
     disambiguate_steps: int = 4,
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
-) -> dict:
+) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
     Find ambiguous_integer_sequences using brute force search
     over a set of progressions.
