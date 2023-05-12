@@ -1,3 +1,5 @@
+import logging
+
 import hydra
 from omegaconf import DictConfig
 
@@ -6,9 +8,13 @@ from src.evals.sequence_completion_with_base_change import (
     evaluate_compute_dependence_with_base_changes,
 )
 from src.evals.string_transformation import evaluate_string_transformation_equality
+from utils import log_exceptions
+
+logger = logging.getLogger(__name__)
 
 
 @hydra.main(version_base=None, config_path="conf", config_name="main")
+@log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
     if task_cfg := cfg.string_transformation_completion_equality:
         evaluate_string_transformation_equality(
