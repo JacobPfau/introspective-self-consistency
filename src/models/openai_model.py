@@ -28,7 +28,7 @@ class OpenAITextModels(ExtendedEnum):
 
 class OpenAIChatModels(ExtendedEnum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
-    CHAT_GPT_4 = "gpt-4"
+    CHAT_GPT_4 = "gpt-4-0314"
 
 
 logger = logging.getLogger(__name__)
@@ -56,8 +56,9 @@ def get_openai_model_from_string(model_name: str) -> Enum:
 def generate_text_completion(
     prompt: str,
     temperature: int = 0,
-    max_tokens: int = 256,
+    max_tokens: int = 512,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
+    # logprobs: int = 5,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/completions/create
 
@@ -74,6 +75,7 @@ def generate_text_completion(
                 prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                # logprobs=logprobs,
             )
             break
         except openai.APIError:
@@ -101,7 +103,7 @@ def generate_text_completion(
 def generate_chat_completion(
     prompt_turns: List[dict],
     temperature: int = 0,
-    max_tokens: int = 256,
+    max_tokens: int = 512,
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
