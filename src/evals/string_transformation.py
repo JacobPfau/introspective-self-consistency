@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
@@ -7,6 +9,9 @@ from src.pipelines.string_transformations import (
     find_ambiguous_string_transformations,
     generate_string_transformation_prompt,
 )
+from src.utils import auto_subdir
+
+logger = logging.getLogger(__name__)
 
 NUM_SHOTS = 8
 COT = False
@@ -173,10 +178,10 @@ def string_transformation_equality(
 
     # find the offset that generates the sequence
     last_completion = eval(explanation)(sequence.split(" => ")[-1].strip())
-    print("last_completion", last_completion)
-    print("actual_completion", actual_completion)
-    print("model_completion_resp", model_completion_resp)
-    print("consistency_resp", consistency_resp)
+    logger.info("last_completion", last_completion)
+    logger.info("actual_completion", actual_completion)
+    logger.info("model_completion_resp", model_completion_resp)
+    logger.info("consistency_resp", consistency_resp)
 
     return {
         "original_function": fn,
@@ -190,8 +195,9 @@ def string_transformation_equality(
     }
 
 
+@auto_subdir
 def evaluate_string_transformation_equality(model, num_shots=NUM_SHOTS, cot=COT):
-    print("Evaluating string transformation equality...")
+    logger.info("Evaluating string transformation equality...")
     ambiguous_sequences = find_ambiguous_string_transformations("#", "@", 4)
     total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())
     completion_data = []
@@ -211,13 +217,11 @@ def evaluate_string_transformation_equality(model, num_shots=NUM_SHOTS, cot=COT)
                     )
                 )
             except Exception as e:
-                print(e)
-                print(f"Failed to evaluate {sequence} with {fn}")
+                logger.warning(e)
+                logger.warning(f"Failed to evaluate {sequence} with {fn}")
                 continue
 
-    pd.DataFrame(completion_data).to_csv(
-        f"./results/string_transformation_equality_evaluation_{model}.csv", index=False
-    )
+    pd.DataFrame(completion_data).to_csv(f"results_{model}.csv", index=False)
 
     match_accs, model_match_accs, model_consistency_accs, consistent_and_matched = (
         [],
@@ -242,7 +246,7 @@ def evaluate_string_transformation_equality(model, num_shots=NUM_SHOTS, cot=COT)
     self_rule_following_consistency = round(np.mean(model_match_accs), 2) * 100
     self_comparison_consistency = round(np.mean(model_consistency_accs), 2) * 100
     consistent_and_matched_accuracy = round(np.mean(consistent_and_matched), 2) * 100
-    print(
+    logger.info(
         f"""
         Evaluated {len(completion_data)} ambiguous string transformations of {total_sequences} total.
         Resulting in:
