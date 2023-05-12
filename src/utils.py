@@ -1,3 +1,28 @@
+import functools
+import logging
+
+
+def log_exceptions(logger: logging.Logger):
+    """
+    Decorator to catch and log exceptions.
+
+    Useful in combination with hydra to make sure that also uncaught exceptions are properly logged to file.
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def decorated(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                logger.exception(e)
+                raise e
+
+        return decorated
+
+    return decorator
+
+
 def reformat_self_consistency_results(results):
     """
     Add in the total number of samples and the percentage of consistent
