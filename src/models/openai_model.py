@@ -6,13 +6,14 @@ from typing import List, Union
 
 import openai
 
-from models.utils import INVALID_RESPONSE, ExtendedEnum
+from src.models.utils import INVALID_RESPONSE, ExtendedEnum
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
+_RETRY_TIMEOUT = 10
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -75,13 +76,13 @@ def generate_text_completion(
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
-            time.sleep(10)
+            time.sleep(_RETRY_TIMEOUT)
         except openai.error.RateLimitError:
             logger.error(
                 "Rate limiting, Sleep and try again."
             )  # TBD: how long to wait?
             n_retries += 1
-            time.sleep(10)
+            time.sleep(_RETRY_TIMEOUT)
 
     if response is None and n_retries == _MAX_RETRIES:
         logger.error("Reached retry limit and did not obtain proper response")
@@ -121,13 +122,13 @@ def generate_chat_completion(
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
-            time.sleep(10)
+            time.sleep(_RETRY_TIMEOUT)
         except openai.error.RateLimitError:
             logger.error(
                 "Rate limiting, Sleep and try again."
             )  # TBD: how long to wait?
             n_retries += 1
-            time.sleep(10)
+            time.sleep(_RETRY_TIMEOUT)
 
     if response is None:
         logger.error("Reached retry limit and did not obtain proper response")

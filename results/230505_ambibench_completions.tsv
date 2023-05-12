@@ -15,3 +15,5 @@ dataset	model	num_shots	num_examples	num_correct	acc
 20230505_16-48_n12_amb50.json	text-davinci-003	12	60	47	0.783
 20230505_16-49_n16_amb75.json	text-davinci-003	16	60	45	0.75
 20230505_16-48_n6_amb50.json	text-davinci-003	6	60	33	0.55
+20230505_16-49_n6_amb75.json	text-davinci-003	6	60	32	0.533
+20230505_16-48_n16_amb50.json	text-davinci-003	16	60	46	0.767
