@@ -29,12 +29,18 @@ parser.add_argument(
     choices=["binary", "integer"],
 )
 parser.add_argument(
+    "--few-shot-prompt-type",
+    default="random",
+    type=str,
+    choices=["random", "same_class", "exclude_class", "same_fn", "ambigious"],
+)
+parser.add_argument(
     "--evaluation",
     default="sequence_completion_equality",
     type=str,
     choices=[
         "sequence_completion_equality",
-        "string_transformation_completion_equality"
+        "string_transformation_completion_equality",
     ],
 )
 parser.add_argument("--num-shots", default=8, type=int)
@@ -48,5 +54,8 @@ if __name__ == "__main__":
         )
     if args.evaluation == "sequence_completion_equality":
         evaluate_sequence_completion_equality(
-            args.model, num_shots=args.num_shots, cot=args.use_cot
+            args.model,
+            num_shots=args.num_shots,
+            cot=args.use_cot,
+            few_shot_prompt_type=args.few_shot_prompt_type,
         )
