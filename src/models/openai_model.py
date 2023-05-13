@@ -105,10 +105,17 @@ def generate_text_completion_with_logprobs(
     temperature: float = 0.0,
     max_tokens: int = 512,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
-    logprobs: int = 0,
+    logprobs: int = 5,
 ) -> Tuple[str, Dict[str, Any]]:
-    response = _get_raw_text_model_response(
-        prompt, temperature, max_tokens, model, logprobs
+    # response = _get_raw_text_model_response(
+    #     prompt, temperature, max_tokens, model, logprobs
+    # )
+    response = openai.Completion.create(
+        model=model.value,
+        prompt=prompt,
+        temperature=temperature,
+        max_tokens=max_tokens,
+        logprobs=logprobs,
     )
 
     if len(response["choices"]) == 0:
@@ -196,7 +203,7 @@ def generate_response_with_turns(
 
 
 def generate_logprob_response_with_turns(
-    model: str,
+    model: Union[str, BaseModel],
     turns: List[dict],
     temperature: float = 0.0,
     max_tokens: int = 512,
@@ -207,7 +214,7 @@ def generate_logprob_response_with_turns(
     Routes to the appropriate model.
     Turns are collapsed into a single string for non-chat model.
     """
-    if model in OpenAITextModels.list():
+    if model in OpenAITextModels.list() or isinstance(model, OpenAITextModels):
         return generate_text_completion_with_logprobs(
             prompt="\n".join([turn["content"] for turn in turns]),
             temperature=temperature,
@@ -215,7 +222,7 @@ def generate_logprob_response_with_turns(
             model=model,
             logprobs=logprobs,
         )
-    elif model in OpenAIChatModels.list():
+    elif model in OpenAIChatModels.list() or isinstance(model, OpenAIChatModels):
         logger.error("Chat models don't support returning logprob")
         return INVALID_RESPONSE
     else:

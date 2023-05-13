@@ -319,7 +319,7 @@ def _generate_shot_pool(
     # continue to draw if fn_item in shots
     while base_fn in shots:
         shots = np.random.choice(shot_pool, size=n_shots, replace=False)
-    return shot_pool
+    return shots
 
 
 def _cot(fn_item: dict, steps: int) -> str:
