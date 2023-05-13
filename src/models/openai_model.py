@@ -2,11 +2,11 @@ import logging
 import os
 import time
 from enum import Enum
-from typing import List, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import openai
 
-from models.utils import INVALID_RESPONSE, BaseModel
+from .utils import INVALID_RESPONSE, BaseModel
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
@@ -48,11 +48,12 @@ def get_openai_model_from_string(model_name: str) -> Enum:
         raise KeyError(f"Invalid OpenAI model name: {model_name}")
 
 
-def generate_text_completion(
+def _get_raw_text_model_response(
     prompt: str,
     temperature: float = 0.0,
     max_tokens: int = 512,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
+    logprobs: int = 0,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/completions/create
 
@@ -61,36 +62,62 @@ def generate_text_completion(
 
     response = None
 
-    n_retries = 0
-    while n_retries < _MAX_RETRIES:
+    for _ in range(_MAX_RETRIES):
         try:
             response = openai.Completion.create(
                 model=model.value,
                 prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                logprobs=logprobs,
             )
-            break
+            return response
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
-            n_retries += 1
             time.sleep(_RETRY_TIMEOUT)
         except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
-            n_retries += 1
+            logger.error("Rate limiting, Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)
 
-    if response is None and n_retries == _MAX_RETRIES:
-        logger.error("Reached retry limit and did not obtain proper response")
-        return INVALID_RESPONSE
+    logger.error("Reached retry limit and did not obtain proper response")
+    return INVALID_RESPONSE
+
+
+def generate_text_completion(
+    prompt: str,
+    temperature: float = 0.0,
+    max_tokens: int = 512,
+    model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
+) -> str:
+    response = _get_raw_text_model_response(prompt, temperature, max_tokens, model)
 
     if len(response["choices"]) == 0:
         logger.error("Response did not return enough `choices`")
         return INVALID_RESPONSE
+    elif response == INVALID_RESPONSE:
+        return response
 
     return response["choices"][0]["text"]
+
+
+def generate_text_completion_with_logprobs(
+    prompt: str,
+    temperature: float = 0.0,
+    max_tokens: int = 512,
+    model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
+    logprobs: int = 0,
+) -> Tuple[str, Dict[str, Any]]:
+    response = _get_raw_text_model_response(
+        prompt, temperature, max_tokens, model, logprobs
+    )
+
+    if len(response["choices"]) == 0:
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
+    elif response == INVALID_RESPONSE:
+        return response
+
+    return response["choices"][0]["text"], response["logprobs"]
 
 
 def generate_chat_completion(
@@ -143,7 +170,7 @@ def generate_response_with_turns(
     model: str,
     turns: List[dict],
     temperature: float = 0.0,
-    max_tokens: int = 256,
+    max_tokens: int = 512,
 ) -> str:
     """
     Helper function to generate a response given a list of turns.
@@ -164,5 +191,32 @@ def generate_response_with_turns(
             max_tokens=max_tokens,
             model=model,
         )
+    else:
+        raise ValueError(f"Model {model} not supported")
+
+
+def generate_logprob_response_with_turns(
+    model: str,
+    turns: List[dict],
+    temperature: float = 0.0,
+    max_tokens: int = 512,
+    logprobs: int = 0,
+) -> str:
+    """
+    Helper function to generate a response given a list of turns.
+    Routes to the appropriate model.
+    Turns are collapsed into a single string for non-chat model.
+    """
+    if model in OpenAITextModels.list():
+        return generate_text_completion_with_logprobs(
+            prompt="\n".join([turn["content"] for turn in turns]),
+            temperature=temperature,
+            max_tokens=max_tokens,
+            model=model,
+            logprobs=logprobs,
+        )
+    elif model in OpenAIChatModels.list():
+        logger.error("Chat models don't support returning logprob")
+        return INVALID_RESPONSE
     else:
         raise ValueError(f"Model {model} not supported")

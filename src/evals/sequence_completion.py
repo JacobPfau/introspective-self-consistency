@@ -113,7 +113,7 @@ def sequence_completion_equality(
             model, [{"role": "user", "content": consistency_prompt}]
         )
 
-    # check what the model would have generated
+    # check what completion the model would have generated given the explanation/rule
     model_completion_resp = None
     if evaluate_model_completion:
         model_completion_prompt = _generate_completion_check_prompt(

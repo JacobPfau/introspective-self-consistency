@@ -8,9 +8,14 @@ from typing import Dict, List, Literal, Optional
 
 from tqdm import tqdm
 
-from models.utils import BaseModel
-from pipelines.sequence_completions import (
+from src.models.openai_model import (
+    OpenAITextModels,
+    generate_logprob_response_with_turns,
+)
+from src.models.utils import BaseModel
+from src.pipelines.sequence_completions import (
     _generate_shot_pool,
+    _resolve_fn,
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
@@ -22,8 +27,10 @@ def run_q1_2_eval(
     model: BaseModel,
     max_offset=8,
     num_shots=4,
-    cot=True,
+    num_invalid=3,
+    cot=False,
     few_shot_prompt_type="random",
+    invalid_fn_type="random",
 ):
 
     # main function to run this eval which can be called from main.py
@@ -37,25 +44,41 @@ def run_q1_2_eval(
 
     # construct prompt for model completion
     for sequence, fns in tqdm(list(amb_seqs.items())):
-        for fn in fns:
-            try:
-                completion_prompt = generate_sequence_completion_prompt(
-                    sequence,
-                    fn,
-                    n_shots=num_shots,
-                    use_cot=cot,
-                    ambiguous_sequences=amb_seqs,
-                    shot_type=few_shot_prompt_type,
-                )
 
-                # prompt model for completion
+        try:
+            # roll out valid fns to obtain valid completions
+            last_step = len(sequence.split(","))
+            valid_completions = [_resolve_fn(fn_item, last_step) for fn_item in fns]
 
-                # obtain log probabilities for each response
+            # generate invalid explanations
+            invalid_fns = _generate_shot_pool(
+                n_shots=num_invalid,
+                base_fn=fns[0],
+                shot_type=invalid_fn_type,
+                ambiguous_sequences=amb_seqs,
+            )
+            invalid_completions = [
+                _resolve_fn(fn_item, last_step) for fn_item in invalid_fns
+            ]
 
-                # evaluate test-passing condition
+            completion_prompt = generate_sequence_completion_prompt(
+                sequence,
+                fns[0],
+                n_shots=num_shots,
+                use_cot=cot,
+                ambiguous_sequences=amb_seqs,
+                shot_type=few_shot_prompt_type,
+            )
 
-            except Exception as e:
-                print(e)
+            # prompt model for completion and obtain log probabilities for each response
+            completion_resp = generate_logprob_response_with_turns(
+                model, completion_prompt["prompt_turns"]
+            )
+
+            # evaluate test-passing condition
+
+        except Exception as e:
+            print(e)
     # TODO: extend to
     # construct prompt for model explanation
     # construct prompt for model explanation conditioned on priming prompt
@@ -88,6 +111,15 @@ def evaluate_logprob_inequality(
     return all(ineq)
 
 
+def generate_sequence_completion_prompt_with_multiple_choice(
+    completion_candadites: List[int],
+) -> str:
+    mc_string = "\n".join(completion_candadites)
+    prompt = f"What is your best guess for the next number in the sequence? Select your best guess from the following options:{mc_string}\n"
+
+    return prompt
+
+
 def get_model_priming_prompt(
     model: BaseModel, response_type: Literal["completion", "explanation"]
 ) -> str:
@@ -109,3 +141,10 @@ def list_logprob_distribution(
 ) -> List[float]:
     # simple list of logprob over responses, ordered by  for valid and invalid responses
     pass
+
+
+if __name__ == "__main__":
+
+    model = OpenAITextModels.TEXT_DAVINCI_003
+
+    run_q1_2_eval(model)
