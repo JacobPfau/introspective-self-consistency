@@ -23,7 +23,7 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_text_completion,
+    generate_completion
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
@@ -77,7 +77,7 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
-    completion_response = generate_text_completion(prompt, model=model)
+    completion_response = generate_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
@@ -90,6 +90,9 @@ if __name__ == "__main__":
     date = datetime.datetime.now().strftime("%y%m%d")
     output_tsv = f"./results/{date}_ambibench_completions.tsv"
     model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
+    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
+    output_tsv = f"./results/{date}_ambibench_completions.tsv"
+    model = OpenAIChatModels.CHAT_GPT_35
 
     ###
 
@@ -105,7 +108,6 @@ if __name__ == "__main__":
     logger.info(f"Start model inference for: {model.value}")
     pred_completions: List[str] = []
     for prompt in tqdm(formatted_prompts):
-
         if isinstance(model, OpenAIChatModels):
             completion = get_chat_completion(prompt, model)
         if isinstance(model, OpenAITextModels):
@@ -125,7 +127,7 @@ if __name__ == "__main__":
         "acc": round(correct_predictions / len(formatted_prompts), 3),
     }
     logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict([results])
+    df = pd.DataFrame.from_dict(results, orient="index")
 
     if os.path.exists(output_tsv):
         # append

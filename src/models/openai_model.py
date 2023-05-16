@@ -6,22 +6,21 @@ from typing import List, Union
 
 import openai
 
-from models.utils import INVALID_RESPONSE, ExtendedEnum
-
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
+INVALID_RESPONSE = "INVALID_RESPONSE"
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-class OpenAITextModels(ExtendedEnum):
+class OpenAITextModels(Enum):
     TEXT_DAVINCI_003 = "text-davinci-003"
 
 
-class OpenAIChatModels(ExtendedEnum):
+class OpenAIChatModels(Enum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
     CHAT_GPT_4 = "gpt-4-0314"
 
@@ -34,18 +33,9 @@ logging.basicConfig(
 )
 
 
-def get_openai_model_from_string(model_name: str) -> Enum:
-    if model_name in OpenAITextModels.list():
-        return OpenAITextModels(model_name)
-    elif model_name in OpenAIChatModels.list():
-        return OpenAIChatModels(model_name)
-    else:
-        raise KeyError(f"Invalid OpenAI model name: {model_name}")
-
-
-def generate_text_completion(
+def generate_completion(
     prompt: str,
-    temperature: float = 0.0,
+    temperature: int = 0,
     max_tokens: int = 256,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
 ) -> str:
@@ -71,12 +61,11 @@ def generate_chat_completion(
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
-    # TODO: may want to handle ServiceUnavailableError
+    # TODO: may want to handle ServiceUnavailableError, RateLimitError
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
     response = None
-
     n_retries = 0
     while n_retries < _MAX_RETRIES:
         try:
@@ -92,19 +81,14 @@ def generate_chat_completion(
             logger.warning("API Error. Sleep and try again.")
             n_retries += 1
             time.sleep(3)
-        except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
-            n_retries += 1
-            time.sleep(10)
 
     if response is None:
         logger.error("Reached retry limit and did not obtain proper response")
         return INVALID_RESPONSE
 
     if len(response["choices"]) == 0:
-        raise KeyError("Response did not return enough `choices`")
+        logger.error("Response did not return enough `choices`")
+        return INVALID_RESPONSE
 
     return response["choices"][0]["message"]["content"]
 
@@ -121,7 +105,7 @@ def generate_response_with_turns(
     Turns are collapsed into a single string for non-chat model.
     """
     if model in OpenAITextModels.list():
-        return generate_text_completion(
+        return generate_completion(
             prompt="\n".join([turn["content"] for turn in turns]),
             temperature=temperature,
             max_tokens=max_tokens,
