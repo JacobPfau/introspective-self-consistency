@@ -106,7 +106,9 @@ def generate_text_completion_with_logprobs(
     max_tokens: int = 512,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
     logprobs: int = 5,
-) -> Tuple[str, Dict[str, Any]]:
+    # echo is required to get the previous tokens logprobs
+    echo: bool = True
+) -> Tuple[str, Dict[str, Dict[str, Any]]]:
     # response = _get_raw_text_model_response(
     #     prompt, temperature, max_tokens, model, logprobs
     # )
@@ -116,6 +118,7 @@ def generate_text_completion_with_logprobs(
         temperature=temperature,
         max_tokens=max_tokens,
         logprobs=logprobs,
+        echo=echo
     )
 
     if len(response["choices"]) == 0:
@@ -124,7 +127,7 @@ def generate_text_completion_with_logprobs(
     elif response == INVALID_RESPONSE:
         return response
 
-    return response["choices"][0]["text"], response["logprobs"]
+    return response["choices"][0]["text"], response['choices'][0]['logprobs']
 
 
 def generate_chat_completion(
@@ -207,8 +210,8 @@ def generate_logprob_response_with_turns(
     turns: List[dict],
     temperature: float = 0.0,
     max_tokens: int = 512,
-    logprobs: int = 0,
-) -> str:
+    logprobs: int = 5,
+) -> Tuple[str, Dict[str, Dict[str, Any]]]:
     """
     Helper function to generate a response given a list of turns.
     Routes to the appropriate model.

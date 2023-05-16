@@ -71,7 +71,7 @@ def run_q1_2_eval(
             )
 
             # prompt model for completion and obtain log probabilities for each response
-            completion_resp = generate_logprob_response_with_turns(
+            completion_resp, log_probs = generate_logprob_response_with_turns(
                 model, completion_prompt["prompt_turns"]
             )
 
@@ -146,5 +146,21 @@ def list_logprob_distribution(
 if __name__ == "__main__":
 
     model = OpenAITextModels.TEXT_DAVINCI_003
+
+    # demonstration of prompting with multiple choice for log probs
+    _, log_probs_dog = generate_logprob_response_with_turns(
+        model, [
+            {"content": "Q: What is cuter A: Cats or B: Dogs? A: Dogs"},
+        ],
+        max_tokens=0
+    )
+    _, log_probs_cat = generate_logprob_response_with_turns(
+        model, [
+            {"content": "Q: What is cuter A: Cats or B: Dogs? A: Dogs"},
+        ],
+        max_tokens=0
+    )
+    print(log_probs_dog)
+    print(log_probs_cat)
 
     run_q1_2_eval(model)
