@@ -1,12 +1,17 @@
-from src.pipelines.sequence_completions import find_ambiguous_integer_sequences
-from src.pipelines.sequence_completions import sequence_functions
 from src.evals.check_self_consistency import self_consistency_evaluation
+from src.pipelines.sequence_completions import (
+    find_ambiguous_integer_sequences,
+    sequence_functions,
+)
 from src.utils import reformat_self_consistency_results
 
 
 def evaluate_compute_dependence_with_base_changes(
-    sequence_type: str, model: str, num_shots: int,
-    on_ambiguous_sequences: bool, num_samples: int
+    sequence_type: str,
+    model: str,
+    num_shots: int,
+    on_ambiguous_sequences: bool,
+    num_samples: int,
 ):
     total = 0
     if on_ambiguous_sequences:
@@ -21,8 +26,10 @@ def evaluate_compute_dependence_with_base_changes(
         results = {}
         ambiguous_sequences = find_ambiguous_integer_sequences(
             valid_sequence_functions={
-                fn: v for fn, v in sequence_functions.items() if fn !=
-                "indexing_criteria_progression"  # does not work with base change
+                fn: v
+                for fn, v in sequence_functions.items()
+                if fn
+                != "indexing_criteria_progression"  # does not work with base change
             },
         )
         for sequence in ambiguous_sequences:
@@ -89,10 +96,10 @@ def evaluate_compute_dependence_with_base_changes(
         json.dump(results, f)
 
     # Save command line arguments
-    args_path = os.path.join(results_dir, "args.json")
-    args_dict = vars(args)
-    args_dict["sequence_functions"] = all_sequence_functions
-    with open(args_path, "w") as f:
-        json.dump(args_dict, f)
+    # args_path = os.path.join(results_dir, "args.json")
+    # args_dict = vars(args)
+    # args_dict["sequence_functions"] = all_sequence_functions
+    # with open(args_path, "w") as f:
+    #     json.dump(args_dict, f)
 
     print(f"Results saved to {results_path}")

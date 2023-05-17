@@ -7,7 +7,10 @@ from src.evals.evaluate_explanation import (
     valid_explanation,
 )
 from src.evals.prompts.continuation_prompt import create_continuation_prompt
-from src.evals.prompts.explanation_prompt import create_explanation_prompt, parse_explanation
+from src.evals.prompts.explanation_prompt import (
+    create_explanation_prompt,
+    parse_explanation,
+)
 
 
 def self_consistency_evaluation(
@@ -59,6 +62,7 @@ def self_consistency_evaluation(
         )
 
         if not valid_continuation(continuation):
+            print("invalid continuation: ", continuation)
             invalid_responses += 1
             continue
         else:
@@ -81,6 +85,7 @@ def self_consistency_evaluation(
         offset = int(offset)
 
         if not valid_explanation(fn, offset, len(sequence)):
+            print("invalid explanation: ", explanation)
             invalid_responses += 1
             continue
         else:

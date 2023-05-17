@@ -1,0 +1,25 @@
+[2023-05-17 12:01:00,599][src.utils][INFO] - Git sha: cb572d459e45d11a84e5cdc86b6603901f676290
+[2023-05-17 12:01:00,608][src.utils][INFO] - Changed files: ['main.py']
+[2023-05-17 12:01:00,616][src.utils][INFO] - Git diff:
+diff --git a/main.py b/main.py
+index 083b705..a363731 100644
+--- a/main.py
++++ b/main.py
+@@ -8,7 +8,7 @@ from src.evals.sequence_completion_with_base_change import (
+     evaluate_compute_dependence_with_base_changes,
+ )
+ from src.evals.string_transformation import evaluate_string_transformation_equality
+-from utils import log_exceptions
++from src.utils import log_exceptions
+
+ logger = logging.getLogger(__name__)
+
+[2023-05-17 12:01:24,463][__main__][ERROR] - name 'args' is not defined
+Traceback (most recent call last):
+  File "/Users/olejorgensen/Documents/AISC/introspective-self-consistency/src/utils.py", line 58, in decorated
+    return func(*args, **kwargs)
+  File "/Users/olejorgensen/Documents/AISC/introspective-self-consistency/main.py", line 36, in main
+    evaluate_compute_dependence_with_base_changes(
+  File "/Users/olejorgensen/Documents/AISC/introspective-self-consistency/src/evals/sequence_completion_with_base_change.py", line 93, in evaluate_compute_dependence_with_base_changes
+    args_dict = vars(args)
+NameError: name 'args' is not defined
