@@ -39,6 +39,8 @@ def main(cfg: DictConfig) -> None:
             num_shots=task_cfg.num_shots,
             on_ambiguous_sequences=task_cfg.on_ambiguous_sequences,
             num_samples=task_cfg.num_samples,
+            distribution=task_cfg.distribution,
+            shot_method=task_cfg.shot_method,
         )
 
 

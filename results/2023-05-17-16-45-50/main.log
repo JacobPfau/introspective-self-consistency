@@ -1,0 +1,39 @@
+[2023-05-17 16:45:50,770][src.utils][INFO] - Git sha: fd5e59f5d30e2ae6f6803e7a4226ac79cb0492bd
+[2023-05-17 16:45:50,779][src.utils][INFO] - Changed files: ['src/evals/check_self_consistency.py', 'src/evals/evaluate_continuation.py']
+[2023-05-17 16:45:50,788][src.utils][INFO] - Git diff:
+diff --git a/src/evals/check_self_consistency.py b/src/evals/check_self_consistency.py
+index 7f8465e..22250ff 100644
+--- a/src/evals/check_self_consistency.py
++++ b/src/evals/check_self_consistency.py
+@@ -61,7 +61,7 @@ def self_consistency_evaluation(
+             temperature=temperature,
+         )
+
+-        if not valid_continuation(continuation):
++        if not valid_continuation(continuation, base):
+             print("invalid continuation: ", continuation)
+             invalid_responses += 1
+             continue
+diff --git a/src/evals/evaluate_continuation.py b/src/evals/evaluate_continuation.py
+index 5b0d593..e42c98c 100644
+--- a/src/evals/evaluate_continuation.py
++++ b/src/evals/evaluate_continuation.py
+@@ -10,6 +10,7 @@ from src.models.openai_model import (
+
+ def valid_continuation(
+     model_continuation: str,
++    base: int,
+ ) -> bool:
+     """
+     Given a continuation as supplied by the model,
+@@ -17,7 +18,9 @@ def valid_continuation(
+     """
+     try:
+         # TODO: Work for arbitrary base continuation
+-        int(model_continuation)
++        print("base is: ", base)
++        print("model continuation is: ", model_continuation)
++        int(model_continuation, base)
+     except ValueError:
+         return False
+     else:

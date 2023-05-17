@@ -1,0 +1,52 @@
+[2023-05-28 20:53:43,900][src.utils][INFO] - Git sha: 376cb64ecc20f6277610f75332c2db18d4f41c3c
+[2023-05-28 20:53:43,918][src.utils][INFO] - Changed directory to /Users/olejorgensen/Documents/AISC/introspective-self-consistency/results/2023-05-28-20-53-43/evaluate_compute_dependence_with_base_changes
+[2023-05-28 20:53:45,153][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,2,0
+[2023-05-28 20:53:46,058][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,0,1
+[2023-05-28 20:53:47,063][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,0,1,2
+[2023-05-28 20:53:47,878][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,4,8,12
+[2023-05-28 20:53:48,597][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,8,12,16
+[2023-05-28 20:53:49,319][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 8,12,16,20
+[2023-05-28 20:53:50,144][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 12,16,20,24
+[2023-05-28 20:53:50,936][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,3,6,9
+[2023-05-28 20:53:51,964][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,6,9,12
+[2023-05-28 20:53:52,950][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,9,12,15
+[2023-05-28 20:53:54,128][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 9,12,15,18
+[2023-05-28 20:53:55,032][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,4,16,64
+[2023-05-28 20:53:55,901][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,16,64,256
+[2023-05-28 20:53:56,727][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 16,64,256,1024
+[2023-05-28 20:53:57,588][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 64,256,1024,4096
+[2023-05-28 20:53:58,511][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,2,4,6
+[2023-05-28 20:53:59,248][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,4,6,8
+[2023-05-28 20:54:00,144][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,6,8,10
+[2023-05-28 20:54:01,042][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,8,10,12
+[2023-05-28 20:54:01,921][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,5,9,13
+[2023-05-28 20:54:02,696][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,9,13,17
+[2023-05-28 20:54:03,545][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 9,13,17,21
+[2023-05-28 20:54:04,367][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 13,17,21,25
+[2023-05-28 20:54:05,257][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,0,1
+[2023-05-28 20:54:06,114][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,0,1,0
+[2023-05-28 20:54:07,132][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,3,5,7
+[2023-05-28 20:54:08,025][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,5,7,9
+[2023-05-28 20:54:09,078][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,7,9,11
+[2023-05-28 20:54:10,102][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 7,9,11,13
+[2023-05-28 20:54:11,025][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,3,4,5
+[2023-05-28 20:54:11,948][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,4,5,6
+[2023-05-28 20:54:12,766][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,5,6,7
+[2023-05-28 20:54:13,479][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,6,7,8
+[2023-05-28 20:54:14,272][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,7,11,15
+[2023-05-28 20:54:15,085][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,3,4
+[2023-05-28 20:54:15,836][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,6,12,18
+[2023-05-28 20:54:16,628][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,12,18,24
+[2023-05-28 20:54:17,445][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 12,18,24,30
+[2023-05-28 20:54:18,242][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 18,24,30,36
+[2023-05-28 20:54:19,013][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,3,7,7
+[2023-05-28 20:54:19,910][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 7,11,15,19
+[2023-05-28 20:54:20,679][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 11,15,19,23
+[2023-05-28 20:54:21,633][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 15,19,23,27
+[2023-05-28 20:54:22,475][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,2,3
+[2023-05-28 20:54:23,313][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,6,10,14
+[2023-05-28 20:54:24,211][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,10,14,18
+[2023-05-28 20:54:25,051][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 10,14,18,22
+[2023-05-28 20:54:25,871][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 14,18,22,26
+[2023-05-28 20:54:26,801][src.evals.sequence_completion_with_base_change][INFO] - 48
+[2023-05-28 20:54:26,804][src.evals.sequence_completion_with_base_change][INFO] - Results saved to results.json

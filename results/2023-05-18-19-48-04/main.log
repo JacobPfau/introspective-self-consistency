@@ -1,0 +1,27 @@
+[2023-05-18 19:48:04,718][src.utils][INFO] - Git sha: c88a972630012a00b49c97de24b75da3baa2f543
+[2023-05-18 19:48:04,727][src.utils][INFO] - Changed files: ['conf/tasks/compute_dependence_with_base_changes.yaml', 'src/evals/prompts/explanation_prompt.py']
+[2023-05-18 19:48:04,734][src.utils][INFO] - Git diff:
+diff --git a/conf/tasks/compute_dependence_with_base_changes.yaml b/conf/tasks/compute_dependence_with_base_changes.yaml
+index d2b79eb..433e336 100644
+--- a/conf/tasks/compute_dependence_with_base_changes.yaml
++++ b/conf/tasks/compute_dependence_with_base_changes.yaml
+@@ -1,5 +1,5 @@
+ sequence_type: integer
+-model: gpt-3.5-turbo
+-num_shots: 4
++model: text-davinci-003
++num_shots: 8
+ on_ambiguous_sequences: true
+ num_samples: 1
+diff --git a/src/evals/prompts/explanation_prompt.py b/src/evals/prompts/explanation_prompt.py
+index 0d13a0c..665adc9 100644
+--- a/src/evals/prompts/explanation_prompt.py
++++ b/src/evals/prompts/explanation_prompt.py
+@@ -119,6 +119,7 @@ def generate_exp_shot_prompt(
+         text += "Explanation: "
+         text += fn
+         text += "\n"
++        text += "\n"
+         return text
+
+     elif model_name == "gpt-3.5-turbo":

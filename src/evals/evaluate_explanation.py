@@ -3,15 +3,15 @@ from typing import List, Union
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
-    CHAT_MODEL_NAME,
     generate_chat_completion,
     generate_completion,
 )
 
+from src.models.openai_model import OpenAITextModels, OpenAIChatModels
+
 
 def valid_explanation(
     fn_form: str,
-    offset: int,
     sequence_length: int,
 ) -> bool:
     """
@@ -20,7 +20,7 @@ def valid_explanation(
     """
     try:
         # TODO: need to have this work for an arbitrary number of arguments
-        [eval(fn_form.format(i + offset)) for i in range(sequence_length + 1)]
+        [eval(fn_form.format(i)) for i in range(sequence_length + 1)]
     except SyntaxError:
         return False
     except NameError:
@@ -57,7 +57,7 @@ def generate_explanation(
     Given a prompt, generate an explanation from the model.
     TODO: refactor code, entirely copied from generate_continuation
     """
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Feed this into the model
         model_response = generate_completion(
             prompt=prompt,
@@ -65,7 +65,7 @@ def generate_explanation(
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
         )
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,
@@ -75,19 +75,29 @@ def generate_explanation(
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
-    print("explain prompt: ", prompt)
-    print("model_response: ", model_response)
+    # print("explain prompt: ", prompt)
+    # print("model_response: ", model_response)
 
     return model_response
 
 
+def generate_implied_sequence(
+    fn_form: str,
+    sequence_length: int,
+) -> List[int]:
+    """
+    Given a function form and an offset as supplied by the model,
+    generate the sequence.
+    """
+    return [eval(fn_form)(i) for i in range(sequence_length)]
+
+
 def generate_implied_continuation(
     fn_form: str,
-    offset: int,
     sequence_length: int,
 ) -> int:
     """
     Given a function form and an offset as supplied by the model,
     generate the next element of the sequence.
     """
-    return eval(fn_form)(offset + sequence_length)
+    return eval(fn_form)(sequence_length)
