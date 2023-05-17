@@ -4,6 +4,7 @@ from src.evals.evaluate_continuation import generate_continuation, valid_continu
 from src.evals.evaluate_explanation import (
     generate_explanation,
     generate_implied_continuation,
+    generate_implied_sequence,
     valid_explanation,
 )
 from src.evals.prompts.continuation_prompt import create_continuation_prompt
@@ -31,6 +32,7 @@ def self_consistency_evaluation(
 
     consistent_explanations = 0
     inconsistent_explanations = 0
+    incorrect_explanations = 0
     invalid_responses = 0
 
     # Generate a prompt
@@ -61,12 +63,15 @@ def self_consistency_evaluation(
             temperature=temperature,
         )
 
-        if not valid_continuation(continuation):
+        if not valid_continuation(continuation, base):
             print("invalid continuation: ", continuation)
             invalid_responses += 1
             continue
         else:
-            int_response = int(continuation)
+            if base == 2:
+                int_response = int(continuation[2:], 2)
+            elif base == 10:
+                int_response = int(continuation)
 
         # Generate an explanation
         explanation = generate_explanation(
@@ -89,18 +94,37 @@ def self_consistency_evaluation(
             invalid_responses += 1
             continue
         else:
+            # check if the explanation is valid up to the continuation
+            implied_sequence = generate_implied_sequence(
+                fn_form=fn,
+                offset=offset,
+                sequence_length=len(sequence),
+            )
+
             implied_continuation = generate_implied_continuation(
                 fn_form=fn,
                 offset=offset,
                 sequence_length=len(sequence),
             )
 
+        # Check the explanation is accurate
+        if implied_sequence != sequence:
+            print("implied_sequence: ", implied_sequence)
+            print("sequence: ", sequence)
+            incorrect_explanations += 1
+            continue
+
         # Check consistency
         print("implied_continuation: ", implied_continuation)
         print("continuation: ", continuation)
-        if int(continuation) == int(implied_continuation):
+        if int_response == int(implied_continuation):
             consistent_explanations += 1
         else:
             inconsistent_explanations += 1
 
-    return consistent_explanations, inconsistent_explanations, invalid_responses
+    return (
+        consistent_explanations,
+        inconsistent_explanations,
+        incorrect_explanations,
+        invalid_responses,
+    )

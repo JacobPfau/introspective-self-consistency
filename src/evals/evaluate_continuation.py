@@ -1,8 +1,8 @@
 from typing import List, Union
 
 from src.models.openai_model import (
-    DAVINCI_MODEL_NAME,
     CHAT_MODEL_NAME,
+    DAVINCI_MODEL_NAME,
     generate_chat_completion,
     generate_completion,
 )
@@ -10,6 +10,7 @@ from src.models.openai_model import (
 
 def valid_continuation(
     model_continuation: str,
+    base: int,
 ) -> bool:
     """
     Given a continuation as supplied by the model,
@@ -17,7 +18,12 @@ def valid_continuation(
     """
     try:
         # TODO: Work for arbitrary base continuation
-        int(model_continuation)
+        print("base is: ", base)
+        print("model continuation is: ", model_continuation)
+        if base == 10:
+            int(model_continuation)
+        elif base == 2:
+            int(model_continuation[2:], 2)
     except ValueError:
         return False
     else:

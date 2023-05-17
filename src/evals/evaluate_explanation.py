@@ -3,7 +3,6 @@ from typing import List, Union
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
-    CHAT_MODEL_NAME,
     generate_chat_completion,
     generate_completion,
 )
@@ -79,6 +78,18 @@ def generate_explanation(
     print("model_response: ", model_response)
 
     return model_response
+
+
+def generate_implied_sequence(
+    fn_form: str,
+    offset: int,
+    sequence_length: int,
+) -> List[int]:
+    """
+    Given a function form and an offset as supplied by the model,
+    generate the sequence.
+    """
+    return [eval(fn_form)(i + offset) for i in range(sequence_length)]
 
 
 def generate_implied_continuation(

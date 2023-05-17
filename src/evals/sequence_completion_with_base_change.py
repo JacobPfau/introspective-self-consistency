@@ -43,6 +43,7 @@ def evaluate_compute_dependence_with_base_changes(
                     (
                         consistent_explanations,
                         inconsistent_explanations,
+                        incorrect_explanations,
                         invalid_explanations,
                     ) = self_consistency_evaluation(
                         model_name=model,
@@ -61,11 +62,13 @@ def evaluate_compute_dependence_with_base_changes(
                     if sequence in results:
                         results[sequence]["consistent"] += consistent_explanations
                         results[sequence]["inconsistent"] += inconsistent_explanations
+                        results[sequence]["incorrect"] += incorrect_explanations
                         results[sequence]["invalid"] += invalid_explanations
                     else:
                         results[sequence] = {
                             "consistent": consistent_explanations,
                             "inconsistent": inconsistent_explanations,
+                            "incorrect": incorrect_explanations,
                             "invalid": invalid_explanations,
                         }
                     break
