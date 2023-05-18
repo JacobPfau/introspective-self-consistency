@@ -3,11 +3,16 @@ import glob
 import os
 import subprocess
 
-from src.models.openai_model import get_all_model_strings
-
 
 def _get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        required=True,
+        default="gpt-3.5-turbo",
+    )
 
     parser.add_argument(
         "--data_dir",
@@ -33,48 +38,51 @@ def main():
 
     data_files = glob.glob(os.path.join(args.data_dir, "*.json"))
 
-    models = get_all_model_strings()
+    model = args.model
 
-    for model in models:
-        for data_path in data_files:
+    for data_path in data_files:
 
-            # category prediction
-            subprocess.call(
-                [
-                    "python",
-                    "src/evaluators/eval_ambibench_category_prediction.py",
-                    "--ambibench_data_path",
-                    data_path,
-                    "--model",
-                    model,
-                    "--output_dir",
-                    args.output_dir,
-                ]
-            )
-            # with multiple choice options
-            subprocess.call(
-                [
-                    "python",
-                    "src/evaluators/eval_ambibench_category_prediction.py",
-                    "--ambibench_data_path",
-                    data_path,
-                    "--model",
-                    model,
-                    "--output_dir",
-                    args.output_dir,
-                    "--use_multiple_choice",
-                ]
-            )
+        # category prediction
+        subprocess.call(
+            [
+                "python",
+                "src/evaluators/eval_ambibench_category_prediction.py",
+                "--ambibench_data_path",
+                data_path,
+                "--model",
+                model,
+                "--output_dir",
+                args.output_dir,
+            ]
+        )
+        # with multiple choice options
+        subprocess.call(
+            [
+                "python",
+                "src/evaluators/eval_ambibench_category_prediction.py",
+                "--ambibench_data_path",
+                data_path,
+                "--model",
+                model,
+                "--output_dir",
+                args.output_dir,
+                "--use_multiple_choice",
+            ]
+        )
 
-            # completion
-            # subprocess.call(
-            #     ["python",
-            #      "src/evaluators/eval_ambibench_completion.py",
-            #      "--ambibench_data_path", data_path,
-            #      "--model", model,
-            #      "--output_dir", args.output_dir,
-            #      ]
-            # )
+        # completion
+        subprocess.call(
+            [
+                "python",
+                "src/evaluators/eval_ambibench_completion.py",
+                "--ambibench_data_path",
+                data_path,
+                "--model",
+                model,
+                "--output_dir",
+                args.output_dir,
+            ]
+        )
 
 
 if __name__ == "__main__":
