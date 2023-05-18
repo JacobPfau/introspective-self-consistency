@@ -105,6 +105,7 @@ def find_ambiguous_integer_sequences(
     disambiguate_steps: int = 4,
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
+    valid_sequence_functions: dict = sequence_functions,
 ) -> dict:
     """
     Find ambiguous_integer_sequences using brute force search
@@ -128,7 +129,7 @@ def find_ambiguous_integer_sequences(
         {'fn': 'lambda x: (2*x) + 1', 'offset': 0}
     ]
     """
-    progression_base_fns = sequence_functions
+    progression_base_fns = valid_sequence_functions
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
         for const_term_two in range(max_constant_term_two):

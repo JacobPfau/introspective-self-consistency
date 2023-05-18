@@ -3,6 +3,8 @@ Script for seeing if the model can select the correct function from a list of
 functions. Looking directly at ambiguous functions generated in pipelines.sequence_completions
 """
 
+# TODO: worried this is not the most recent version of this file!!
+
 import argparse
 import logging
 
@@ -56,9 +58,9 @@ parser.add_argument(
 parser.add_argument("--on-ambiguous-sequences", default="True", type=str2bool)
 parser.add_argument(
     "--model",
-    default="CHAT",
+    default="text-davinci-003",
     type=str,
-    choices=["CHAT", "DAVINCI"],
+    choices=["gpt-3.5-turbo", "text-davinci-003"],
 )
 parser.add_argument("--num-shots", default=4, type=int)
 parser.add_argument("--use-cot", default=False, type=str2bool, nargs="?", const=True)
