@@ -1,0 +1,14 @@
+[2023-05-17 17:06:05,464][src.utils][INFO] - Git sha: 6752585d17fa41f8edc1b227a20a59e422f92359
+[2023-05-17 17:06:05,473][src.utils][INFO] - Changed files: ['conf/tasks/compute_dependence_with_base_changes.yaml']
+[2023-05-17 17:06:05,480][src.utils][INFO] - Git diff:
+diff --git a/conf/tasks/compute_dependence_with_base_changes.yaml b/conf/tasks/compute_dependence_with_base_changes.yaml
+index 43fff5d..d2b79eb 100644
+--- a/conf/tasks/compute_dependence_with_base_changes.yaml
++++ b/conf/tasks/compute_dependence_with_base_changes.yaml
+@@ -1,5 +1,5 @@
+ sequence_type: integer
+-model: text-davinci-003
++model: gpt-3.5-turbo
+ num_shots: 4
+ on_ambiguous_sequences: true
+ num_samples: 1

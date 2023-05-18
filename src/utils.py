@@ -106,20 +106,24 @@ def reformat_self_consistency_results(results):
     and inconsistent explanations, alongside invalid explanations. Calculate
     this average across all sequences, and add it to the results dict.
     """
-    consistent, inconsistent, invalid = 0, 0, 0
+    consistent, inconsistent, incorrect, invalid = 0, 0, 0, 0
     for sequence in results:
         consistent += results[sequence]["consistent"]
         inconsistent += results[sequence]["inconsistent"]
+        incorrect += results[sequence]["incorrect"]
         invalid += results[sequence]["invalid"]
 
-    total = consistent + inconsistent + invalid
+    total = consistent + inconsistent + invalid + incorrect
     consistent_percentage = consistent / total
     inconsistent_percentage = inconsistent / total
+    incorrect_percentage = incorrect / total
     invalid_percentage = invalid / total
+
 
     results["total"] = total
     results["consistent"] = consistent_percentage
     results["inconsistent"] = inconsistent_percentage
+    results["incorrect"] = incorrect_percentage
     results["invalid"] = invalid_percentage
 
     return results
