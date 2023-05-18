@@ -55,11 +55,11 @@ def test_create_explanation_prompt():
 
 
 def test_self_consistency_evaluation():
-    model_name = "text-davinci-003"
+    model_name = "gpt-3.5-turbo"
     sequence = [1, 2, 3]
     distribution = "default"
     base = 2
-    shots = 4
+    shots = 16
     shot_method = "random"
     temperature = 0
     samples = 4
@@ -76,7 +76,6 @@ def test_self_consistency_evaluation():
     )
 
     print(outputs)
-
 
 if __name__ == "__main__":
     test_self_consistency_evaluation()

@@ -62,6 +62,8 @@ def self_consistency_evaluation(
             model_name=model_name,
             temperature=temperature,
         )
+        # strip whitespace
+        continuation = continuation.strip()
 
         if not valid_continuation(continuation, base):
             print("invalid continuation: ", continuation)
@@ -82,14 +84,12 @@ def self_consistency_evaluation(
 
         # Parse explanation
         try:
-            fn, offset = parse_explanation(explanation)
+            fn = parse_explanation(explanation)
         except:
             invalid_responses += 1
             continue
 
-        offset = int(offset)
-
-        if not valid_explanation(fn, offset, len(sequence)):
+        if not valid_explanation(fn, len(sequence)):
             print("invalid explanation: ", explanation)
             invalid_responses += 1
             continue
@@ -97,13 +97,11 @@ def self_consistency_evaluation(
             # check if the explanation is valid up to the continuation
             implied_sequence = generate_implied_sequence(
                 fn_form=fn,
-                offset=offset,
                 sequence_length=len(sequence),
             )
 
             implied_continuation = generate_implied_continuation(
                 fn_form=fn,
-                offset=offset,
                 sequence_length=len(sequence),
             )
 
