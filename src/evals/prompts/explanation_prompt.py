@@ -73,10 +73,10 @@ def create_explanation_prompt(
         text += ",".join([str(x) for x in sequence])
     elif base == 2:
         text += ",".join([bin(x) for x in sequence])
-    print("siiii")
+    # print("siiii")
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
-    print(pre_prompt)
+    # print(pre_prompt)
     if model_name == "text-davinci-003":
         # Prepend to the shots
         pretext = pre_prompt + "\n"
@@ -105,10 +105,10 @@ def generate_exp_shot_prompt(
     """
     if shot_method == "random":
         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        print("og fn is", fn)
+        # print("og fn is", fn)
         # Reformat fn to replace every x after the first with x+offset
         fn = reformat_function(fn, offset)
-        print(fn)
+        # print(fn)
         sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
@@ -156,5 +156,5 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
             # Saving the value based on the key
             if key == "Explanation":
                 x = value
-    print(x)
+    # print(x)
     return x

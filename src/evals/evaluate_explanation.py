@@ -73,8 +73,8 @@ def generate_explanation(
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
-    print("explain prompt: ", prompt)
-    print("model_response: ", model_response)
+    # print("explain prompt: ", prompt)
+    # print("model_response: ", model_response)
 
     return model_response
 

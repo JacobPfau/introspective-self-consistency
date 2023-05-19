@@ -69,11 +69,8 @@ def self_consistency_evaluation(
             print("invalid continuation: ", continuation)
             invalid_responses += 1
             continue
-        else:
-            if base == 2:
-                int_response = int(continuation[2:], 2)
-            elif base == 10:
-                int_response = int(continuation)
+        if base == 2:
+            continuation = int(continuation, 2)
 
         # Generate an explanation
         explanation = generate_explanation(
@@ -114,12 +111,9 @@ def self_consistency_evaluation(
 
         # Check consistency
         print("implied_continuation: ", implied_continuation)
-        # get the continuation in decimal
-        if base == 2:
-            pass
 
         print("continuation: ", continuation)
-        if int_response == int(implied_continuation):
+        if continuation == int(implied_continuation):
             consistent_explanations += 1
         else:
             inconsistent_explanations += 1
