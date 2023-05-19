@@ -2,7 +2,7 @@ import logging
 import os
 import time
 from enum import Enum
-from typing import Any, Dict, List, Tuple, Union
+from typing import List, Tuple, Union
 
 import openai
 
@@ -103,12 +103,11 @@ def generate_text_completion(
 def generate_text_completion_with_logprobs(
     prompt: str,
     temperature: float = 0.0,
-    max_tokens: int = 512,
+    max_tokens: int = 0,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
     logprobs: int = 5,
-    # echo is required to get the previous tokens logprobs
-    echo: bool = True
-) -> Tuple[str, Dict[str, Dict[str, Any]]]:
+    echo: bool = True,
+) -> Tuple[List[str], List[float]]:
     # response = _get_raw_text_model_response(
     #     prompt, temperature, max_tokens, model, logprobs
     # )
@@ -118,8 +117,8 @@ def generate_text_completion_with_logprobs(
         temperature=temperature,
         max_tokens=max_tokens,
         logprobs=logprobs,
-        echo=echo
-    )
+        echo=echo,
+    )  # echo is required to get the previous tokens logprobs
 
     if len(response["choices"]) == 0:
         logger.error("Response did not return enough `choices`")
@@ -127,7 +126,8 @@ def generate_text_completion_with_logprobs(
     elif response == INVALID_RESPONSE:
         return response
 
-    return response["choices"][0]["text"], response['choices'][0]['logprobs']
+    logprob_dict = response["choices"][0]["logprobs"]
+    return logprob_dict["tokens"], logprob_dict["token_logprobs"]
 
 
 def generate_chat_completion(
@@ -211,7 +211,7 @@ def generate_logprob_response_with_turns(
     temperature: float = 0.0,
     max_tokens: int = 512,
     logprobs: int = 5,
-) -> Tuple[str, Dict[str, Dict[str, Any]]]:
+) -> Tuple[List[str], List[float]]:
     """
     Helper function to generate a response given a list of turns.
     Routes to the appropriate model.
