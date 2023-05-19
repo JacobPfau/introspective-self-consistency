@@ -118,7 +118,7 @@ def evaluate_ambibench_completion(
 
     # store results in TSV
     results = {
-        "dataset": Path(data_path).name,
+        "dataset": str(Path(data_path).name),
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "num_examples": len(formatted_prompts),

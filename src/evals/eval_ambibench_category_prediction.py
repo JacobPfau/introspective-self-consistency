@@ -160,7 +160,7 @@ def evaluate_ambibench_category_prediction(
 
     # store results in TSV
     results = {
-        "dataset": Path(data_path).name,
+        "dataset": str(Path(data_path).name),
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "multiple_choice": int(multiple_choice),
