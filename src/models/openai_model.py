@@ -1,12 +1,11 @@
 import logging
 import os
 import time
-from enum import Enum
 from typing import List, Union
 
 import openai
 
-from src.models.utils import INVALID_RESPONSE
+from models.utils import INVALID_RESPONSE, ExtendedEnum
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
@@ -18,11 +17,11 @@ _RETRY_TIMEOUT = 10
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
-class OpenAITextModels(Enum):
+class OpenAITextModels(ExtendedEnum):
     TEXT_DAVINCI_003 = "text-davinci-003"
 
 
-class OpenAIChatModels(Enum):
+class OpenAIChatModels(ExtendedEnum):
     CHAT_GPT_35 = "gpt-3.5-turbo"
     CHAT_GPT_4 = "gpt-4-0314"
 
@@ -35,10 +34,10 @@ logging.basicConfig(
 )
 
 
-def get_openai_model_from_string(model_name: str) -> Enum:
-    if model_name in [m.value for m in OpenAITextModels]:
+def get_openai_model_from_string(model_name: str) -> ExtendedEnum:
+    if model_name in OpenAITextModels.list():
         return OpenAITextModels(model_name)
-    elif model_name in [m.value for m in OpenAIChatModels]:
+    elif model_name in OpenAIChatModels.list():
         return OpenAIChatModels(model_name)
     else:
         raise KeyError(f"Invalid OpenAI model name: {model_name}")
@@ -55,10 +54,7 @@ def generate_completion(
     if isinstance(model, str):
         model = OpenAITextModels(model)
 
-    response = None
-
-    n_retries = 0
-    while n_retries < _MAX_RETRIES:
+    for _ in range(_MAX_RETRIES):
         try:
             response = openai.Completion.create(
                 model=model.value,
@@ -66,27 +62,20 @@ def generate_completion(
                 temperature=temperature,
                 max_tokens=max_tokens,
             )
-            break
+            return response["choices"][0]["text"]
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
-            n_retries += 1
-            time.sleep(_RETRY_TIMEOUT)
         except openai.error.RateLimitError:
             logger.error(
                 "Rate limiting, Sleep and try again."
             )  # TBD: how long to wait?
-            n_retries += 1
+        except KeyError:
+            logger.warning("Unexpected response format. Sleep and try again.")
+        finally:
             time.sleep(_RETRY_TIMEOUT)
 
-    if response is None and n_retries == _MAX_RETRIES:
-        logger.error("Reached retry limit and did not obtain proper response")
-        return INVALID_RESPONSE
-
-    if len(response["choices"]) == 0:
-        logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
-
-    return response["choices"][0]["text"]
+    logger.error("Reached retry limit and did not obtain proper response")
+    return INVALID_RESPONSE
 
 
 def generate_chat_completion(
