@@ -40,7 +40,7 @@ def format_completion_prompt_for_model_type(
     formatted_prompts: List[dict] = []
     expected_completions: List[str] = []
 
-    if isinstance(model, OpenAIChatModels):
+    if model in [m.value for m in OpenAIChatModels]:
         # Need to format the original prompt structure to run inference for AmbiBench completions?
         # E.g.: 'Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the prairie.\nA: Y
         #   \nQ: The fugitive is in the river.\nA: Y\nQ: The surveyor is in the marsh.\nA:'
@@ -49,7 +49,7 @@ def format_completion_prompt_for_model_type(
             template["content"] = ex["prompt"]
             formatted_prompts.append(template)
             expected_completions.append(ex["completion"].strip())
-    elif isinstance(model, OpenAITextModels):
+    elif model in [m.value for m in OpenAITextModels]:
         for ex in examples:
             formatted_prompts.append(ex["prompt"])
             expected_completions.append(ex["completion"].strip())

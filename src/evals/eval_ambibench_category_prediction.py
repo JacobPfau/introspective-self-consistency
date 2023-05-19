@@ -70,12 +70,12 @@ def format_prompt_for_prediction_for_model_type(
         category_pred = dataset.assistance_prompts["category_prediction"]
         prompt = example_set + possible_cats + category_pred
 
-        if isinstance(model, OpenAIChatModels):
+        if model in [m.value for m in OpenAIChatModels]:
             template = CHAT_PROMPT_TEMPLATE.copy()
             template["content"] = prompt
             formatted_prompts.append(template)
 
-        elif isinstance(model, OpenAITextModels):
+        elif model in [m.value for m in OpenAITextModels]:
             formatted_prompts.append(prompt)
 
         else:
