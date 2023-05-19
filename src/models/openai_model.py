@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import List, Union
+from typing import Callable, List, Union
 
 import openai
 
@@ -43,6 +43,26 @@ def get_openai_model_from_string(model_name: str) -> ExtendedEnum:
         raise KeyError(f"Invalid OpenAI model name: {model_name}")
 
 
+def _with_retries(api_call: Callable) -> str:
+    for _ in range(_MAX_RETRIES):
+        try:
+            return api_call()
+        except openai.APIError:
+            logger.warning("API Error. Sleep and try again.")
+        except openai.error.RateLimitError:
+            logger.error(
+                "Rate limiting, Sleep and try again."
+            )  # TBD: how long to wait?
+        # TODO: may want to also handle ServiceUnavailableError, RateLimitError
+        except KeyError:
+            logger.warning("Unexpected response format. Sleep and try again.")
+        finally:
+            time.sleep(_RETRY_TIMEOUT)
+
+    logger.error("Reached retry limit and did not obtain proper response")
+    return INVALID_RESPONSE
+
+
 def generate_completion(
     prompt: str,
     temperature: float = 0.0,
@@ -54,28 +74,16 @@ def generate_completion(
     if isinstance(model, str):
         model = OpenAITextModels(model)
 
-    for _ in range(_MAX_RETRIES):
-        try:
-            response = openai.Completion.create(
-                model=model.value,
-                prompt=prompt,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            return response["choices"][0]["text"]
-        except openai.APIError:
-            logger.warning("API Error. Sleep and try again.")
-        except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
-        except KeyError:
-            logger.warning("Unexpected response format. Sleep and try again.")
-        finally:
-            time.sleep(_RETRY_TIMEOUT)
+    def api_call():
+        response = openai.Completion.create(
+            model=model.value,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            prompt=prompt,
+        )
+        return response["choices"][0]["text"]
 
-    logger.error("Reached retry limit and did not obtain proper response")
-    return INVALID_RESPONSE
+    return _with_retries(api_call)
 
 
 def generate_chat_completion(
@@ -85,36 +93,19 @@ def generate_chat_completion(
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
-    # TODO: may want to handle ServiceUnavailableError, RateLimitError
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
-    response = None
-    n_retries = 0
-    while n_retries < _MAX_RETRIES:
-        try:
-            response = openai.ChatCompletion.create(
-                model=model.value,
-                messages=prompt_turns,
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            if response is not None:
-                break
-        except openai.APIError:
-            logger.warning("API Error. Sleep and try again.")
-            n_retries += 1
-            time.sleep(_RETRY_TIMEOUT)
+    def api_call():
+        response = openai.ChatCompletion.create(
+            model=model.value,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            messages=prompt_turns,
+        )
+        return response["choices"][0]["message"]["content"]
 
-    if response is None:
-        logger.error("Reached retry limit and did not obtain proper response")
-        return INVALID_RESPONSE
-
-    if len(response["choices"]) == 0:
-        logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
-
-    return response["choices"][0]["message"]["content"]
+    return _with_retries(api_call)
 
 
 def generate_response_with_turns(
