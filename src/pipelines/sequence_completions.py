@@ -42,6 +42,8 @@ from typing import Literal, Tuple
 
 import numpy as np
 
+PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
+
 SYSTEM_PROMPT = """
 You are a mathematical assistant.
 You are helping with integer sequences like arithmetic or geometric sequences.
@@ -424,9 +426,7 @@ def generate_sequence_completion_prompt(
     prompt_type: Literal["completion", "explanation"] = "completion",
     use_cot: bool = False,
     n_shots: int = 0,
-    shot_type: Literal[
-        "random", "same_fn", "same_class", "ambigious", "exclude_class"
-    ] = "random",
+    shot_type: PromptType = "random",
     ambiguous_sequences: dict = None,
 ) -> dict:
     """
