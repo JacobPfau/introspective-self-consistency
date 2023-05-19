@@ -3,6 +3,7 @@ defaults:
 - tasks/sequence_completion_equality@sequence_completion_equality
 - tasks/compute_dependence_with_base_changes@compute_dependence_with_base_changes
 - tasks/ambibench_category_prediction@ambibench_category_prediction
+- tasks/ambibench_completion@ambibench_completion
 
 hydra:
   job:
