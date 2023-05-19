@@ -46,11 +46,11 @@ The sequences will be taken from the list of ambiguous sequences.
 # import random
 from typing import List, Union
 
+from src.evals.prompts.distributions import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
 from src.pipelines.sequence_completions import sequence_functions
-from src.evals.prompts.distributions import DISTRIBUTIONS
 
 # from pipelines.sequence_completions import (  # BASE_PROMPT,; COT_PROMPT,; COT_STEP,
 #     SYSTEM_PROMPT,
@@ -59,6 +59,7 @@ from src.evals.prompts.distributions import DISTRIBUTIONS
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 del sequence_functions["recursive_progression"]
+
 
 def create_continuation_prompt(
     sequence: List[int],
@@ -77,10 +78,10 @@ def create_continuation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_cont_shot_prompt(shot_method, sequence_length, model_name, base)
+            shot_prompt = generate_cont_shot_prompt(
+                shot_method, sequence_length, model_name, base
+            )
             prompt_text += shot_prompt
-
-    # TODO: Need to fix!!
 
     text = DISTRIBUTIONS[distribution]["continuation"]
     text += "\n"
@@ -121,7 +122,7 @@ def generate_cont_shot_prompt(
     """
     if shot_method == "random":
         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        # replace 
+        # replace
         fn = reformat_function(fn, offset)
         sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:

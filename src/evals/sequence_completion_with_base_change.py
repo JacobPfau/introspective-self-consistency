@@ -41,9 +41,10 @@ def evaluate_compute_dependence_with_base_changes(
             for _ in range(2):
                 try:
                     (
-                        consistent_explanations,
-                        inconsistent_explanations,
-                        incorrect_explanations,
+                        correct_consistent_explanations,
+                        correct_inconsistent_explanations,
+                        incorrect_consistent_explanations,
+                        incorrect_inconsistent_explanations,
                         invalid_explanations,
                     ) = self_consistency_evaluation(
                         model_name=model,
@@ -60,15 +61,25 @@ def evaluate_compute_dependence_with_base_changes(
                     print(e)
                 else:
                     if sequence in results:
-                        results[sequence]["consistent"] += consistent_explanations
-                        results[sequence]["inconsistent"] += inconsistent_explanations
-                        results[sequence]["incorrect"] += incorrect_explanations
+                        results[sequence][
+                            "correct_consistent"
+                        ] += correct_consistent_explanations
+                        results[sequence][
+                            "correct_inconsistent"
+                        ] += correct_inconsistent_explanations
+                        results[sequence][
+                            "incorrect_consistent"
+                        ] += incorrect_consistent_explanations
+                        results[sequence][
+                            "incorrect_inconsistent"
+                        ] += incorrect_inconsistent_explanations
                         results[sequence]["invalid"] += invalid_explanations
                     else:
                         results[sequence] = {
-                            "consistent": consistent_explanations,
-                            "inconsistent": inconsistent_explanations,
-                            "incorrect": incorrect_explanations,
+                            "correct_consistent": correct_consistent_explanations,
+                            "correct_inconsistent": correct_inconsistent_explanations,
+                            "incorrect_consistent": incorrect_consistent_explanations,
+                            "incorrect_inconsistent": incorrect_inconsistent_explanations,
                             "invalid": invalid_explanations,
                         }
                     break

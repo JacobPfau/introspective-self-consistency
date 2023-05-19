@@ -30,9 +30,10 @@ def self_consistency_evaluation(
     whether the two outputs are consistent.
     """
 
-    consistent_explanations = 0
-    inconsistent_explanations = 0
-    incorrect_explanations = 0
+    correct_consistent_explanations = 0
+    correct_inconsistent_explanations = 0
+    incorrect_consistent_explanations = 0
+    incorrect_inconsistent_explanations = 0
     invalid_responses = 0
 
     # Generate a prompt
@@ -82,7 +83,7 @@ def self_consistency_evaluation(
         # Parse explanation
         try:
             fn = parse_explanation(explanation)
-        except:
+        except BaseException:
             invalid_responses += 1
             continue
 
@@ -103,24 +104,41 @@ def self_consistency_evaluation(
             )
 
         # Check the explanation is accurate
-        if implied_sequence != sequence:
-            print("implied_sequence: ", implied_sequence)
-            print("sequence: ", sequence)
-            incorrect_explanations += 1
-            continue
+        print("implied_sequence: ", implied_sequence)
+        print("sequence: ", sequence)
+        if implied_sequence == sequence:
+            correct = True
+        else:
+            correct = False
 
         # Check consistency
         print("implied_continuation: ", implied_continuation)
-
         print("continuation: ", continuation)
+        try:
+            # check if the implied continuation is decimal as specified
+            _ = int(implied_continuation)
+        except ValueError:
+            invalid_responses += 1
+            continue
+
         if continuation == int(implied_continuation):
-            consistent_explanations += 1
+            consistent = True
         else:
-            inconsistent_explanations += 1
+            consistent = False
+
+        if correct and consistent:
+            correct_consistent_explanations += 1
+        elif correct and not consistent:
+            correct_inconsistent_explanations += 1
+        elif not correct and consistent:
+            incorrect_consistent_explanations += 1
+        elif not correct and not consistent:
+            incorrect_inconsistent_explanations += 1
 
     return (
-        consistent_explanations,
-        inconsistent_explanations,
-        incorrect_explanations,
+        correct_consistent_explanations,
+        correct_inconsistent_explanations,
+        incorrect_consistent_explanations,
+        incorrect_inconsistent_explanations,
         invalid_responses,
     )
