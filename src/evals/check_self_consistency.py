@@ -114,6 +114,10 @@ def self_consistency_evaluation(
 
         # Check consistency
         print("implied_continuation: ", implied_continuation)
+        # get the continuation in decimal
+        if base == 2:
+            pass
+
         print("continuation: ", continuation)
         if int_response == int(implied_continuation):
             consistent_explanations += 1
