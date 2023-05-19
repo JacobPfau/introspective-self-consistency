@@ -1,2 +1,2 @@
-data_path: data/ambi-bench/dataset.json
+data_path: ???
 model: gpt-3.5-turbo
