@@ -8,6 +8,7 @@ import logging
 import random
 from typing import Any, Dict, List, Literal, Optional, Union
 
+import tiktoken
 from tqdm import tqdm
 
 from src.models.openai_model import (
@@ -39,10 +40,21 @@ def list_rindex(li, x):
 
 
 def _get_logprob_from_response(
-    completion_string: str, tokens: List[str], token_logprobs: List[float]
+    model: OpenAITextModels,
+    completion_string: str,
+    tokens: List[str],
+    token_logprobs: List[float],
 ) -> float:
+
+    encoding = tiktoken.encoding_for_model(model.value)
+    # obtain string sub-tokens to find index in tokens
+    string_tokens = [
+        encoding.decode([tkn]) for tkn in encoding.encode(completion_string)
+    ]
+    # TODO: how to handle repeated tokens?
     try:
-        logprob = token_logprobs[list_rindex(tokens, completion_string)]
+        logprobs = [token_logprobs[list_rindex(tokens, tkn)] for tkn in string_tokens]
+        logprob = sum(logprobs) / len(logprobs)
     except ValueError as e:
         logger.error(f"Completion not found, return min logprob: {repr(e)}")
         logprob = _MIN_LOGPROB
@@ -129,9 +141,10 @@ def run_q1_2_eval(
             ]:
                 # add explanation to the last prompt turn
                 # turns[-2] = {'role': 'assistant', 'content': 'lambda x: 4 ** (3 * x)'}
-                # turns[-1] = {'role': 'user', 'content': '\nFor the sequence: 0,2,4,6\n\nGive the code that generates the above sequence.\n'}
+                # turns[-1] = {'role': 'user', 'content': '\nFor the sequence: 0,2,4,6\n
+                #   \nGive the code that generates the above sequence.\n'}
                 turns = explanation_prompt["prompt_turns"]
-                explanation_string = " " + str(explanation)
+                explanation_string = " " + str(explanation["fn"])
                 turns[-1]["content"] += explanation_string
 
                 # TODO: how to make infernece more efficient? currently using all turns for every completion request
@@ -141,9 +154,8 @@ def run_q1_2_eval(
                     max_tokens=0,
                 )
 
-                # TODO: handle multi-token completions
                 logprob = _get_logprob_from_response(
-                    explanation_string, tokens, token_logprobs
+                    model, explanation_string, tokens, token_logprobs
                 )
                 explanation_responses.append(
                     {"completion": explanation, "logprob": logprob, "valid": valid}
@@ -196,7 +208,9 @@ def eval_sequence_completion(
         completion_string = " " + str(completion)
 
         if priming_prompt is not None:
-            turns.append({"speaker": "user", "content": priming_prompt + completion_string})
+            turns.append(
+                {"speaker": "user", "content": priming_prompt + completion_string}
+            )
         else:
             turns[-1]["content"] += completion_string
 
