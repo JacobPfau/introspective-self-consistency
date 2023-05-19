@@ -24,7 +24,7 @@ Prompts will take the form:
 
 from typing import List, Union
 
-from src.evals.prompts.distributions import DISTRIBUTIONS
+from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
@@ -73,7 +73,6 @@ def create_explanation_prompt(
         text += ",".join([str(x) for x in sequence])
     elif base == 2:
         text += ",".join([bin(x) for x in sequence])
-    # print("siiii")
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
     # print(pre_prompt)
@@ -92,6 +91,7 @@ def create_explanation_prompt(
             }
         ]
         whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}]
+        print(whole_prompt)
         return whole_prompt
     else:
         raise ValueError(f"Invalid model name: {model_name}")
@@ -105,10 +105,8 @@ def generate_exp_shot_prompt(
     """
     if shot_method == "random":
         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        # print("og fn is", fn)
         # Reformat fn to replace every x after the first with x+offset
         fn = reformat_function(fn, offset)
-        # print(fn)
         sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
@@ -156,5 +154,4 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
             # Saving the value based on the key
             if key == "Explanation":
                 x = value
-    # print(x)
     return x

@@ -121,7 +121,7 @@ def self_consistency_evaluation(
             invalid_responses += 1
             continue
 
-        if continuation == int(implied_continuation):
+        if int(continuation) == int(implied_continuation):
             consistent = True
         else:
             consistent = False

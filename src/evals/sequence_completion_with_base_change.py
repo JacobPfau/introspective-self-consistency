@@ -12,6 +12,8 @@ def evaluate_compute_dependence_with_base_changes(
     num_shots: int,
     on_ambiguous_sequences: bool,
     num_samples: int,
+    distribution: str = "default",
+    shot_method: str = "random",
 ):
     total = 0
     if on_ambiguous_sequences:
@@ -40,6 +42,7 @@ def evaluate_compute_dependence_with_base_changes(
             print(f"Sequence: {sequence}")
             for _ in range(2):
                 try:
+                    print("base be: ", base)
                     (
                         correct_consistent_explanations,
                         correct_inconsistent_explanations,
@@ -49,10 +52,10 @@ def evaluate_compute_dependence_with_base_changes(
                     ) = self_consistency_evaluation(
                         model_name=model,
                         sequence=int_sequence,
-                        distribution="default",
+                        distribution=distribution,
                         base=base,
                         shots=num_shots,
-                        shot_method="random",
+                        shot_method=shot_method,
                         temperature=0.0,
                         samples=num_samples,
                     )
