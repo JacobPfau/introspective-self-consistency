@@ -98,7 +98,7 @@ def eval_category_predictions(
         if pred.split(" ")[-1] in [y, y.lower(), y.upper()]:
             correct_predictions += 1
         else:
-            logger.info(f"'{pred}' != '{y}'")
+            logger.debug(f"'{pred}' != '{y}'")
 
     return correct_predictions
 
@@ -185,10 +185,15 @@ if __name__ == "__main__":
     dataset = load_ambibench_dataset(args.ambibench_data_path)
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
-    if dataset.config.n_multiple_choices < 1:
+    # determine whether to use multiple choice or all options
+    if args.use_multiple_choice and dataset.config.n_multiple_choices < 1:
         logger.warning(
             "No multiple choice options in the dataset, will use default of all possible categories."
         )
+        use_multiple_choice = False
+    elif args.use_multiple_choice and dataset.config.n_multiple_choices > 1:
+        use_multiple_choice = True
+    else:
         use_multiple_choice = False
 
     (
@@ -210,19 +215,19 @@ if __name__ == "__main__":
 
         pred_categories.append(prediction)
 
-    correct_predictions = eval_category_predictions(
+    num_correct_predictions = eval_category_predictions(
         expected_categories, pred_categories
     )
 
     # store results in TSV
     results = {
-        "dataset": output_tsv,
+        "dataset": str(args.ambibench_data_path).split("/")[-1],
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "multiple_choice": int(use_multiple_choice),
         "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
+        "num_correct": num_correct_predictions,
+        "acc": round(num_correct_predictions / len(expected_categories), 3),
     }
     logger.info(f"Results: {repr(results)}")
     df = pd.DataFrame.from_dict([results])

@@ -10,6 +10,7 @@ We are interested in different metrics of correctness and constistency as follow
     3. self-comparison consistency:
 
  """
+import argparse
 import datetime
 import logging
 import os
@@ -23,7 +24,8 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_completion
+    generate_completion,
+    get_openai_model_from_string,
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
@@ -82,22 +84,67 @@ def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
     return completion_response.strip()
 
 
+def _get_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--ambibench_data_path",
+        type=str,
+        required=True,
+        default="./data/ambi-bench/dataset.json",
+        help="File path to dataset",
+    )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        required=True,
+        default="gpt-3.5-turbo",
+        help="Model name for which to run evals",
+    )
+
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        required=False,
+        default="./results",
+        help="Directory where to store results",
+    )
+
+    parser.add_argument(
+        "--output_tsv",
+        type=str,
+        required=False,
+        default="ambibench_completions.tsv",
+        help="TSV file name where results are stored.",
+    )
+
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
 
-    # set params
-    ambibench_data_dir = "./data/ambi-bench"
-    data_file_name = "20230406_12-28_ambibench_examples.json"
+    args = _get_args()
+
+    model = get_openai_model_from_string(args.model)
+
     date = datetime.datetime.now().strftime("%y%m%d")
-    output_tsv = f"./results/{date}_ambibench_completions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
-    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
-    output_tsv = f"./results/{date}_ambibench_completions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35
+    if args.output_tsv is not None:
+        output_tsv = os.path.join(args.output_dir, f"{date}_" + args.output_tsv)
+    else:
+        # use dataset name for results file
+        tsv_name = (
+            str(args.ambibench_data_path)
+            .split("/")[-1]
+            .replace(".json", "_results.tsv")
+        )
+        output_tsv = os.path.join(args.output_dir, f"{date}_" + tsv_name)
 
     ###
 
     #
-    dataset = load_ambibench_dataset(os.path.join(ambibench_data_dir, data_file_name))
+    dataset = load_ambibench_dataset(args.ambibench_data_path)
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
     formatted_prompts, expected_completions = format_completion_prompt_for_model_type(
@@ -115,16 +162,16 @@ if __name__ == "__main__":
 
         pred_completions.append(completion)
 
-    correct_predictions = eval_completions(expected_completions, pred_completions)
+    num_correct_predictions = eval_completions(expected_completions, pred_completions)
 
     # store results in TSV
     results = {
-        "dataset": data_file_name,
+        "dataset": str(args.ambibench_data_path).split("/")[-1],
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
+        "num_correct": num_correct_predictions,
+        "acc": round(num_correct_predictions / len(expected_completions), 3),
     }
     logger.info(f"Results: {repr(results)}")
     df = pd.DataFrame.from_dict(results, orient="index")
