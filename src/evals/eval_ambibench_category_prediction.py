@@ -1,11 +1,11 @@
-import argparse
-import datetime
 import logging
 import os
 import random
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.models.openai_model import (
@@ -18,9 +18,9 @@ from src.models.openai_model import (
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 from src.structures.ambibench import AmbiBenchDataset
+from utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
-
 
 ALL_CATEGORIES_PROMPT = "Possible options for [category withheld] are the following. Please select one of these labels when prompted:\n"
 CATEGORY_PREDICTION_PROMPT = (
@@ -49,7 +49,6 @@ def _get_prompt_for_multi_choice_categories(categories_string: str) -> str:
 def format_prompt_for_prediction_for_model_type(
     dataset: AmbiBenchDataset, model: str, use_multiple_choice: bool
 ) -> Tuple[List[dict], List[str]]:
-
     formatted_prompts: List[dict] = []
     expected_category: List[str] = []
 
@@ -66,7 +65,6 @@ def format_prompt_for_prediction_for_model_type(
                 ex["multiple_choice_category"]
             )
         else:
-
             possible_cats = _get_prompt_for_all_categories(dataset.candidate_categories)
 
         category_pred = dataset.assistance_prompts["category_prediction"]
@@ -93,7 +91,7 @@ def eval_category_predictions(
 ) -> int:
     # compare predictions to ground truth
     correct_predictions = 0
-    for (y, pred) in zip(expected_completions, pred_completions):
+    for y, pred in zip(expected_completions, pred_completions):
         # prediction may contain enumeration
         if pred.split(" ")[-1] in [y, y.lower(), y.upper()]:
             correct_predictions += 1
@@ -115,91 +113,33 @@ def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
     return text_response.strip()
 
 
-def _get_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--ambibench_data_path",
-        type=str,
-        required=True,
-        default="./data/ambi-bench/dataset.json",
-        help="File path to dataset",
-    )
-
-    parser.add_argument(
-        "--model",
-        type=str,
-        required=True,
-        default="gpt-3.5-turbo",
-        help="Model name for which to run evals",
-    )
-
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        required=False,
-        default="./results",
-        help="Directory where to store results",
-    )
-
-    parser.add_argument(
-        "--output_tsv",
-        type=str,
-        required=False,
-        default="ambibench_category_prediction.tsv",
-        help="TSV file name where results are stored.",
-    )
-
-    parser.add_argument(
-        "--use_multiple_choice",
-        action="store_true",
-        help="Use multiple choice for category prediction if available. If not set will use all categories by default.",
-    )
-
-    args = parser.parse_args()
-    return args
-
-
-if __name__ == "__main__":
-
-    # set arguments
-    args = _get_args()
-
-    model = get_openai_model_from_string(args.model)
-
-    date = datetime.datetime.now().strftime("%y%m%d")
-    if args.output_tsv is not None:
-        output_tsv = os.path.join(args.output_dir, f"{date}_" + args.output_tsv)
-    else:
-        # use dataset name for results file
-        tsv_name = (
-            str(args.ambibench_data_path)
-            .split("/")[-1]
-            .replace(".json", "_results.tsv")
-        )
-        output_tsv = os.path.join(args.output_dir, f"{date}_" + tsv_name)
-
-    ###
+@auto_subdir
+def evaluate_ambibench_category_prediction(
+    model: str,
+    data_path: str,
+    multiple_choice: bool = False,
+) -> None:
+    model = get_openai_model_from_string(model)
+    output_tsv = f"{Path(data_path).stem}_results.tsv"
 
     # get data
-    dataset = load_ambibench_dataset(args.ambibench_data_path)
+    data_path = Path(get_original_cwd()) / data_path
+    dataset = load_ambibench_dataset(data_path)
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
     # determine whether to use multiple choice or all options
-    if args.use_multiple_choice and dataset.config.n_multiple_choices < 1:
+    if multiple_choice and dataset.config.n_multiple_choices <= 1:
         logger.warning(
             "No multiple choice options in the dataset, will use default of all possible categories."
         )
-        use_multiple_choice = False
-    elif args.use_multiple_choice and dataset.config.n_multiple_choices > 1:
-        use_multiple_choice = True
-    else:
-        use_multiple_choice = False
+        multiple_choice = False
 
     (
         formatted_prompts,
         expected_categories,
-    ) = format_prompt_for_prediction_for_model_type(dataset, model, use_multiple_choice)
+    ) = format_prompt_for_prediction_for_model_type(
+        dataset, model.value, multiple_choice
+    )
     logger.info(
         f"No. prompts for AmbiBench category prediction: {len(formatted_prompts)}"
     )
@@ -207,7 +147,6 @@ if __name__ == "__main__":
     logger.info(f"Start model inference for: {model.value}")
     pred_categories: List[str] = []
     for prompt in tqdm(formatted_prompts):
-
         if isinstance(model, OpenAIChatModels):
             prediction = get_chat_cat_prediction(prompt, model)
         if isinstance(model, OpenAITextModels):
@@ -221,10 +160,10 @@ if __name__ == "__main__":
 
     # store results in TSV
     results = {
-        "dataset": str(args.ambibench_data_path).split("/")[-1],
+        "dataset": Path(data_path).name,
         "model": model.value,
         "num_shots": dataset.config.n_shots,
-        "multiple_choice": int(use_multiple_choice),
+        "multiple_choice": int(multiple_choice),
         "num_examples": len(formatted_prompts),
         "num_correct": num_correct_predictions,
         "acc": round(num_correct_predictions / len(expected_categories), 3),
@@ -236,5 +175,4 @@ if __name__ == "__main__":
         # append
         df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
 
-    os.makedirs(os.path.dirname(output_tsv), exist_ok=True)
     df.to_csv(output_tsv, sep="\t", index=False, header=True)

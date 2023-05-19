@@ -3,6 +3,9 @@ import logging
 import hydra
 from omegaconf import DictConfig
 
+from evals.eval_ambibench_category_prediction import (
+    evaluate_ambibench_category_prediction,
+)
 from src.evals.sequence_completion import evaluate_sequence_completion_equality
 from src.evals.sequence_completion_with_base_change import (
     evaluate_compute_dependence_with_base_changes,
@@ -39,6 +42,13 @@ def main(cfg: DictConfig) -> None:
             num_shots=task_cfg.num_shots,
             on_ambiguous_sequences=task_cfg.on_ambiguous_sequences,
             num_samples=task_cfg.num_samples,
+        )
+
+    if task_cfg := cfg.ambibench_category_prediction:
+        evaluate_ambibench_category_prediction(
+            model=task_cfg.model,
+            data_path=task_cfg.data_path,
+            multiple_choice=task_cfg.multiple_choice,
         )
 
 

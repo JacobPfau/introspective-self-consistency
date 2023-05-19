@@ -5,11 +5,13 @@ TODO:
 """
 
 import json
+from pathlib import Path
+from typing import Union
 
 from src.structures.ambibench import AmbiBenchDataset
 
 
-def load_ambibench_dataset(json_path: str) -> AmbiBenchDataset:
+def load_ambibench_dataset(json_path: Union[str, Path]) -> AmbiBenchDataset:
 
     with open(json_path) as f_in:
         ambibench_data = json.load(f_in)
