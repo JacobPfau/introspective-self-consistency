@@ -10,7 +10,7 @@ from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
-from utils import auto_subdir
+from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 

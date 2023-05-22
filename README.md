@@ -33,3 +33,10 @@ git clone https://github.com/openai/human-eval
 pip install -e human-eval
 
 ```
+# Experiments
+
+## Running Q0
+
+```sh
+python main.py --multirun sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1 string_transformation_completion_equality=false compute_dependence_with_base_changes=false
+```

@@ -20,6 +20,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class OpenAITextModels(Enum):
     TEXT_DAVINCI_003 = "text-davinci-003"
+    DAVINCI = 'davinci'
 
 
 class OpenAIChatModels(Enum):
