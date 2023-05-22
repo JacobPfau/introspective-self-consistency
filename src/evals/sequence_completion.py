@@ -194,6 +194,7 @@ def evaluate_sequence_completion_equality(
                     )
                 )
             except Exception as e:
+                logger.exception(e)
                 logger.warning(e)
 
     pd.DataFrame(completion_data).to_csv(
