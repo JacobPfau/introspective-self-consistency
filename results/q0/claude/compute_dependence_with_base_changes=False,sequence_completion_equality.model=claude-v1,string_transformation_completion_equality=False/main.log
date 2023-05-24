@@ -1,0 +1,149 @@
+[2023-05-22 15:37:35,658][src.utils][INFO] - Git sha: 95ea6d9cb654c0175e7d5d121cb71dfd5e741359
+[2023-05-22 15:37:35,673][src.utils][INFO] - Changed files: ['src/evals/sequence_completion.py', 'src/models/anthropic_model.py']
+[2023-05-22 15:37:35,687][src.utils][INFO] - Git diff:
+diff --git a/src/evals/sequence_completion.py b/src/evals/sequence_completion.py
+index 4dae51b..623249d 100644
+--- a/src/evals/sequence_completion.py
++++ b/src/evals/sequence_completion.py
+@@ -4,7 +4,7 @@ import numpy as np
+ import pandas as pd
+ from tqdm.auto import tqdm
+
+-from src.models.openai_model import generate_response_with_turns
++from src.models.completions import generate_response_with_turns
+ from src.pipelines.sequence_completions import (
+     PromptType,
+     find_ambiguous_integer_sequences,
+@@ -162,7 +162,7 @@ def sequence_completion_equality(
+         "generated_completion_matches": int(actual_completion) == last_completion,
+         "model_self_consistency_evaluation": consistency_resp,
+         "model_completion": model_completion_resp,
+-        "model_completion_matches": int(model_completion_resp) == last_completion,
++        "model_completion_matches": model_completion_resp == str(last_completion),
+     }
+
+
+diff --git a/src/models/anthropic_model.py b/src/models/anthropic_model.py
+index bf6f889..8977581 100644
+--- a/src/models/anthropic_model.py
++++ b/src/models/anthropic_model.py
+@@ -6,7 +6,7 @@ from typing import Dict, List, Union
+
+ from anthropic import AI_PROMPT, HUMAN_PROMPT, ApiException, Client
+
+-from models.utils import INVALID_RESPONSE, ExtendedEnum
++from src.models.utils import INVALID_RESPONSE, ExtendedEnum
+
+ CHAT_PROMPT_TEMPLATE = {"role": "Human", "content": ""}
+ # TEXT_PROMPT_TEMPLATE is just a simple string
+@@ -83,7 +83,8 @@ def generate_completion(
+             return response["completion"]
+         except ApiException:
+             logger.warning("API Error. Sleep and try again.")
+-        except KeyError:
++        except KeyError as e:
++            logger.exception(e)
+             logger.warning("Unexpected response format. Sleep and try again.")
+         finally:
+             time.sleep(_RETRY_TIMEOUT)
+@@ -92,6 +93,28 @@ def generate_completion(
+     return INVALID_RESPONSE
+
+
++def _convert_gpt_roles(
++    prompt_turns: List[Dict[str, str]],
++) -> List[Dict[str, str]]:
++    """
++    Convert "role": user to "role": Human and "role": assistant to "role": Assistant
++    """
++    new_turns = []
++    for turn in prompt_turns:
++        if turn["role"] == "user":
++            new_turns.append({
++                "role": "Human",
++                "content": turn['content']
++            })
++        elif turn["role"] == "assistant":
++            new_turns.append({
++                "role": "Assistant",
++                "content": turn['content']
++            })
++
++    return new_turns
++
++
+ def format_chat_prompt(
+     prompt_turns: List[Dict[str, str]],
+ ) -> str:
+@@ -114,6 +137,8 @@ def format_chat_prompt(
+     :raises ValueError: if the prompt_turns are not in the expected format
+     :return: the formatted prompt
+     """
++
++    prompt_turns = _convert_gpt_roles(prompt_turns)
+     if any(
+         (role := turn["role"]) not in ["Human", "Assistant"] for turn in prompt_turns
+     ):
+[2023-05-22 15:37:35,689][src.utils][INFO] - Changed directory to /Users/domenicrosati/src/introspective-self-consistency/results/2023-05-22-15-37-35/compute_dependence_with_base_changes=False,sequence_completion_equality.model=claude-v1,string_transformation_completion_equality=False/evaluate_sequence_completion_equality
+[2023-05-22 15:37:35,690][src.evals.sequence_completion][INFO] - Evaluating sequence completion equality...
+[2023-05-22 15:46:01,308][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 185, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 156, in sequence_completion_equality
+    last_completion = eval(explanation)(last_completion_step + 1)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-05-22 15:46:01,310][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-05-22 15:46:22,438][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 185, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 156, in sequence_completion_equality
+    last_completion = eval(explanation)(last_completion_step + 1)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-05-22 15:46:22,438][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-05-22 15:55:28,572][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 185, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 137, in sequence_completion_equality
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-05-22 15:55:28,572][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-05-22 15:57:58,866][src.evals.sequence_completion][ERROR] - 4
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 185, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 156, in sequence_completion_equality
+    last_completion = eval(explanation)(last_completion_step + 1)
+  File "<string>", line 1, in <lambda>
+KeyError: 4
+[2023-05-22 15:57:58,866][src.evals.sequence_completion][WARNING] - 4
+[2023-05-22 16:17:51,173][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 185, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 156, in sequence_completion_equality
+    last_completion = eval(explanation)(last_completion_step + 1)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-05-22 16:17:51,175][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-05-22 16:18:32,724][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 185, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 137, in sequence_completion_equality
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-05-22 16:18:32,724][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-05-22 16:55:36,212][src.evals.sequence_completion][INFO] -
+        Evaluated 219 ambiguous sequences of 225 total.
+        Resulting in:
+        - 79.0% ground-truth-consistent
+        - 0.0% self-rule-following-consistency
+        - 0.0% self-comparison-consistency
+        - 0.0% self-comparison-consistency and ground-truth-consistent.

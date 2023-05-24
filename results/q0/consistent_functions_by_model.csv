@@ -1,0 +1,497 @@
+,fn,model
+0,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}",davinci
+1,"{'fn': 'lambda x: (x * 1) % (3+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 3)}",davinci
+2,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 3)}",davinci
+3,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 2)}",davinci
+4,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 0, 2)}",davinci
+5,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 3, 'metadata': ('power_progression', 1, 2)}",davinci
+6,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 0, 1)}",gpt-3.5-turbo
+7,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 0, 0)}",gpt-3.5-turbo
+8,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-3.5-turbo
+9,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-3.5-turbo
+10,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-3.5-turbo
+11,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 2)}",gpt-3.5-turbo
+12,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-3.5-turbo
+13,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-3.5-turbo
+14,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 1)}",gpt-3.5-turbo
+15,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 0, 1)}",gpt-3.5-turbo
+16,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-3.5-turbo
+17,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-3.5-turbo
+18,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 0, 0)}",gpt-3.5-turbo
+19,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 0, 1)}",gpt-3.5-turbo
+20,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-3.5-turbo
+21,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 0, 1)}",gpt-3.5-turbo
+22,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 0, 0)}",gpt-3.5-turbo
+23,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-3.5-turbo
+24,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-3.5-turbo
+25,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-3.5-turbo
+26,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 2)}",gpt-3.5-turbo
+27,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-3.5-turbo
+28,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-3.5-turbo
+29,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-3.5-turbo
+30,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 1)}",gpt-3.5-turbo
+31,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 0, 1)}",gpt-3.5-turbo
+32,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-3.5-turbo
+33,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-3.5-turbo
+34,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 0, 1)}",gpt-3.5-turbo
+35,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 0, 0)}",gpt-3.5-turbo
+36,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-3.5-turbo
+37,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-3.5-turbo
+38,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-3.5-turbo
+39,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 3)}",gpt-3.5-turbo
+40,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-3.5-turbo
+41,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-3.5-turbo
+42,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-3.5-turbo
+43,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 0, 1)}",gpt-3.5-turbo
+44,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-3.5-turbo
+45,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-3.5-turbo
+46,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 2, 0)}",gpt-3.5-turbo
+47,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 2, 1)}",gpt-3.5-turbo
+48,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 2, 1)}",gpt-3.5-turbo
+49,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 0, 3)}",gpt-3.5-turbo
+50,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 2, 0)}",gpt-3.5-turbo
+51,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 2, 1)}",gpt-3.5-turbo
+52,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 2, 1)}",gpt-3.5-turbo
+53,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 0, 3)}",gpt-3.5-turbo
+54,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 0)}",gpt-3.5-turbo
+55,"{'fn': 'lambda x: (3 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 2, 3)}",gpt-3.5-turbo
+56,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 2, 0)}",gpt-3.5-turbo
+57,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 2, 1)}",gpt-3.5-turbo
+58,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 2, 1)}",gpt-3.5-turbo
+59,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 2, 'metadata': ('geometric_progression', 0, 3)}",gpt-3.5-turbo
+60,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 2, 0)}",gpt-3.5-turbo
+61,"{'fn': 'lambda x: (3 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 3)}",gpt-3.5-turbo
+62,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 2, 0)}",gpt-3.5-turbo
+63,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 2, 1)}",gpt-3.5-turbo
+64,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 2, 1)}",gpt-3.5-turbo
+65,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 0, 3)}",gpt-3.5-turbo
+66,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 2, 0)}",gpt-3.5-turbo
+67,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-3.5-turbo
+68,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-3.5-turbo
+69,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-3.5-turbo
+70,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 3)}",gpt-3.5-turbo
+71,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-3.5-turbo
+72,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-3.5-turbo
+73,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-3.5-turbo
+74,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-3.5-turbo
+75,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 0)}",gpt-3.5-turbo
+76,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-3.5-turbo
+77,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 1, 1)}",gpt-3.5-turbo
+78,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-3.5-turbo
+79,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-3.5-turbo
+80,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-3.5-turbo
+81,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 1, 1)}",gpt-3.5-turbo
+82,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 3)}",gpt-3.5-turbo
+83,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-3.5-turbo
+84,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-3.5-turbo
+85,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-3.5-turbo
+86,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 1, 1)}",gpt-3.5-turbo
+87,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 3)}",gpt-3.5-turbo
+88,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-3.5-turbo
+89,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-3.5-turbo
+90,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-3.5-turbo
+91,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 3, 'metadata': ('bit_or_progression', 1, 1)}",gpt-3.5-turbo
+92,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 3)}",gpt-3.5-turbo
+93,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-3.5-turbo
+94,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-3.5-turbo
+95,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 3)}",gpt-3.5-turbo
+96,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-3.5-turbo
+97,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 3)}",gpt-3.5-turbo
+98,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 3)}",gpt-3.5-turbo
+99,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-3.5-turbo
+100,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 1, 'metadata': ('bit_or_progression', 3, 2)}",gpt-3.5-turbo
+101,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-3.5-turbo
+102,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 2, 'metadata': ('bit_or_progression', 3, 2)}",gpt-3.5-turbo
+103,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-3.5-turbo
+104,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 3, 'metadata': ('bit_or_progression', 3, 2)}",gpt-3.5-turbo
+105,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 1, 2)}",gpt-3.5-turbo
+106,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 3, 0)}",gpt-3.5-turbo
+107,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 3, 1)}",gpt-3.5-turbo
+108,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-3.5-turbo
+109,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 3, 1)}",gpt-3.5-turbo
+110,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 1, 2)}",gpt-3.5-turbo
+111,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 3, 0)}",gpt-3.5-turbo
+112,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 3, 1)}",gpt-3.5-turbo
+113,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-3.5-turbo
+114,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 3, 1)}",gpt-3.5-turbo
+115,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 1, 2)}",gpt-3.5-turbo
+116,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 3, 0)}",gpt-3.5-turbo
+117,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-3.5-turbo
+118,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 3, 1)}",gpt-3.5-turbo
+119,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 1, 2)}",gpt-3.5-turbo
+120,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 3, 0)}",gpt-3.5-turbo
+121,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 3, 1)}",gpt-3.5-turbo
+122,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-3.5-turbo
+123,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 3, 1)}",gpt-3.5-turbo
+124,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 1, 3)}",gpt-3.5-turbo
+125,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 2, 2)}",gpt-3.5-turbo
+126,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 1, 3)}",gpt-3.5-turbo
+127,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 2, 2)}",gpt-3.5-turbo
+128,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 2, 2)}",gpt-3.5-turbo
+129,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 1, 3)}",gpt-3.5-turbo
+130,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 2, 2)}",gpt-3.5-turbo
+131,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-3.5-turbo
+132,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 2)}",gpt-3.5-turbo
+133,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 1, 0)}",gpt-3.5-turbo
+134,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 1, 1)}",gpt-3.5-turbo
+135,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 0, 2)}",gpt-3.5-turbo
+136,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 1, 1)}",gpt-3.5-turbo
+137,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-3.5-turbo
+138,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 2)}",gpt-3.5-turbo
+139,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 1, 0)}",gpt-3.5-turbo
+140,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 1, 1)}",gpt-3.5-turbo
+141,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 0, 2)}",gpt-3.5-turbo
+142,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 1, 1)}",gpt-3.5-turbo
+143,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-3.5-turbo
+144,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 2)}",gpt-3.5-turbo
+145,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 1, 0)}",gpt-3.5-turbo
+146,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 1, 1)}",gpt-3.5-turbo
+147,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 0, 2)}",gpt-3.5-turbo
+148,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 1, 1)}",gpt-3.5-turbo
+149,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-3.5-turbo
+150,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 1, 0)}",gpt-3.5-turbo
+151,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 1, 1)}",gpt-3.5-turbo
+152,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 0, 2)}",gpt-3.5-turbo
+153,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 1, 1)}",gpt-3.5-turbo
+154,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 0, 'metadata': ('power_progression', 1, 2)}",gpt-3.5-turbo
+155,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 0, 'metadata': ('power_progression', 3, 1)}",gpt-3.5-turbo
+156,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 1, 'metadata': ('power_progression', 1, 2)}",gpt-3.5-turbo
+157,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 1, 'metadata': ('power_progression', 3, 1)}",gpt-3.5-turbo
+158,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 2, 'metadata': ('power_progression', 1, 2)}",gpt-3.5-turbo
+159,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 2, 'metadata': ('power_progression', 3, 1)}",gpt-3.5-turbo
+160,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 3, 'metadata': ('power_progression', 1, 2)}",gpt-3.5-turbo
+161,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 3, 'metadata': ('power_progression', 3, 1)}",gpt-3.5-turbo
+162,"{'fn': 'lambda x: (3 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 2, 3)}",gpt-3.5-turbo
+163,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 0, 'metadata': ('bit_or_progression', 3, 3)}",gpt-3.5-turbo
+164,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-3.5-turbo
+165,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 3, 1)}",gpt-3.5-turbo
+166,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-3.5-turbo
+167,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 3, 1)}",gpt-3.5-turbo
+168,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-3.5-turbo
+169,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 3, 1)}",gpt-3.5-turbo
+170,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-3.5-turbo
+171,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 0, 'metadata': ('modular_progression', 2, 1)}",gpt-3.5-turbo
+172,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 1)}",gpt-3.5-turbo
+173,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 2, 'metadata': ('modular_progression', 2, 1)}",gpt-3.5-turbo
+174,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 1, 'metadata': ('modular_progression', 2, 1)}",gpt-3.5-turbo
+175,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 1, 'metadata': ('modular_progression', 0, 1)}",gpt-3.5-turbo
+176,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 3, 'metadata': ('modular_progression', 0, 1)}",gpt-3.5-turbo
+177,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 3, 'metadata': ('modular_progression', 2, 1)}",gpt-3.5-turbo
+178,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 3, 3)}",gpt-3.5-turbo
+179,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-3.5-turbo
+180,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 2, 'metadata': ('bit_or_progression', 3, 3)}",gpt-3.5-turbo
+181,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-3.5-turbo
+182,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 3, 'metadata': ('bit_or_progression', 3, 3)}",gpt-3.5-turbo
+183,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-3.5-turbo
+184,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 0, 1)}",gpt-4-0314
+185,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 0)}",gpt-4-0314
+186,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 0, 0)}",gpt-4-0314
+187,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-4-0314
+188,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-4-0314
+189,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-4-0314
+190,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 2)}",gpt-4-0314
+191,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-4-0314
+192,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-4-0314
+193,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 0, 1)}",gpt-4-0314
+194,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-4-0314
+195,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-4-0314
+196,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}",gpt-4-0314
+197,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 0, 0)}",gpt-4-0314
+198,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 0, 1)}",gpt-4-0314
+199,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-4-0314
+200,"{'fn': 'lambda x: (x * 1) % (3+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 3)}",gpt-4-0314
+201,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 0, 1)}",gpt-4-0314
+202,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 0, 0)}",gpt-4-0314
+203,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-4-0314
+204,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-4-0314
+205,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-4-0314
+206,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 2)}",gpt-4-0314
+207,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-4-0314
+208,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-4-0314
+209,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-4-0314
+210,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 1)}",gpt-4-0314
+211,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 0, 1)}",gpt-4-0314
+212,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-4-0314
+213,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-4-0314
+214,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 0, 0)}",gpt-4-0314
+215,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-4-0314
+216,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-4-0314
+217,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-4-0314
+218,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 3)}",gpt-4-0314
+219,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-4-0314
+220,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-4-0314
+221,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 1)}",gpt-4-0314
+222,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 0)}",gpt-4-0314
+223,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 2, 1)}",gpt-4-0314
+224,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 0, 3)}",gpt-4-0314
+225,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 2, 0)}",gpt-4-0314
+226,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 2, 0)}",gpt-4-0314
+227,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 2, 1)}",gpt-4-0314
+228,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 2, 1)}",gpt-4-0314
+229,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 0)}",gpt-4-0314
+230,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 2, 0)}",gpt-4-0314
+231,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 2, 1)}",gpt-4-0314
+232,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 2, 0)}",gpt-4-0314
+233,"{'fn': 'lambda x: (3 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 3)}",gpt-4-0314
+234,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 2, 0)}",gpt-4-0314
+235,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 2, 1)}",gpt-4-0314
+236,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 0, 3)}",gpt-4-0314
+237,"{'fn': 'lambda x: (3 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 2, 3)}",gpt-4-0314
+238,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 2)}",gpt-4-0314
+239,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 1)}",gpt-4-0314
+240,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 2)}",gpt-4-0314
+241,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 3)}",gpt-4-0314
+242,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 3)}",gpt-4-0314
+243,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 3)}",gpt-4-0314
+244,"{'fn': 'lambda x: (x * 1) % (2+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 2)}",gpt-4-0314
+245,"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 0, 'metadata': ('modular_progression', 3, 2)}",gpt-4-0314
+246,"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 3, 'metadata': ('modular_progression', 3, 2)}",gpt-4-0314
+247,"{'fn': 'lambda x: (x * 1) % (2+1)', 'offset': 3, 'metadata': ('modular_progression', 0, 2)}",gpt-4-0314
+248,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-4-0314
+249,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 1, 1)}",gpt-4-0314
+250,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-4-0314
+251,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-4-0314
+252,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-4-0314
+253,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 1, 1)}",gpt-4-0314
+254,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 3)}",gpt-4-0314
+255,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-4-0314
+256,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-4-0314
+257,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 1)}",gpt-4-0314
+258,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 1, 1)}",gpt-4-0314
+259,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 3)}",gpt-4-0314
+260,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 0)}",gpt-4-0314
+261,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-4-0314
+262,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 3, 'metadata': ('bit_or_progression', 1, 1)}",gpt-4-0314
+263,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 3)}",gpt-4-0314
+264,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 1)}",gpt-4-0314
+265,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 3)}",gpt-4-0314
+266,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 2)}",gpt-4-0314
+267,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-4-0314
+268,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 0, 'metadata': ('bit_or_progression', 3, 2)}",gpt-4-0314
+269,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-4-0314
+270,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 1, 'metadata': ('bit_or_progression', 3, 2)}",gpt-4-0314
+271,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-4-0314
+272,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 2, 'metadata': ('bit_or_progression', 3, 2)}",gpt-4-0314
+273,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 2)}",gpt-4-0314
+274,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 3, 'metadata': ('bit_or_progression', 3, 2)}",gpt-4-0314
+275,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 1, 2)}",gpt-4-0314
+276,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 3, 0)}",gpt-4-0314
+277,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 3, 1)}",gpt-4-0314
+278,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-4-0314
+279,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 3, 1)}",gpt-4-0314
+280,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 1, 2)}",gpt-4-0314
+281,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 3, 0)}",gpt-4-0314
+282,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 3, 0)}",gpt-4-0314
+283,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 3, 1)}",gpt-4-0314
+284,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-4-0314
+285,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 1, 2)}",gpt-4-0314
+286,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 3, 1)}",gpt-4-0314
+287,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 0)}",gpt-4-0314
+288,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 3, 1)}",gpt-4-0314
+289,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 1, 3)}",gpt-4-0314
+290,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 2, 2)}",gpt-4-0314
+291,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 1, 3)}",gpt-4-0314
+292,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 2, 2)}",gpt-4-0314
+293,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 2, 2)}",gpt-4-0314
+294,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 1, 3)}",gpt-4-0314
+295,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 2, 2)}",gpt-4-0314
+296,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-4-0314
+297,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 2)}",gpt-4-0314
+298,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 1, 0)}",gpt-4-0314
+299,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 1, 1)}",gpt-4-0314
+300,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 1, 1)}",gpt-4-0314
+301,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-4-0314
+302,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 2)}",gpt-4-0314
+303,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 1, 0)}",gpt-4-0314
+304,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 1, 1)}",gpt-4-0314
+305,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 0, 2)}",gpt-4-0314
+306,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 1, 1)}",gpt-4-0314
+307,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-4-0314
+308,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 2)}",gpt-4-0314
+309,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 1, 0)}",gpt-4-0314
+310,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 1, 1)}",gpt-4-0314
+311,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 1, 1)}",gpt-4-0314
+312,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 0)}",gpt-4-0314
+313,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 1, 0)}",gpt-4-0314
+314,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 1, 1)}",gpt-4-0314
+315,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 0, 2)}",gpt-4-0314
+316,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 1, 1)}",gpt-4-0314
+317,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 0, 'metadata': ('power_progression', 1, 2)}",gpt-4-0314
+318,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 0, 'metadata': ('power_progression', 3, 1)}",gpt-4-0314
+319,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 1, 'metadata': ('power_progression', 3, 1)}",gpt-4-0314
+320,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 2, 'metadata': ('power_progression', 1, 2)}",gpt-4-0314
+321,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 2, 'metadata': ('power_progression', 3, 1)}",gpt-4-0314
+322,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 3, 'metadata': ('power_progression', 1, 2)}",gpt-4-0314
+323,"{'fn': 'lambda x: (3 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 2, 3)}",gpt-4-0314
+324,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-4-0314
+325,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 3, 1)}",gpt-4-0314
+326,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-4-0314
+327,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 3, 1)}",gpt-4-0314
+328,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-4-0314
+329,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 3, 1)}",gpt-4-0314
+330,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-4-0314
+331,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 3, 'metadata': ('bit_or_progression', 3, 1)}",gpt-4-0314
+332,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 1)}",gpt-4-0314
+333,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 1)}",gpt-4-0314
+334,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 2, 'metadata': ('modular_progression', 0, 1)}",gpt-4-0314
+335,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 2, 'metadata': ('modular_progression', 2, 1)}",gpt-4-0314
+336,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 1, 'metadata': ('modular_progression', 2, 1)}",gpt-4-0314
+337,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 3, 'metadata': ('modular_progression', 0, 1)}",gpt-4-0314
+338,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-4-0314
+339,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 2, 'metadata': ('bit_or_progression', 3, 3)}",gpt-4-0314
+340,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-4-0314
+341,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 3, 'metadata': ('bit_or_progression', 3, 3)}",gpt-4-0314
+342,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 3)}",gpt-4-0314
+343,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 0, 1)}",text-davinci-003
+344,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 0, 0)}",text-davinci-003
+345,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 2)}",text-davinci-003
+346,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 1)}",text-davinci-003
+347,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 2)}",text-davinci-003
+348,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 2)}",text-davinci-003
+349,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 3)}",text-davinci-003
+350,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 3)}",text-davinci-003
+351,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 1)}",text-davinci-003
+352,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 0, 1)}",text-davinci-003
+353,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 1)}",text-davinci-003
+354,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 0)}",text-davinci-003
+355,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}",text-davinci-003
+356,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 0, 0)}",text-davinci-003
+357,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 0, 1)}",text-davinci-003
+358,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 0)}",text-davinci-003
+359,"{'fn': 'lambda x: (x * 1) % (3+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 3)}",text-davinci-003
+360,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 0, 1)}",text-davinci-003
+361,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 0, 0)}",text-davinci-003
+362,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 2)}",text-davinci-003
+363,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 2)}",text-davinci-003
+364,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 2)}",text-davinci-003
+365,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 3)}",text-davinci-003
+366,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 1)}",text-davinci-003
+367,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 1)}",text-davinci-003
+368,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 0)}",text-davinci-003
+369,"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 0, 1)}",text-davinci-003
+370,"{'fn': 'lambda x: (1 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 0, 0)}",text-davinci-003
+371,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 2)}",text-davinci-003
+372,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 1)}",text-davinci-003
+373,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 2)}",text-davinci-003
+374,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 2)}",text-davinci-003
+375,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 3)}",text-davinci-003
+376,"{'fn': 'lambda x: (1 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 0, 1)}",text-davinci-003
+377,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 1)}",text-davinci-003
+378,"{'fn': 'lambda x: (1 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 0)}",text-davinci-003
+379,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 2, 0)}",text-davinci-003
+380,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 2, 1)}",text-davinci-003
+381,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 2, 1)}",text-davinci-003
+382,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 0, 3)}",text-davinci-003
+383,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 2, 0)}",text-davinci-003
+384,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 2, 1)}",text-davinci-003
+385,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 0, 3)}",text-davinci-003
+386,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 2, 0)}",text-davinci-003
+387,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 2, 1)}",text-davinci-003
+388,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 2, 1)}",text-davinci-003
+389,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 2, 'metadata': ('geometric_progression', 0, 3)}",text-davinci-003
+390,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 2, 0)}",text-davinci-003
+391,"{'fn': 'lambda x: (3 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 3)}",text-davinci-003
+392,"{'fn': 'lambda x: (3 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 2, 0)}",text-davinci-003
+393,"{'fn': 'lambda x: (3 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 2, 1)}",text-davinci-003
+394,"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 2, 1)}",text-davinci-003
+395,"{'fn': 'lambda x: (1 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 0, 3)}",text-davinci-003
+396,"{'fn': 'lambda x: (3 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 2, 0)}",text-davinci-003
+397,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 2)}",text-davinci-003
+398,"{'fn': 'lambda x: (1 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 1)}",text-davinci-003
+399,"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 2)}",text-davinci-003
+400,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 3)}",text-davinci-003
+401,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 3)}",text-davinci-003
+402,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 2)}",text-davinci-003
+403,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 3)}",text-davinci-003
+404,"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 1)}",text-davinci-003
+405,"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 3, 'metadata': ('modular_progression', 3, 2)}",text-davinci-003
+406,"{'fn': 'lambda x: (x * 1) % (2+1)', 'offset': 3, 'metadata': ('modular_progression', 0, 2)}",text-davinci-003
+407,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 0)}",text-davinci-003
+408,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 2)}",text-davinci-003
+409,"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 1)}",text-davinci-003
+410,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 1)}",text-davinci-003
+411,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 1, 1)}",text-davinci-003
+412,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 0)}",text-davinci-003
+413,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 1)}",text-davinci-003
+414,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 1)}",text-davinci-003
+415,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 1, 1)}",text-davinci-003
+416,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 3)}",text-davinci-003
+417,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 0)}",text-davinci-003
+418,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 1)}",text-davinci-003
+419,"{'fn': 'lambda x: (2 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 1, 1)}",text-davinci-003
+420,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 3)}",text-davinci-003
+421,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 0)}",text-davinci-003
+422,"{'fn': 'lambda x: (2 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 1)}",text-davinci-003
+423,"{'fn': 'lambda x: (2 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 3)}",text-davinci-003
+424,"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 1)}",text-davinci-003
+425,"{'fn': 'lambda x: (1 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 3)}",text-davinci-003
+426,"{'fn': 'lambda x: (1 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 2)}",text-davinci-003
+427,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 2)}",text-davinci-003
+428,"{'fn': 'lambda x: (4 * x) | 2', 'offset': 1, 'metadata': ('bit_or_progression', 3, 2)}",text-davinci-003
+429,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 2)}",text-davinci-003
+430,"{'fn': 'lambda x: (4 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 2)}",text-davinci-003
+431,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 1, 2)}",text-davinci-003
+432,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 3, 0)}",text-davinci-003
+433,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 3, 1)}",text-davinci-003
+434,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 0)}",text-davinci-003
+435,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 3, 1)}",text-davinci-003
+436,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 1, 2)}",text-davinci-003
+437,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 3, 0)}",text-davinci-003
+438,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 3, 1)}",text-davinci-003
+439,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 0)}",text-davinci-003
+440,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 3, 1)}",text-davinci-003
+441,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 3, 0)}",text-davinci-003
+442,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 3, 1)}",text-davinci-003
+443,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 0)}",text-davinci-003
+444,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 3, 1)}",text-davinci-003
+445,"{'fn': 'lambda x: (2 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 1, 2)}",text-davinci-003
+446,"{'fn': 'lambda x: (4 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 3, 0)}",text-davinci-003
+447,"{'fn': 'lambda x: (4 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 3, 1)}",text-davinci-003
+448,"{'fn': 'lambda x: (4 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 0)}",text-davinci-003
+449,"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 3, 1)}",text-davinci-003
+450,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 1, 3)}",text-davinci-003
+451,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 2, 2)}",text-davinci-003
+452,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 1, 3)}",text-davinci-003
+453,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 2, 2)}",text-davinci-003
+454,"{'fn': 'lambda x: (2 * x) * 3', 'offset': 2, 'metadata': ('geometric_progression', 1, 3)}",text-davinci-003
+455,"{'fn': 'lambda x: (3 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 2, 2)}",text-davinci-003
+456,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 0)}",text-davinci-003
+457,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 2)}",text-davinci-003
+458,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 1, 0)}",text-davinci-003
+459,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 0, 2)}",text-davinci-003
+460,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 1, 1)}",text-davinci-003
+461,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 0)}",text-davinci-003
+462,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 2)}",text-davinci-003
+463,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 1, 0)}",text-davinci-003
+464,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 1, 1)}",text-davinci-003
+465,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 0, 2)}",text-davinci-003
+466,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 1, 1)}",text-davinci-003
+467,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 0)}",text-davinci-003
+468,"{'fn': 'lambda x: (2 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 2)}",text-davinci-003
+469,"{'fn': 'lambda x: (2 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 1, 0)}",text-davinci-003
+470,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 1, 1)}",text-davinci-003
+471,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 0, 2)}",text-davinci-003
+472,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 1, 1)}",text-davinci-003
+473,"{'fn': 'lambda x: (2 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 0)}",text-davinci-003
+474,"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 1, 1)}",text-davinci-003
+475,"{'fn': 'lambda x: (1 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 0, 2)}",text-davinci-003
+476,"{'fn': 'lambda x: (2 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 1, 1)}",text-davinci-003
+477,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 0, 'metadata': ('power_progression', 1, 2)}",text-davinci-003
+478,"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 0, 'metadata': ('power_progression', 3, 1)}",text-davinci-003
+479,"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 2, 'metadata': ('power_progression', 1, 2)}",text-davinci-003
+480,"{'fn': 'lambda x: (3 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 2, 3)}",text-davinci-003
+481,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 0, 'metadata': ('bit_or_progression', 3, 3)}",text-davinci-003
+482,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 3)}",text-davinci-003
+483,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 3, 1)}",text-davinci-003
+484,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 1)}",text-davinci-003
+485,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 3, 1)}",text-davinci-003
+486,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 1)}",text-davinci-003
+487,"{'fn': 'lambda x: (4 * x) | 1', 'offset': 3, 'metadata': ('bit_or_progression', 3, 1)}",text-davinci-003
+488,"{'fn': 'lambda x: (4 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 1)}",text-davinci-003
+489,"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 0, 'metadata': ('modular_progression', 2, 1)}",text-davinci-003
+490,"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 2, 'metadata': ('modular_progression', 0, 1)}",text-davinci-003
+491,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 3, 3)}",text-davinci-003
+492,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 3)}",text-davinci-003
+493,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 2, 'metadata': ('bit_or_progression', 3, 3)}",text-davinci-003
+494,"{'fn': 'lambda x: (4 * x) | 3', 'offset': 3, 'metadata': ('bit_or_progression', 3, 3)}",text-davinci-003
+495,"{'fn': 'lambda x: (4 * x) + 3', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 3)}",text-davinci-003

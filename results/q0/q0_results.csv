@@ -1,0 +1,9 @@
+,model,answer_validity,ground_truth_consistent,ground_truth_consistent_num,self_rule_following_consistency,self_rule_following_consistency_len,self_comparison_consistency,self_comparison_consistency_len,consistent_and_matched_accuracy,consistent_and_matched_accuracy_len
+0,davinci,valid,26.090000000000003,23,56.52,23,96.31,217,26.090000000000003,23
+1,gpt-3.5-turbo,valid,94.67999999999999,188,95.74000000000001,188,94.42,215,89.89,188
+2,gpt-4-0314,valid,94.64,168,97.02,168,77.17,184,73.81,168
+3,text-davinci-003,valid,88.44,173,93.64,173,84.89,225,83.82,173
+4,davinci,all,2.76,217,5.99,217,96.31,217,88.48,217
+5,gpt-3.5-turbo,all,82.78999999999999,215,83.72,215,94.42,215,90.7,215
+6,gpt-4-0314,all,86.41,184,88.59,184,77.17,184,72.83,184
+7,text-davinci-003,all,68.0,225,72.0,225,84.89,225,79.11,225
