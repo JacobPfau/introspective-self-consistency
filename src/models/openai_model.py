@@ -50,14 +50,15 @@ def _with_retries(api_call: Callable) -> str:
             return api_call()
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
+            time.sleep(_RETRY_TIMEOUT)
         except openai.error.RateLimitError:
             logger.error(
                 "Rate limiting, Sleep and try again."
             )  # TBD: how long to wait?
+            time.sleep(_RETRY_TIMEOUT)
         # TODO: may want to also handle ServiceUnavailableError, RateLimitError
         except KeyError:
             logger.warning("Unexpected response format. Sleep and try again.")
-        finally:
             time.sleep(_RETRY_TIMEOUT)
 
     logger.error("Reached retry limit and did not obtain proper response")
