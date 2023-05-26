@@ -38,7 +38,7 @@ Consistency evaluator - two outputs consistent
 """
 
 import random
-from typing import Literal, Tuple
+from typing import Dict, List, Literal, Tuple, Union
 
 import numpy as np
 
@@ -108,7 +108,7 @@ def find_ambiguous_integer_sequences(
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
     valid_sequence_functions: dict = sequence_functions,
-) -> dict:
+) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
     Find ambiguous_integer_sequences using brute force search
     over a set of progressions.
@@ -322,7 +322,7 @@ def _generate_shot_pool(
     # continue to draw if fn_item in shots
     while base_fn in shots:
         shots = np.random.choice(shot_pool, size=n_shots, replace=False)
-    return shot_pool
+    return shots
 
 
 def _cot(fn_item: dict, steps: int) -> str:

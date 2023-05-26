@@ -6,7 +6,7 @@ from typing import Dict, List, Union
 
 from anthropic import AI_PROMPT, HUMAN_PROMPT, ApiException, Client
 
-from models.utils import INVALID_RESPONSE, ExtendedEnum
+from models.utils import INVALID_RESPONSE, BaseModel
 
 CHAT_PROMPT_TEMPLATE = {"role": "Human", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string
@@ -14,11 +14,11 @@ _MAX_RETRIES = 3
 _RETRY_TIMEOUT = 3
 
 
-class AnthropicTextModels(ExtendedEnum):
+class AnthropicTextModels(BaseModel):
     CLAUDE_V1 = "claude-v1"
 
 
-class AnthropicChatModels(ExtendedEnum):
+class AnthropicChatModels(BaseModel):
     CLAUDE_V1 = "claude-v1"
 
 
