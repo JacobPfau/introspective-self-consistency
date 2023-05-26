@@ -1,0 +1,10 @@
+string_transformation_completion_equality: null
+sequence_completion_equality: null
+compute_dependence_with_base_changes:
+  sequence_type: binary
+  model: text-davinci-003
+  num_shots: 4
+  on_ambiguous_sequences: true
+  num_samples: 1
+  distribution: default
+  shot_method: random

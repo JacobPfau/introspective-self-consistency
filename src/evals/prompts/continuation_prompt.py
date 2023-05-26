@@ -27,6 +27,7 @@ The sequences will be taken from the list of ambiguous sequences.
 # import random
 from typing import List, Union
 
+from src.models.openai_model import OpenAITextModels, OpenAIChatModels
 from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
 
@@ -74,7 +75,7 @@ def create_continuation_prompt(
         text += ",".join([bin(x) for x in sequence])
     else:
         raise ValueError(f"Invalid base: {base}")
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Prepend to the shots
         pretext = "Here are some examples of sequence continuations."
         pretext += "\n"
@@ -82,7 +83,7 @@ def create_continuation_prompt(
         text += "\n"
         text += "A: "
         return text
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         pretext = [
             {
                 "role": "system",
@@ -108,8 +109,8 @@ def generate_cont_shot_prompt(
         sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
-
-    if model_name == "text-davinci-003":
+    print("model name is: ", model_name)
+    if model_name in OpenAITextModels.list():
         text = "Q: "
         if base == 10:
             text += ",".join([str(x) for x in sequence])
@@ -123,7 +124,7 @@ def generate_cont_shot_prompt(
         text += "\n"
         return text
 
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         if base == 10:
             q_text = ",".join([str(x) for x in sequence])
             a_text = str(eval(fn)(sequence_length))

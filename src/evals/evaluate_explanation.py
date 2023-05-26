@@ -7,6 +7,8 @@ from src.models.openai_model import (
     generate_completion,
 )
 
+from src.models.openai_model import OpenAITextModels, OpenAIChatModels
+
 
 def valid_explanation(
     fn_form: str,
@@ -55,7 +57,7 @@ def generate_explanation(
     Given a prompt, generate an explanation from the model.
     TODO: refactor code, entirely copied from generate_continuation
     """
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Feed this into the model
         model_response = generate_completion(
             prompt=prompt,
@@ -63,7 +65,7 @@ def generate_explanation(
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
         )
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,

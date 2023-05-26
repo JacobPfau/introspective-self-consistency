@@ -7,6 +7,8 @@ from src.models.openai_model import (
     generate_completion,
 )
 
+from src.models.openai_model import OpenAITextModels, OpenAIChatModels
+
 
 def valid_continuation(
     model_continuation: str,
@@ -23,6 +25,7 @@ def valid_continuation(
         if base == 10:
             int(model_continuation)
         elif base == 2:
+
             int(model_continuation[2:], 2)
     except ValueError:
         return False
@@ -38,7 +41,7 @@ def generate_continuation(
     """
     Given a prompt, generate a continuation from the model.
     """
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Feed this into the model
         model_response = generate_completion(
             prompt=prompt,
@@ -46,7 +49,7 @@ def generate_continuation(
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
         )
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,
