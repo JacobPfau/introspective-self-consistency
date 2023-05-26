@@ -40,3 +40,11 @@ pip install -e human-eval
 ```sh
 python main.py --multirun sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1 string_transformation_completion_equality=false compute_dependence_with_base_changes=false
 ```
+
+# Tests
+Tests are run using `pytest`.
+The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
+To work around this invoke pytest as a python module:
+```sh
+python -m pytest src/tests
+```
