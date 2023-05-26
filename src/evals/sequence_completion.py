@@ -1,12 +1,18 @@
+import logging
+
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
 from src.models.openai_model import generate_response_with_turns
 from src.pipelines.sequence_completions import (
+    PromptType,
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
+from src.utils import auto_subdir
+
+logger = logging.getLogger(__name__)
 
 MAX_OFFSET = 8
 NUM_SHOTS = 8
@@ -71,11 +77,11 @@ def sequence_completion_equality(
     evaluate_model_completion: bool = True,
     evaluate_model_consistency: bool = True,
     ambiguous_sequences: dict = None,
-    few_shot_prompt_type: str = "random",
+    few_shot_prompt_type: PromptType = "random",
 ):
     completion_prompt = generate_sequence_completion_prompt(
-        sequence,
-        fn,
+        sequence=sequence,
+        fn_item=fn,
         n_shots=num_shots,
         use_cot=cot,
         ambiguous_sequences=ambiguous_sequences,
@@ -83,8 +89,8 @@ def sequence_completion_equality(
     )
 
     explanation_prompt = generate_sequence_completion_prompt(
-        sequence,
-        fn,
+        sequence=sequence,
+        fn_item=fn,
         n_shots=num_shots,
         use_cot=cot,
         prompt_type="explanation",
@@ -160,14 +166,15 @@ def sequence_completion_equality(
     }
 
 
+@auto_subdir
 def evaluate_sequence_completion_equality(
-    model,
-    max_offset=MAX_OFFSET,
-    num_shots=NUM_SHOTS,
-    cot=COT,
-    few_shot_prompt_type="random",
+    model: str,
+    max_offset: int = MAX_OFFSET,
+    num_shots: int = NUM_SHOTS,
+    cot: bool = COT,
+    few_shot_prompt_type: PromptType = "random",
 ):
-    print("Evaluating sequence completion equality...")
+    logger.info("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
     total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())
     completion_data = []
@@ -176,9 +183,9 @@ def evaluate_sequence_completion_equality(
             try:
                 completion_data.append(
                     sequence_completion_equality(
-                        sequence,
-                        fn,
-                        model,
+                        sequence=sequence,
+                        fn=fn,
+                        model=model,
                         max_offset=max_offset,
                         num_shots=num_shots,
                         cot=cot,
@@ -187,10 +194,11 @@ def evaluate_sequence_completion_equality(
                     )
                 )
             except Exception as e:
-                print(e)
+                logger.exception(e)
+                logger.warning(e)
 
     pd.DataFrame(completion_data).to_csv(
-        f"./results/sequence_completion_equality_evaluation_{model}.csv", index=False
+        f"sequence_completion_equality_evaluation_{model}.csv", index=False
     )
 
     match_accs, model_match_accs, model_consistency_accs, consistent_and_matched = (
@@ -216,7 +224,7 @@ def evaluate_sequence_completion_equality(
     self_rule_following_consistency = round(np.mean(model_match_accs), 2) * 100
     self_comparison_consistency = round(np.mean(model_consistency_accs), 2) * 100
     consistent_and_matched_accuracy = round(np.mean(consistent_and_matched), 2) * 100
-    print(
+    logger.info(
         f"""
         Evaluated {len(completion_data)} ambiguous sequences of {total_sequences} total.
         Resulting in:

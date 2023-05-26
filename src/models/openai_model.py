@@ -5,7 +5,7 @@ from typing import Callable, List, Union
 
 import openai
 
-from models.utils import INVALID_RESPONSE, ExtendedEnum
+from src.models.utils import INVALID_RESPONSE, ExtendedEnum
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
@@ -19,6 +19,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class OpenAITextModels(ExtendedEnum):
     TEXT_DAVINCI_003 = "text-davinci-003"
+    DAVINCI = "davinci"
 
 
 class OpenAIChatModels(ExtendedEnum):
