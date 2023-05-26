@@ -5,8 +5,9 @@ from typing import Dict, List, Tuple, Union
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
+from src.pipelines.baseb_sequence_completions import numberToBase
 from src.pipelines.sequence_completions import sequence_functions
 
 
@@ -143,7 +144,7 @@ def choose_function(
     if model_name == "text-davinci-003":
 
         # Feed this into the model
-        model_response = generate_completion(
+        model_response = generate_text_completion(
             prompt=formatted_prompt,
             temperature=temperature,
             max_tokens=256,
@@ -155,7 +156,7 @@ def choose_function(
             prompt_turns=formatted_prompt,
             temperature=temperature,
             max_tokens=256,
-            model=CHAT_MODEL_NAME,
+            model=model_name,
         )
         # print("model response is: ", model_response)
     # Parse the model's response to get the index of the function it chose

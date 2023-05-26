@@ -6,7 +6,7 @@ from typing import List, Tuple, Union
 
 import openai
 
-from src.models.utils import INVALID_RESPONSE, BaseModel
+from src.models.base_model import BaseModel
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
@@ -77,7 +77,7 @@ def _get_raw_text_model_response(
             time.sleep(_RETRY_TIMEOUT)
 
     logger.error("Reached retry limit and did not obtain proper response")
-    return INVALID_RESPONSE
+    return model.invalid_response
 
 
 def generate_text_completion(
@@ -90,8 +90,8 @@ def generate_text_completion(
 
     if len(response["choices"]) == 0:
         logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
-    elif response == INVALID_RESPONSE:
+        return model.invalid_response
+    elif response == model.invalid_response:
         return response
 
     return response["choices"][0]["text"]
@@ -117,8 +117,8 @@ def generate_text_completion_with_logprobs(
 
     if len(response["choices"]) == 0:
         logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
-    elif response == INVALID_RESPONSE:
+        return model.invalid_response
+    elif response == model.invalid_response:
         return response
 
     logprob_dict = response["choices"][0]["logprobs"]
@@ -156,11 +156,11 @@ def generate_chat_completion(
 
     if response is None:
         logger.error("Reached retry limit and did not obtain proper response")
-        return INVALID_RESPONSE
+        return model.invalid_response
 
     if len(response["choices"]) == 0:
         logger.error("Response did not return enough `choices`")
-        return INVALID_RESPONSE
+        return model.invalid_response
 
     return response["choices"][0]["message"]["content"]
 
@@ -216,6 +216,6 @@ def generate_logprob_response_with_turns(
         )
     elif model in OpenAIChatModels.list() or isinstance(model, OpenAIChatModels):
         logger.error("Chat models don't support returning logprob")
-        return INVALID_RESPONSE
+        return model.invalid_response
     else:
         raise ValueError(f"Model {model} not supported")

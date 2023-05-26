@@ -1,12 +1,11 @@
 import logging
 import os
 import time
-from enum import Enum
 from typing import Dict, List, Union
 
 from anthropic import AI_PROMPT, HUMAN_PROMPT, ApiException, Client
 
-from models.utils import INVALID_RESPONSE, BaseModel
+from src.models.base_model import BaseModel
 
 CHAT_PROMPT_TEMPLATE = {"role": "Human", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string
@@ -28,15 +27,6 @@ logging.basicConfig(
     datefmt="%d/%m/%Y %H:%M:%S",
     level=logging.INFO,
 )
-
-
-def get_anthropic_model_from_string(model_name: str) -> Enum:
-    if model_name in AnthropicChatModels.list():
-        return AnthropicChatModels(model_name)
-    elif model_name in AnthropicTextModels.list():
-        return AnthropicTextModels(model_name)
-    else:
-        raise KeyError(f"Invalid Anthropic model name: {model_name}")
 
 
 def _escape_nl(prompt: str) -> str:
@@ -89,7 +79,7 @@ def generate_completion(
             time.sleep(_RETRY_TIMEOUT)
 
     logger.error("Reached retry limit and did not obtain proper response")
-    return INVALID_RESPONSE
+    return model.invalid_response
 
 
 def format_chat_prompt(

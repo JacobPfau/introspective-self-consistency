@@ -3,9 +3,8 @@ from typing import List, Union
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
-    CHAT_MODEL_NAME,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
 
 
@@ -59,7 +58,7 @@ def generate_explanation(
     """
     if model_name == "text-davinci-003":
         # Feed this into the model
-        model_response = generate_completion(
+        model_response = generate_text_completion(
             prompt=prompt,
             temperature=temperature,
             max_tokens=256,
