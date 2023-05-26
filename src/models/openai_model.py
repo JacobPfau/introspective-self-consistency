@@ -6,7 +6,7 @@ from typing import List, Tuple, Union
 
 import openai
 
-from .utils import INVALID_RESPONSE, BaseModel
+from src.models.utils import INVALID_RESPONSE, BaseModel
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
@@ -20,6 +20,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class OpenAITextModels(BaseModel):
     TEXT_DAVINCI_003 = "text-davinci-003"
+    DAVINCI = "davinci"
 
 
 class OpenAIChatModels(BaseModel):
@@ -35,14 +36,10 @@ logging.basicConfig(
 )
 
 
-def get_all_model_strings() -> List[str]:
-    return OpenAITextModels.list() + OpenAIChatModels.list()
-
-
 def get_openai_model_from_string(model_name: str) -> Enum:
-    if model_name in OpenAITextModels.list():
+    if model_name in [m.value for m in OpenAITextModels]:
         return OpenAITextModels(model_name)
-    elif model_name in OpenAIChatModels.list():
+    elif model_name in [m.value for m in OpenAIChatModels]:
         return OpenAIChatModels(model_name)
     else:
         raise KeyError(f"Invalid OpenAI model name: {model_name}")
@@ -136,12 +133,11 @@ def generate_chat_completion(
     model: Union[str, OpenAIChatModels] = OpenAIChatModels.CHAT_GPT_35,
 ) -> str:
     # docs: https://platform.openai.com/docs/api-reference/chat
-    # TODO: may want to handle ServiceUnavailableError
+    # TODO: may want to handle ServiceUnavailableError, RateLimitError
     if isinstance(model, str):
         model = OpenAIChatModels(model)
 
     response = None
-
     n_retries = 0
     while n_retries < _MAX_RETRIES:
         try:
@@ -155,12 +151,6 @@ def generate_chat_completion(
                 break
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
-            n_retries += 1
-            time.sleep(_RETRY_TIMEOUT)
-        except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
             n_retries += 1
             time.sleep(_RETRY_TIMEOUT)
 

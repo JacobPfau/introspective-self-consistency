@@ -29,7 +29,7 @@ def test_choose_function():
         ]
         correct_function_indices = [3]
         target_sequence = "1,2,4,8"
-        model_name = "DAVINCI"
+        model_name = "text-davinci-003"
         try:
             result = utils.choose_function(
                 possible_functions=possible_functions,

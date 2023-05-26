@@ -42,6 +42,8 @@ from typing import Dict, List, Literal, Tuple, Union
 
 import numpy as np
 
+PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
+
 SYSTEM_PROMPT = """
 You are a mathematical assistant.
 You are helping with integer sequences like arithmetic or geometric sequences.
@@ -105,6 +107,7 @@ def find_ambiguous_integer_sequences(
     disambiguate_steps: int = 4,
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
+    valid_sequence_functions: dict = sequence_functions,
 ) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
     Find ambiguous_integer_sequences using brute force search
@@ -128,7 +131,7 @@ def find_ambiguous_integer_sequences(
         {'fn': 'lambda x: (2*x) + 1', 'offset': 0}
     ]
     """
-    progression_base_fns = sequence_functions
+    progression_base_fns = valid_sequence_functions
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
         for const_term_two in range(max_constant_term_two):
@@ -423,9 +426,7 @@ def generate_sequence_completion_prompt(
     prompt_type: Literal["completion", "explanation"] = "completion",
     use_cot: bool = False,
     n_shots: int = 0,
-    shot_type: Literal[
-        "random", "same_fn", "same_class", "ambigious", "exclude_class"
-    ] = "random",
+    shot_type: PromptType = "random",
     ambiguous_sequences: dict = None,
 ) -> dict:
     """

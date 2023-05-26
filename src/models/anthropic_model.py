@@ -44,7 +44,7 @@ def _escape_nl(prompt: str) -> str:
     return prompt.replace("\n", "\\n")
 
 
-def generate_text_completion(
+def generate_completion(
     prompt: str,
     temperature: float = 0.0,
     max_tokens: int = 256,
@@ -144,6 +144,6 @@ def generate_chat_completion(
         model = AnthropicChatModels(model)
 
     prompt = format_chat_prompt(prompt_turns)
-    return generate_text_completion(
+    return generate_completion(
         prompt=prompt, temperature=temperature, max_tokens=max_tokens, model=model.value
     )

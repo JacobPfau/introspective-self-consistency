@@ -24,7 +24,7 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_text_completion,
+    generate_completion,
     get_openai_model_from_string,
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
@@ -79,7 +79,7 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
-    completion_response = generate_text_completion(prompt, model=model)
+    completion_response = generate_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
@@ -155,7 +155,6 @@ if __name__ == "__main__":
     logger.info(f"Start model inference for: {model.value}")
     pred_completions: List[str] = []
     for prompt in tqdm(formatted_prompts):
-
         if isinstance(model, OpenAIChatModels):
             completion = get_chat_completion(prompt, model)
         if isinstance(model, OpenAITextModels):
@@ -163,7 +162,7 @@ if __name__ == "__main__":
 
         pred_completions.append(completion)
 
-    correct_predictions = eval_completions(expected_completions, pred_completions)
+    num_correct_predictions = eval_completions(expected_completions, pred_completions)
 
     # store results in TSV
     results = {
@@ -171,11 +170,11 @@ if __name__ == "__main__":
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
+        "num_correct": num_correct_predictions,
+        "acc": round(num_correct_predictions / len(expected_completions), 3),
     }
     logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict([results])
+    df = pd.DataFrame.from_dict(results, orient="index")
 
     if os.path.exists(output_tsv):
         # append

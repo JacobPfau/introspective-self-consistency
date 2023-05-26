@@ -13,7 +13,7 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_text_completion,
+    generate_completion,
     get_openai_model_from_string,
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
@@ -110,7 +110,7 @@ def get_chat_cat_prediction(prompt: Dict[str, str], model: OpenAIChatModels) -> 
 
 
 def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
-    text_response = generate_text_completion(prompt, model=model)
+    text_response = generate_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return text_response.strip()
 
@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
         pred_categories.append(prediction)
 
-    correct_predictions = eval_category_predictions(
+    num_correct_predictions = eval_category_predictions(
         expected_categories, pred_categories
     )
 
@@ -226,8 +226,8 @@ if __name__ == "__main__":
         "num_shots": dataset.config.n_shots,
         "multiple_choice": int(use_multiple_choice),
         "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
+        "num_correct": num_correct_predictions,
+        "acc": round(num_correct_predictions / len(expected_categories), 3),
     }
     logger.info(f"Results: {repr(results)}")
     df = pd.DataFrame.from_dict([results])

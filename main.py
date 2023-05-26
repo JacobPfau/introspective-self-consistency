@@ -1,61 +1,46 @@
-import argparse
+import logging
+
+import hydra
+from omegaconf import DictConfig
 
 from src.evals.sequence_completion import evaluate_sequence_completion_equality
+from src.evals.sequence_completion_with_base_change import (
+    evaluate_compute_dependence_with_base_changes,
+)
 from src.evals.string_transformation import evaluate_string_transformation_equality
+from src.utils import log_exceptions
+
+logger = logging.getLogger(__name__)
 
 
-def str2bool(v):
-    if isinstance(v, bool):
-        return v
-    if v.lower() in ("yes", "true", "t", "y", "1"):
-        return True
-    elif v.lower() in ("no", "false", "f", "n", "0"):
-        return False
-    else:
-        raise argparse.ArgumentTypeError("Boolean value expected.")
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--model",
-    default="gpt-3.5-turbo",
-    type=str,
-    choices=["gpt-3.5-turbo", "text-davinci-003"],
-)
-parser.add_argument(
-    "--sequence-type",
-    default="integer",
-    type=str,
-    choices=["binary", "integer"],
-)
-parser.add_argument(
-    "--few-shot-prompt-type",
-    default="random",
-    type=str,
-    choices=["random", "same_class", "exclude_class", "same_fn", "ambigious"],
-)
-parser.add_argument(
-    "--evaluation",
-    default="sequence_completion_equality",
-    type=str,
-    choices=[
-        "sequence_completion_equality",
-        "string_transformation_completion_equality",
-    ],
-)
-parser.add_argument("--num-shots", default=8, type=int)
-parser.add_argument("--use-cot", default=True, type=str2bool, nargs="?", const=True)
-
-args = parser.parse_args()
-if __name__ == "__main__":
-    if args.evaluation == "string_transformation_completion_equality":
+@hydra.main(version_base=None, config_path="conf", config_name="main")
+@log_exceptions(logger)
+def main(cfg: DictConfig) -> None:
+    if task_cfg := cfg.string_transformation_completion_equality:
         evaluate_string_transformation_equality(
-            args.model, num_shots=args.num_shots, cot=args.use_cot
+            model=task_cfg.model,
+            num_shots=task_cfg.num_shots,
+            cot=task_cfg.use_cot,
         )
-    if args.evaluation == "sequence_completion_equality":
+
+    if task_cfg := cfg.sequence_completion_equality:
         evaluate_sequence_completion_equality(
-            args.model,
-            num_shots=args.num_shots,
-            cot=args.use_cot,
-            few_shot_prompt_type=args.few_shot_prompt_type,
+            model=task_cfg.model,
+            max_offset=task_cfg.max_offset,
+            num_shots=task_cfg.num_shots,
+            cot=task_cfg.use_cot,
+            few_shot_prompt_type=task_cfg.few_shot_prompt_type,
         )
+
+    if task_cfg := cfg.compute_dependence_with_base_changes:
+        evaluate_compute_dependence_with_base_changes(
+            sequence_type=task_cfg.sequence_type,
+            model=task_cfg.model,
+            num_shots=task_cfg.num_shots,
+            on_ambiguous_sequences=task_cfg.on_ambiguous_sequences,
+            num_samples=task_cfg.num_samples,
+        )
+
+
+if __name__ == "__main__":
+    main()
