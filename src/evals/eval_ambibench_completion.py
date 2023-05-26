@@ -1,22 +1,22 @@
-"""This module provides methods to evaluate the correctness and consistency of predicitons
+"""This module provides methods to evaluate the correctness and consistency of predictions
  on basic AmbiBench-style examples. The model is given a prompt with few-shot examples and tested for the following cases:
     1. uninformative completion: predict a binary output {X; Y} on whether or not the last question contains the [category withheld]
 
 Here 'uninformative' refers to [category withheld] in the instruction, i.e. the model is not informed about the category
 
-We are interested in different metrics of correctness and constistency as follows:
+We are interested in different metrics of correctness and consistency as follows:
     1. ground-truth correctness: Does the model correctly predict the completion (X or Y) or category (multiple-choice)?
     2. self-rule-following consistency: Is the predicted completion of the model consistent with the predicted category?
     3. self-comparison consistency:
 
  """
-import argparse
-import datetime
 import logging
 import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.models.openai_model import (
@@ -28,6 +28,7 @@ from src.models.openai_model import (
 )
 from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
+from utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
@@ -39,7 +40,7 @@ def format_completion_prompt_for_model_type(
     formatted_prompts: List[dict] = []
     expected_completions: List[str] = []
 
-    if isinstance(model, OpenAIChatModels):
+    if model in [m.value for m in OpenAIChatModels]:
         # Need to format the original prompt structure to run inference for AmbiBench completions?
         # E.g.: 'Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the prairie.\nA: Y
         #   \nQ: The fugitive is in the river.\nA: Y\nQ: The surveyor is in the marsh.\nA:'
@@ -48,7 +49,7 @@ def format_completion_prompt_for_model_type(
             template["content"] = ex["prompt"]
             formatted_prompts.append(template)
             expected_completions.append(ex["completion"].strip())
-    elif isinstance(model, OpenAITextModels):
+    elif model in [m.value for m in OpenAITextModels]:
         for ex in examples:
             formatted_prompts.append(ex["prompt"])
             expected_completions.append(ex["completion"].strip())
@@ -84,71 +85,22 @@ def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
     return completion_response.strip()
 
 
-def _get_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
+@auto_subdir
+def evaluate_ambibench_completion(
+    model: str,
+    data_path: str,
+):
+    model = get_model_from_string(model)
+    output_tsv = f"{Path(data_path).stem}_results.tsv"
 
-    parser.add_argument(
-        "--ambibench_data_path",
-        type=str,
-        required=True,
-        default="./data/ambi-bench/dataset.json",
-        help="File path to dataset",
-    )
+    # get data
+    data_path = Path(get_original_cwd()) / data_path
+    dataset = load_ambibench_dataset(data_path)
 
-    parser.add_argument(
-        "--model",
-        type=str,
-        required=True,
-        default="gpt-3.5-turbo",
-        help="Model name for which to run evals",
-    )
-
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        required=False,
-        default="./results",
-        help="Directory where to store results",
-    )
-
-    parser.add_argument(
-        "--output_tsv",
-        type=str,
-        required=False,
-        default="ambibench_completions.tsv",
-        help="TSV file name where results are stored.",
-    )
-
-    args = parser.parse_args()
-    return args
-
-
-if __name__ == "__main__":
-
-    args = _get_args()
-
-    model = get_model_from_string(args.model)
-
-    date = datetime.datetime.now().strftime("%y%m%d")
-    if args.output_tsv is not None:
-        output_tsv = os.path.join(args.output_dir, f"{date}_" + args.output_tsv)
-    else:
-        # use dataset name for results file
-        tsv_name = (
-            str(args.ambibench_data_path)
-            .split("/")[-1]
-            .replace(".json", "_results.tsv")
-        )
-        output_tsv = os.path.join(args.output_dir, f"{date}_" + tsv_name)
-
-    ###
-
-    #
-    dataset = load_ambibench_dataset(args.ambibench_data_path)
     logger.info(f"Dataset config: {repr(dataset.config)}")
 
     formatted_prompts, expected_completions = format_completion_prompt_for_model_type(
-        dataset.examples, model
+        dataset.examples, model.value
     )
     logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
 
@@ -166,7 +118,7 @@ if __name__ == "__main__":
 
     # store results in TSV
     results = {
-        "dataset": str(args.ambibench_data_path).split("/")[-1],
+        "dataset": str(Path(data_path).name),
         "model": model.value,
         "num_shots": dataset.config.n_shots,
         "num_examples": len(formatted_prompts),
@@ -180,5 +132,4 @@ if __name__ == "__main__":
         # append
         df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
 
-    os.makedirs(os.path.dirname(output_tsv), exist_ok=True)
     df.to_csv(output_tsv, sep="\t", index=False, header=True)
