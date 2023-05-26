@@ -19,7 +19,6 @@ from src.models.openai_model import (
 from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 from src.structures.ambibench import AmbiBenchDataset
-from src.utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
@@ -114,7 +113,6 @@ def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
     return text_response.strip()
 
 
-@auto_subdir
 def evaluate_ambibench_category_prediction(
     model: str,
     data_glob: str,

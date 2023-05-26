@@ -10,7 +10,6 @@ from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
-from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +165,6 @@ def sequence_completion_equality(
     }
 
 
-@auto_subdir
 def evaluate_sequence_completion_equality(
     model: str,
     max_offset: int = MAX_OFFSET,

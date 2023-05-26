@@ -1,3 +1,4 @@
+task: ???
 defaults:
 - tasks/string_transformation_completion_equality@string_transformation_completion_equality
 - tasks/sequence_completion_equality@sequence_completion_equality

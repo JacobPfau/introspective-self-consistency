@@ -6,12 +6,11 @@ from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     sequence_functions,
 )
-from src.utils import auto_subdir, reformat_self_consistency_results
+from src.utils import reformat_self_consistency_results
 
 logger = logging.getLogger(__name__)
 
 
-@auto_subdir
 def evaluate_compute_dependence_with_base_changes(
     sequence_type: str,
     model: str,

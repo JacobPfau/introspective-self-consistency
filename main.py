@@ -20,14 +20,16 @@ logger = logging.getLogger(__name__)
 @hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
-    if task_cfg := cfg.string_transformation_completion_equality:
+    if cfg.task == "string_transformation_completion_equality":
+        task_cfg = cfg.string_transformation_completion_equality
         evaluate_string_transformation_equality(
             model=task_cfg.model,
             num_shots=task_cfg.num_shots,
             cot=task_cfg.use_cot,
         )
 
-    if task_cfg := cfg.sequence_completion_equality:
+    if cfg.task == "sequence_completion_equality":
+        task_cfg = cfg.sequence_completion_equality
         evaluate_sequence_completion_equality(
             model=task_cfg.model,
             max_offset=task_cfg.max_offset,
@@ -36,7 +38,8 @@ def main(cfg: DictConfig) -> None:
             few_shot_prompt_type=task_cfg.few_shot_prompt_type,
         )
 
-    if task_cfg := cfg.compute_dependence_with_base_changes:
+    if cfg.task == "compute_dependence_with_base_changes":
+        task_cfg = cfg.compute_dependence_with_base_changes
         evaluate_compute_dependence_with_base_changes(
             sequence_type=task_cfg.sequence_type,
             model=task_cfg.model,
@@ -45,14 +48,16 @@ def main(cfg: DictConfig) -> None:
             num_samples=task_cfg.num_samples,
         )
 
-    if task_cfg := cfg.ambibench_category_prediction:
+    if cfg.task == "ambibench_category_prediction":
+        task_cfg = cfg.ambibench_category_prediction
         evaluate_ambibench_category_prediction(
             model=task_cfg.model,
             data_glob=task_cfg.data_glob,
             multiple_choice=task_cfg.multiple_choice,
         )
 
-    if task_cfg := cfg.ambibench_completion:
+    if cfg.task == "ambibench_completion":
+        task_cfg = cfg.ambibench_completion
         evaluate_ambibench_completion(
             model=task_cfg.model,
             data_glob=task_cfg.data_glob,

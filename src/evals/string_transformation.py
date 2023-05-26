@@ -9,7 +9,6 @@ from src.pipelines.string_transformations import (
     find_ambiguous_string_transformations,
     generate_string_transformation_prompt,
 )
-from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
@@ -195,7 +194,6 @@ def string_transformation_equality(
     }
 
 
-@auto_subdir
 def evaluate_string_transformation_equality(model, num_shots=NUM_SHOTS, cot=COT):
     logger.info("Evaluating string transformation equality...")
     ambiguous_sequences = find_ambiguous_string_transformations("#", "@", 4)
