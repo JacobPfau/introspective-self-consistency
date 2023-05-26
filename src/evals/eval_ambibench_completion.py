@@ -97,11 +97,11 @@ def evaluate_ambibench_completion(
     data_glob = Path(get_original_cwd()) / data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    for data_path in glob.glob(data_glob):
+    for data_path in glob.glob(str(data_glob)):
 
         dataset = load_ambibench_dataset(data_path)
 
-        logger.info(f"Dataset config: {repr(dataset.config)}")
+        logger.debug(f"Dataset config: {repr(dataset.config)}")
 
         (
             formatted_prompts,
