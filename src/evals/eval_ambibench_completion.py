@@ -24,9 +24,9 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_completion,
-    get_openai_model_from_string,
+    generate_text_completion,
 )
+from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
@@ -79,7 +79,7 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
-    completion_response = generate_completion(prompt, model=model)
+    completion_response = generate_text_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
     args = _get_args()
 
-    model = get_openai_model_from_string(args.model)
+    model = get_model_from_string(args.model)
 
     date = datetime.datetime.now().strftime("%y%m%d")
     if args.output_tsv is not None:

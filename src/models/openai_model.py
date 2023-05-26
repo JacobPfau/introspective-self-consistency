@@ -6,7 +6,8 @@ from typing import List, Tuple, Union
 
 import openai
 
-from src.models.utils import INVALID_RESPONSE, BaseModel
+from src.models.base_model import BaseModel
+from src.models.utils import INVALID_RESPONSE
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
