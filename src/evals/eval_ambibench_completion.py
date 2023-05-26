@@ -89,15 +89,15 @@ def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
 @auto_subdir
 def evaluate_ambibench_completion(
     model: str,
-    data_dir: str,
+    data_glob: str,
 ):
     model = get_model_from_string(model)
-    output_tsv = f"{Path(data_dir).stem}_results.tsv"
 
     # get data
-    data_path = Path(get_original_cwd()) / data_dir
+    data_glob = Path(get_original_cwd()) / data_glob
+    output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    for data_path in glob.glob(os.path.join(data_dir, "*.json")):
+    for data_path in glob.glob(data_glob):
 
         dataset = load_ambibench_dataset(data_path)
 

@@ -48,14 +48,14 @@ def main(cfg: DictConfig) -> None:
     if task_cfg := cfg.ambibench_category_prediction:
         evaluate_ambibench_category_prediction(
             model=task_cfg.model,
-            data_dir=task_cfg.data_path,
+            data_glob=task_cfg.data_path,
             multiple_choice=task_cfg.multiple_choice,
         )
 
     if task_cfg := cfg.ambibench_completion:
         evaluate_ambibench_completion(
             model=task_cfg.model,
-            data_dir=task_cfg.data_path,
+            data_glob=task_cfg.data_path,
         )
 
 
