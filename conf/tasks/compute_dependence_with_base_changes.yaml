@@ -3,5 +3,5 @@ model: gpt-3.5-turbo
 num_shots: 4
 on_ambiguous_sequences: true
 num_samples: 1
-distribution: default
+distribution: forced-consistency
 shot_method: random
