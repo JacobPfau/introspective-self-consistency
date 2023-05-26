@@ -70,9 +70,10 @@ def generate_completion(
             f"Prompt must end with `{_escape_nl(AI_PROMPT)}` but was `{_escape_nl(prompt)}`"
         )
 
+    api_key = os.environ["ANTHROPIC_API_KEY"]
     for _ in range(_MAX_RETRIES):
         try:
-            client = Client(os.environ["ANTHROPIC_API_KEY"])
+            client = Client(api_key)
             response = client.completion(
                 model=model.value,
                 prompt=prompt,
@@ -83,9 +84,9 @@ def generate_completion(
             return response["completion"]
         except ApiException:
             logger.warning("API Error. Sleep and try again.")
+            time.sleep(_RETRY_TIMEOUT)
         except KeyError:
             logger.warning("Unexpected response format. Sleep and try again.")
-        finally:
             time.sleep(_RETRY_TIMEOUT)
 
     logger.error("Reached retry limit and did not obtain proper response")
