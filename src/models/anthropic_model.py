@@ -6,7 +6,6 @@ from typing import Dict, List, Union
 from anthropic import AI_PROMPT, HUMAN_PROMPT, ApiException, Client
 
 from src.models.base_model import BaseModel
-from src.models.utils import INVALID_RESPONSE
 
 CHAT_PROMPT_TEMPLATE = {"role": "Human", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string
@@ -80,7 +79,7 @@ def generate_completion(
             time.sleep(_RETRY_TIMEOUT)
 
     logger.error("Reached retry limit and did not obtain proper response")
-    return INVALID_RESPONSE
+    return model.invalid_response
 
 
 def format_chat_prompt(

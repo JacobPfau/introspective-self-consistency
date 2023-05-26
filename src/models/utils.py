@@ -2,8 +2,6 @@ from src.models.anthropic_model import AnthropicChatModels, AnthropicTextModels
 from src.models.base_model import BaseModel
 from src.models.openai_model import OpenAIChatModels, OpenAITextModels
 
-INVALID_RESPONSE = "INVALID_RESPONSE"
-
 
 def get_model_from_string(model_name: str) -> BaseModel:
     if model_name in OpenAITextModels.list():
