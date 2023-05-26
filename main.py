@@ -12,7 +12,7 @@ from src.evals.sequence_completion_with_base_change import (
     evaluate_compute_dependence_with_base_changes,
 )
 from src.evals.string_transformation import evaluate_string_transformation_equality
-from utils import log_exceptions
+from src.utils import log_exceptions
 
 logger = logging.getLogger(__name__)
 

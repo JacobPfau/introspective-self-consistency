@@ -10,7 +10,7 @@ from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
-from utils import auto_subdir
+from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
@@ -194,6 +194,7 @@ def evaluate_sequence_completion_equality(
                     )
                 )
             except Exception as e:
+                logger.exception(e)
                 logger.warning(e)
 
     pd.DataFrame(completion_data).to_csv(
