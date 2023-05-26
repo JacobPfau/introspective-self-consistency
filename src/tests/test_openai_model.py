@@ -2,7 +2,7 @@ import openai
 import pytest
 import tiktoken
 
-from models.openai_model import (
+from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
