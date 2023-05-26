@@ -132,9 +132,9 @@ def run_q1_2_eval(
                 explanation_responses
             )
             logger.info(
-                f"Given sequence '{sequence}' \
-                    \t Completion test was passed: {test_passing_completion} \
-                    \t Explanation test was passed: {test_passing_explanation}"
+                f"Given sequence '{sequence}': \
+                    \n- Completion test was passed: {test_passing_completion} \
+                    \n- Explanation test was passed: {test_passing_explanation}"
             )
 
             # # sort completion responses by logprob with largest first
