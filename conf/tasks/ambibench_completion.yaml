@@ -1,2 +1,2 @@
-data_path: ???
+data_path: "./data/ambi-bench/amb50"
 model: gpt-3.5-turbo

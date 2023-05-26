@@ -10,6 +10,7 @@ We are interested in different metrics of correctness and consistency as follows
     3. self-comparison consistency:
 
  """
+import glob
 import logging
 import os
 from pathlib import Path
@@ -28,7 +29,7 @@ from src.models.openai_model import (
 )
 from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
-from utils import auto_subdir
+from src.utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
@@ -88,48 +89,54 @@ def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
 @auto_subdir
 def evaluate_ambibench_completion(
     model: str,
-    data_path: str,
+    data_dir: str,
 ):
     model = get_model_from_string(model)
-    output_tsv = f"{Path(data_path).stem}_results.tsv"
+    output_tsv = f"{Path(data_dir).stem}_results.tsv"
 
     # get data
-    data_path = Path(get_original_cwd()) / data_path
-    dataset = load_ambibench_dataset(data_path)
+    data_path = Path(get_original_cwd()) / data_dir
 
-    logger.info(f"Dataset config: {repr(dataset.config)}")
+    for data_path in glob.glob(os.path.join(data_dir, "*.json")):
 
-    formatted_prompts, expected_completions = format_completion_prompt_for_model_type(
-        dataset.examples, model.value
-    )
-    logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
+        dataset = load_ambibench_dataset(data_path)
 
-    logger.info(f"Start model inference for: {model.value}")
-    pred_completions: List[str] = []
-    for prompt in tqdm(formatted_prompts):
-        if isinstance(model, OpenAIChatModels):
-            completion = get_chat_completion(prompt, model)
-        if isinstance(model, OpenAITextModels):
-            completion = get_text_completion(prompt, model)
+        logger.info(f"Dataset config: {repr(dataset.config)}")
 
-        pred_completions.append(completion)
+        (
+            formatted_prompts,
+            expected_completions,
+        ) = format_completion_prompt_for_model_type(dataset.examples, model.value)
+        logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
 
-    num_correct_predictions = eval_completions(expected_completions, pred_completions)
+        logger.info(f"Start model inference for: {model.value}")
+        pred_completions: List[str] = []
+        for prompt in tqdm(formatted_prompts):
+            if isinstance(model, OpenAIChatModels):
+                completion = get_chat_completion(prompt, model)
+            if isinstance(model, OpenAITextModels):
+                completion = get_text_completion(prompt, model)
 
-    # store results in TSV
-    results = {
-        "dataset": str(Path(data_path).name),
-        "model": model.value,
-        "num_shots": dataset.config.n_shots,
-        "num_examples": len(formatted_prompts),
-        "num_correct": num_correct_predictions,
-        "acc": round(num_correct_predictions / len(expected_completions), 3),
-    }
-    logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict(results, orient="index")
+            pred_completions.append(completion)
 
-    if os.path.exists(output_tsv):
-        # append
-        df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
+        num_correct_predictions = eval_completions(
+            expected_completions, pred_completions
+        )
 
-    df.to_csv(output_tsv, sep="\t", index=False, header=True)
+        # store results in TSV
+        results = {
+            "dataset": str(Path(data_path).name),
+            "model": model.value,
+            "num_shots": dataset.config.n_shots,
+            "num_examples": len(formatted_prompts),
+            "num_correct": num_correct_predictions,
+            "acc": round(num_correct_predictions / len(expected_completions), 3),
+        }
+        logger.info(f"Results: {repr(results)}")
+        df = pd.DataFrame.from_dict(results, orient="index")
+
+        if os.path.exists(output_tsv):
+            # append
+            df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
+
+        df.to_csv(output_tsv, sep="\t", index=False, header=True)

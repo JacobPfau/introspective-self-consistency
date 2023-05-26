@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import random
@@ -18,7 +19,7 @@ from src.models.openai_model import (
 from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 from src.structures.ambibench import AmbiBenchDataset
-from utils import auto_subdir
+from src.utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
@@ -116,63 +117,66 @@ def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
 @auto_subdir
 def evaluate_ambibench_category_prediction(
     model: str,
-    data_path: str,
+    data_dir: str,
     multiple_choice: bool = False,
 ) -> None:
     model = get_model_from_string(model)
-    output_tsv = f"{Path(data_path).stem}_results.tsv"
+    output_tsv = f"{Path(data_dir).stem}_results.tsv"
 
     # get data
-    data_path = Path(get_original_cwd()) / data_path
-    dataset = load_ambibench_dataset(data_path)
-    logger.info(f"Dataset config: {repr(dataset.config)}")
+    data_dir = Path(get_original_cwd()) / data_dir
 
-    # determine whether to use multiple choice or all options
-    if multiple_choice and dataset.config.n_multiple_choices <= 1:
-        logger.warning(
-            "No multiple choice options in the dataset, will use default of all possible categories."
+    for data_path in glob.glob(os.path.join(data_dir, "*.json")):
+
+        dataset = load_ambibench_dataset(data_path)
+        logger.info(f"Dataset config: {repr(dataset.config)}")
+
+        # determine whether to use multiple choice or all options
+        if multiple_choice and dataset.config.n_multiple_choices <= 1:
+            logger.warning(
+                "No multiple choice options in the dataset, will use default of all possible categories."
+            )
+            multiple_choice = False
+
+        (
+            formatted_prompts,
+            expected_categories,
+        ) = format_prompt_for_prediction_for_model_type(
+            dataset, model.value, multiple_choice
         )
-        multiple_choice = False
+        logger.info(
+            f"No. prompts for AmbiBench category prediction: {len(formatted_prompts)}"
+        )
 
-    (
-        formatted_prompts,
-        expected_categories,
-    ) = format_prompt_for_prediction_for_model_type(
-        dataset, model.value, multiple_choice
-    )
-    logger.info(
-        f"No. prompts for AmbiBench category prediction: {len(formatted_prompts)}"
-    )
+        logger.info(f"Start model inference for: {model.value}")
+        pred_categories: List[str] = []
+        for prompt in tqdm(formatted_prompts):
+            if isinstance(model, OpenAIChatModels):
+                prediction = get_chat_cat_prediction(prompt, model)
+            if isinstance(model, OpenAITextModels):
+                prediction = get_text_cat_prediction(prompt, model)
 
-    logger.info(f"Start model inference for: {model.value}")
-    pred_categories: List[str] = []
-    for prompt in tqdm(formatted_prompts):
-        if isinstance(model, OpenAIChatModels):
-            prediction = get_chat_cat_prediction(prompt, model)
-        if isinstance(model, OpenAITextModels):
-            prediction = get_text_cat_prediction(prompt, model)
+            pred_categories.append(prediction)
 
-        pred_categories.append(prediction)
+        num_correct_predictions = eval_category_predictions(
+            expected_categories, pred_categories
+        )
 
-    num_correct_predictions = eval_category_predictions(
-        expected_categories, pred_categories
-    )
+        # store results in TSV
+        results = {
+            "dataset": str(Path(data_path).name),
+            "model": model.value,
+            "num_shots": dataset.config.n_shots,
+            "multiple_choice": int(multiple_choice),
+            "num_examples": len(formatted_prompts),
+            "num_correct": num_correct_predictions,
+            "acc": round(num_correct_predictions / len(expected_categories), 3),
+        }
+        logger.info(f"Results: {repr(results)}")
+        df = pd.DataFrame.from_dict([results])
 
-    # store results in TSV
-    results = {
-        "dataset": str(Path(data_path).name),
-        "model": model.value,
-        "num_shots": dataset.config.n_shots,
-        "multiple_choice": int(multiple_choice),
-        "num_examples": len(formatted_prompts),
-        "num_correct": num_correct_predictions,
-        "acc": round(num_correct_predictions / len(expected_categories), 3),
-    }
-    logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict([results])
+        if os.path.exists(output_tsv):
+            # append
+            df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
 
-    if os.path.exists(output_tsv):
-        # append
-        df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
-
-    df.to_csv(output_tsv, sep="\t", index=False, header=True)
+        df.to_csv(output_tsv, sep="\t", index=False, header=True)
