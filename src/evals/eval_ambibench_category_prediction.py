@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple
 
 import pandas as pd
 from hydra.utils import get_original_cwd
+from omegaconf import DictConfig
 from tqdm import tqdm
 
 from src.models.openai_model import (
@@ -113,17 +114,17 @@ def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
     return text_response.strip()
 
 
-def evaluate_ambibench_category_prediction(
-    model: str,
-    data_glob: str,
-    multiple_choice: bool = False,
-) -> None:
+def evaluate_ambibench_category_prediction(cfg: DictConfig) -> None:
+    model: str = cfg.model
+    data_glob: str = cfg.data_glob
+    multiple_choice: bool = cfg.get("multiple_choice", False)
+
     model = get_model_from_string(model)
     # get data
     data_glob = Path(get_original_cwd()) / data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    for data_path in glob.glob(str(data_glob)):
+    for data_path in list(glob.glob(str(data_glob)))[:2]:
 
         dataset = load_ambibench_dataset(data_path)
         logger.debug(f"Dataset config: {repr(dataset.config)}")
@@ -147,7 +148,7 @@ def evaluate_ambibench_category_prediction(
 
         logger.info(f"Start model inference for: {model.value}")
         pred_categories: List[str] = []
-        for prompt in tqdm(formatted_prompts):
+        for prompt in tqdm(formatted_prompts[:2]):
             if isinstance(model, OpenAIChatModels):
                 prediction = get_chat_cat_prediction(prompt, model)
             if isinstance(model, OpenAITextModels):

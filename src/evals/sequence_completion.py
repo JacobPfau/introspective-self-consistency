@@ -2,6 +2,7 @@ import logging
 
 import numpy as np
 import pandas as pd
+from omegaconf import DictConfig
 from tqdm.auto import tqdm
 
 from src.models.openai_model import generate_response_with_turns
@@ -165,13 +166,13 @@ def sequence_completion_equality(
     }
 
 
-def evaluate_sequence_completion_equality(
-    model: str,
-    max_offset: int = MAX_OFFSET,
-    num_shots: int = NUM_SHOTS,
-    cot: bool = COT,
-    few_shot_prompt_type: PromptType = "random",
-):
+def evaluate_sequence_completion_equality(cfg: DictConfig) -> None:
+    model: str = cfg.model
+    max_offset: int = cfg.get("max_offset", MAX_OFFSET)
+    num_shots: int = cfg.get("num_shots", NUM_SHOTS)
+    cot: bool = cfg.get("cot", COT)
+    few_shot_prompt_type: PromptType = cfg.get("few_shot_prompt_type", "random")
+
     logger.info("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
     total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())

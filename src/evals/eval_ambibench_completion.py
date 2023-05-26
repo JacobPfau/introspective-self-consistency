@@ -18,8 +18,10 @@ from typing import Dict, List, Tuple
 
 import pandas as pd
 from hydra.utils import get_original_cwd
+from omegaconf import DictConfig
 from tqdm import tqdm
 
+from models.base_model import BaseModel
 from src.models.openai_model import (
     CHAT_PROMPT_TEMPLATE,
     OpenAIChatModels,
@@ -85,17 +87,17 @@ def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
     return completion_response.strip()
 
 
-def evaluate_ambibench_completion(
-    model: str,
-    data_glob: str,
-):
-    model = get_model_from_string(model)
+def evaluate_ambibench_completion(cfg: DictConfig) -> None:
+    model: str = cfg.model
+    data_glob: str = cfg.data_glob
+
+    model: BaseModel = get_model_from_string(model)
 
     # get data
     data_glob = Path(get_original_cwd()) / data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    for data_path in glob.glob(str(data_glob)):
+    for data_path in list(glob.glob(str(data_glob)))[:2]:
 
         dataset = load_ambibench_dataset(data_path)
 
@@ -109,7 +111,7 @@ def evaluate_ambibench_completion(
 
         logger.info(f"Start model inference for: {model.value}")
         pred_completions: List[str] = []
-        for prompt in tqdm(formatted_prompts):
+        for prompt in tqdm(formatted_prompts[:2]):
             if isinstance(model, OpenAIChatModels):
                 completion = get_chat_completion(prompt, model)
             if isinstance(model, OpenAITextModels):

@@ -1,6 +1,8 @@
 import json
 import logging
 
+from omegaconf import DictConfig
+
 from src.evals.check_self_consistency import self_consistency_evaluation
 from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
@@ -11,13 +13,13 @@ from src.utils import reformat_self_consistency_results
 logger = logging.getLogger(__name__)
 
 
-def evaluate_compute_dependence_with_base_changes(
-    sequence_type: str,
-    model: str,
-    num_shots: int,
-    on_ambiguous_sequences: bool,
-    num_samples: int,
-):
+def evaluate_compute_dependence_with_base_changes(cfg: DictConfig) -> None:
+    sequence_type: str = cfg.sequence_type
+    model: str = cfg.model
+    num_shots: int = cfg.num_shots
+    on_ambiguous_sequences: bool = cfg.on_ambiguous_sequences
+    num_samples: int = cfg.num_samples
+
     total = 0
     if on_ambiguous_sequences:
         if sequence_type == "integer":

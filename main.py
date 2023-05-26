@@ -1,4 +1,5 @@
 import logging
+from typing import Callable
 
 import hydra
 from omegaconf import DictConfig
@@ -16,52 +17,24 @@ from src.utils import log_exceptions
 
 logger = logging.getLogger(__name__)
 
+TASK_FUNS = {
+    "string_transformation_completion_equality": evaluate_string_transformation_equality,
+    "sequence_completion_equality": evaluate_sequence_completion_equality,
+    "compute_dependence_with_base_changes": evaluate_compute_dependence_with_base_changes,
+    "ambibench_category_prediction": evaluate_ambibench_category_prediction,
+    "ambibench_completion": evaluate_ambibench_completion,
+}
+
 
 @hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
-    if cfg.task == "string_transformation_completion_equality":
-        task_cfg = cfg.string_transformation_completion_equality
-        evaluate_string_transformation_equality(
-            model=task_cfg.model,
-            num_shots=task_cfg.num_shots,
-            cot=task_cfg.use_cot,
-        )
-
-    if cfg.task == "sequence_completion_equality":
-        task_cfg = cfg.sequence_completion_equality
-        evaluate_sequence_completion_equality(
-            model=task_cfg.model,
-            max_offset=task_cfg.max_offset,
-            num_shots=task_cfg.num_shots,
-            cot=task_cfg.use_cot,
-            few_shot_prompt_type=task_cfg.few_shot_prompt_type,
-        )
-
-    if cfg.task == "compute_dependence_with_base_changes":
-        task_cfg = cfg.compute_dependence_with_base_changes
-        evaluate_compute_dependence_with_base_changes(
-            sequence_type=task_cfg.sequence_type,
-            model=task_cfg.model,
-            num_shots=task_cfg.num_shots,
-            on_ambiguous_sequences=task_cfg.on_ambiguous_sequences,
-            num_samples=task_cfg.num_samples,
-        )
-
-    if cfg.task == "ambibench_category_prediction":
-        task_cfg = cfg.ambibench_category_prediction
-        evaluate_ambibench_category_prediction(
-            model=task_cfg.model,
-            data_glob=task_cfg.data_glob,
-            multiple_choice=task_cfg.multiple_choice,
-        )
-
-    if cfg.task == "ambibench_completion":
-        task_cfg = cfg.ambibench_completion
-        evaluate_ambibench_completion(
-            model=task_cfg.model,
-            data_glob=task_cfg.data_glob,
-        )
+    task: str = cfg.task
+    task_cfg: DictConfig = cfg.get(task)
+    task_fun: Callable[[DictConfig], None] = TASK_FUNS.get(task)
+    if task_fun is None or task_cfg is None:
+        raise ValueError(f"Task '{task}' not supported.")
+    task_fun(task_cfg)
 
 
 if __name__ == "__main__":
