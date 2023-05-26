@@ -108,9 +108,7 @@ def generate_text_completion_with_logprobs(
     logprobs: int = 5,
     echo: bool = True,
 ) -> Tuple[List[str], List[float]]:
-    # response = _get_raw_text_model_response(
-    #     prompt, temperature, max_tokens, model, logprobs
-    # )
+
     response = openai.Completion.create(
         model=model.value,
         prompt=prompt,
@@ -127,6 +125,7 @@ def generate_text_completion_with_logprobs(
         return response
 
     logprob_dict = response["choices"][0]["logprobs"]
+    # return a list of tokens and a list of logprobs because sub-tokens can appear multiple times
     return logprob_dict["tokens"], logprob_dict["token_logprobs"]
 
 
@@ -177,7 +176,7 @@ def generate_chat_completion(
 
 
 def generate_response_with_turns(
-    model: str,
+    model: Union[str, BaseModel],
     turns: List[dict],
     temperature: float = 0.0,
     max_tokens: int = 512,
@@ -187,14 +186,14 @@ def generate_response_with_turns(
     Routes to the appropriate model.
     Turns are collapsed into a single string for non-chat model.
     """
-    if model in OpenAITextModels.list():
+    if model in OpenAITextModels.list() or isinstance(model, OpenAITextModels):
         return generate_text_completion(
             prompt="\n".join([turn["content"] for turn in turns]),
             temperature=temperature,
             max_tokens=max_tokens,
             model=model,
         )
-    elif model in OpenAIChatModels.list():
+    elif model in OpenAIChatModels.list() or isinstance(model, OpenAIChatModels):
         return generate_chat_completion(
             prompt_turns=turns,
             temperature=temperature,
