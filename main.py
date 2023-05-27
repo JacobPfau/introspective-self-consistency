@@ -1,10 +1,8 @@
 import logging
-from pathlib import Path
 from typing import Callable
 
 import hydra
-from hydra.utils import get_original_cwd
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 from src.evals.eval_ambibench_category_prediction import (
     evaluate_ambibench_category_prediction,
@@ -28,28 +26,18 @@ TASK_FUNS = {
 }
 
 
-def load_default_task_cfg(task: str) -> DictConfig:
-    cfg_path = Path(get_original_cwd()) / f"conf/tasks/{task}.yaml"
-    try:
-        cfg: DictConfig = OmegaConf.load(cfg_path)
-        return cfg
-    except FileNotFoundError:
-        raise ValueError(
-            f"Task '{task}' not supported (no config found at {str(cfg_path)})."
-        )
-
-
 @hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
+    if not cfg.keys() == {"task", "config"}:
+        raise ValueError(
+            f"Config should have exactly two keys: 'task' and 'config', but got {cfg.keys()}."
+        )
     task: str = cfg.task
+    task_cfg: DictConfig = cfg.config
     task_fun: Callable[[DictConfig], None] = TASK_FUNS.get(task)
     if task_fun is None:
-        raise ValueError(f"Task '{task}' not supported (no task function found).")
-
-    task_cfg = load_default_task_cfg(task)
-    # update the default task_cfg with the values from the user-specified cfg
-    task_cfg.merge_with(cfg)
+        raise ValueError(f"Task '{task}' not supported.")
     task_fun(task_cfg)
 
 
