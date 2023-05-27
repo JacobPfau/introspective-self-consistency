@@ -29,16 +29,11 @@ TASK_FUNS = {
 @hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
-    if not cfg.keys() == {"task", "config"}:
-        raise ValueError(
-            f"Config should have exactly two keys: 'task' and 'config', but got {cfg.keys()}."
-        )
     task: str = cfg.task
-    task_cfg: DictConfig = cfg.config
     task_fun: Callable[[DictConfig], None] = TASK_FUNS.get(task)
     if task_fun is None:
         raise ValueError(f"Task '{task}' not supported.")
-    task_fun(task_cfg)
+    task_fun(cfg)
 
 
 if __name__ == "__main__":

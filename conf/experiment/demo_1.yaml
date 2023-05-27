@@ -2,9 +2,7 @@
 # note:
 #  the line above is necessary to make Hydra treat the following as top-level config parameters
 #  instead of nested under "experiment"
-task: ambibench_category_prediction # which task to run
-config:
-  multiple_choice: true # the delta from the default config ...
+multiple_choice: true # the delta from the default config ...
 
 defaults: # ... all other parameters are taken from the default task config
-  - /tasks/ambibench_category_prediction@config
+  - /task/ambibench_category_prediction@_global_
