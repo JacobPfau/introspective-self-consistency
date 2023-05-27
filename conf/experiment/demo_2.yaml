@@ -5,4 +5,4 @@
 model: gpt-4-0314 # the delta from the default config ...
 
 defaults: # ... all other parameters are taken from the default task config
-  - /task/ambibench_completion@config
+  - /task/ambibench_completion

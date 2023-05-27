@@ -5,4 +5,4 @@
 multiple_choice: true # the delta from the default config ...
 
 defaults: # ... all other parameters are taken from the default task config
-  - /task/ambibench_category_prediction@_global_
+  - /task/ambibench_category_prediction
