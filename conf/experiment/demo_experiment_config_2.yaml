@@ -1,0 +1,4 @@
+# @package _global_
+task: ambibench_completion # which task to run
+ambibench_completion: # all other values are taken from ../tasks/ambibench_completion.yaml
+  model: gpt-4-0314

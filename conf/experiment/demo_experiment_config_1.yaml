@@ -1,0 +1,4 @@
+# @package _global_
+task: ambibench_category_prediction # which task to run
+ambibench_category_prediction: # all other values are taken from ../tasks/ambibench_category_prediction.yaml
+  multiple_choice: true
