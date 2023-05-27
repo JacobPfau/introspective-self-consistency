@@ -1,0 +1,7 @@
+# @package _global_
+# note:
+#  the line above is necessary to make Hydra treat the following as top-level config parameters
+#  instead of nested under "experiment"
+task: ambibench_category_prediction # which task to run
+ambibench_category_prediction:
+  multiple_choice: true # the delta from the default; all other taken from ../tasks/ambibench_category_prediction.yaml
