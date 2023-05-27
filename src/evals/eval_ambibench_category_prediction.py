@@ -124,7 +124,7 @@ def evaluate_ambibench_category_prediction(cfg: DictConfig) -> None:
     data_glob = Path(get_original_cwd()) / data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    for data_path in list(glob.glob(str(data_glob)))[:2]:
+    for data_path in glob.glob(str(data_glob)):
 
         dataset = load_ambibench_dataset(data_path)
         logger.debug(f"Dataset config: {repr(dataset.config)}")
@@ -148,7 +148,7 @@ def evaluate_ambibench_category_prediction(cfg: DictConfig) -> None:
 
         logger.info(f"Start model inference for: {model.value}")
         pred_categories: List[str] = []
-        for prompt in tqdm(formatted_prompts[:2]):
+        for prompt in tqdm(formatted_prompts):
             if isinstance(model, OpenAIChatModels):
                 prediction = get_chat_cat_prediction(prompt, model)
             if isinstance(model, OpenAITextModels):

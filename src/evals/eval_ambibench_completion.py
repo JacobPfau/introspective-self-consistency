@@ -97,7 +97,7 @@ def evaluate_ambibench_completion(cfg: DictConfig) -> None:
     data_glob = Path(get_original_cwd()) / data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    for data_path in list(glob.glob(str(data_glob)))[:2]:
+    for data_path in glob.glob(str(data_glob)):
 
         dataset = load_ambibench_dataset(data_path)
 
@@ -111,7 +111,7 @@ def evaluate_ambibench_completion(cfg: DictConfig) -> None:
 
         logger.info(f"Start model inference for: {model.value}")
         pred_completions: List[str] = []
-        for prompt in tqdm(formatted_prompts[:2]):
+        for prompt in tqdm(formatted_prompts):
             if isinstance(model, OpenAIChatModels):
                 completion = get_chat_completion(prompt, model)
             if isinstance(model, OpenAITextModels):
