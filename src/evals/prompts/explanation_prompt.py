@@ -22,13 +22,18 @@ Prompts will take the form:
 """
 
 
+import logging
 from typing import List, Union
 
 from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
-from src.models.openai_model import DAVINCI_MODEL_NAME, OpenAITextModels, OpenAIChatModels
+from src.models.openai_model import (
+    DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
+)
 from src.pipelines.sequence_completions import sequence_functions
 
 PRE_PROMPT = """
@@ -39,6 +44,8 @@ the second by f(1), the third by f(2), and so on.
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 sequence_functions = sequence_functions.copy()
+
+logger = logging.getLogger(__name__)
 
 
 def create_explanation_prompt(
@@ -75,7 +82,7 @@ def create_explanation_prompt(
         text += ",".join([bin(x) for x in sequence])
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
-    # print(pre_prompt)
+    # logger.info(pre_prompt)
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
         pretext = pre_prompt + "\n"
@@ -91,7 +98,7 @@ def create_explanation_prompt(
             }
         ]
         whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}]
-        print(whole_prompt)
+        logger.info(str(whole_prompt))
         return whole_prompt
     else:
         raise ValueError(f"Invalid model name: {model_name}")
@@ -132,7 +139,7 @@ def generate_exp_shot_prompt(
         return response
 
     else:
-        print("model name is: ", model_name)
+        logger.info(f"model name is: {model_name}")
         raise ValueError(f"Invalid model name: {model_name}")
 
 

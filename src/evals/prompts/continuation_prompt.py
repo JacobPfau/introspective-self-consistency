@@ -24,12 +24,14 @@ The sequences will be taken from the list of ambiguous sequences.
 
 """
 
+import logging
+
 # import random
 from typing import List, Union
 
-from src.models.openai_model import OpenAITextModels, OpenAIChatModels
 from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
+from src.models.openai_model import OpenAIChatModels, OpenAITextModels
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
 from src.pipelines.sequence_completions import sequence_functions
@@ -41,6 +43,8 @@ from src.pipelines.sequence_completions import sequence_functions
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 del sequence_functions["recursive_progression"]
+
+logger = logging.getLogger(__name__)
 
 
 def create_continuation_prompt(
@@ -109,7 +113,7 @@ def generate_cont_shot_prompt(
         sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
-    print("model name is: ", model_name)
+    logger.info(f"model name is: {model_name}")
     if model_name in OpenAITextModels.list():
         text = "Q: "
         if base == 10:
@@ -133,7 +137,7 @@ def generate_cont_shot_prompt(
             a_text = bin(eval(fn)(sequence_length))
         response = [{"role": "user", "content": q_text}]
         response += [{"role": "assistant", "content": a_text}]
-        # print("responseo be: ", response)
+        logger.info(f"response is: {response}")
         return response
 
     else:

@@ -6,9 +6,10 @@ from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     sequence_functions,
 )
-from src.utils import reformat_self_consistency_results, auto_subdir
+from src.utils import auto_subdir, reformat_self_consistency_results
 
 logger = logging.getLogger(__name__)
+
 
 @auto_subdir
 def evaluate_compute_dependence_with_base_changes(
@@ -43,11 +44,11 @@ def evaluate_compute_dependence_with_base_changes(
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
             total += 1
-            logger.info("Total: ", total)
+            logger.info(f"Total: {total}")
             logger.info(f"Sequence: {sequence}")
             for _ in range(2):
                 try:
-                    logger.info("base be: ", base)
+                    logger.info(f"base be: {base}")
                     (
                         correct_consistent_explanations,
                         correct_inconsistent_explanations,
@@ -66,7 +67,7 @@ def evaluate_compute_dependence_with_base_changes(
                     )
                 except Exception as e:
                     logger.info("oopies")
-                    logger.info(e)
+                    logger.info(f"Error is: {str(e)}")
                 else:
                     if sequence in results:
                         results[sequence][
@@ -95,7 +96,7 @@ def evaluate_compute_dependence_with_base_changes(
             pass
             # TODO: have support for general base sequences here
 
-    logger.info(total)
+    logger.info("Total is: {str(total)}")
 
     # Reformat results
     results = reformat_self_consistency_results(results)

@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from src.evals.evaluate_continuation import generate_continuation, valid_continuation
@@ -12,6 +13,8 @@ from src.evals.prompts.explanation_prompt import (
     create_explanation_prompt,
     parse_explanation,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def self_consistency_evaluation(
@@ -56,7 +59,7 @@ def self_consistency_evaluation(
     )
 
     for _ in range(samples):
-        print("eyo")
+        logger.info("Generating a continuation and explanation")
         # Generate a continuation
         continuation = generate_continuation(
             prompt=continuation_prompt,
@@ -67,7 +70,7 @@ def self_consistency_evaluation(
         continuation = continuation.strip()
 
         if not valid_continuation(continuation, base):
-            print("invalid continuation: ", continuation)
+            logger.info("invalid continuation: ", continuation)
             invalid_responses += 1
             continue
         if base == 2:
@@ -88,7 +91,7 @@ def self_consistency_evaluation(
             continue
 
         if not valid_explanation(fn, len(sequence)):
-            print("invalid explanation: ", explanation)
+            logger.info(f"invalid explanation: {explanation}")
             invalid_responses += 1
             continue
         else:
@@ -104,16 +107,16 @@ def self_consistency_evaluation(
             )
 
         # Check the explanation is accurate
-        print("implied_sequence: ", implied_sequence)
-        print("sequence: ", sequence)
+        logger.info(f"implied_sequence: {implied_sequence}")
+        logger.info(f"sequence: {sequence}")
         if implied_sequence == sequence:
             correct = True
         else:
             correct = False
 
         # Check consistency
-        print("implied_continuation: ", implied_continuation)
-        print("continuation: ", continuation)
+        logger.info(f"implied_continuation: {implied_continuation}")
+        logger.info(f"continuation: {continuation}")
         try:
             # check if the implied continuation is decimal as specified
             _ = int(implied_continuation)
