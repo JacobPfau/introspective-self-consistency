@@ -1,6 +1,6 @@
-sequence_type: binary
-model: gpt-4-0314
-num_shots: 4
+sequence_type: integer
+model: gpt-3.5-turbo
+num_shots: 1
 on_ambiguous_sequences: true
 num_samples: 1
 distribution: default
