@@ -12,6 +12,7 @@ from typing import Any, Dict, List, Literal, Union
 
 import pandas as pd
 import tiktoken
+from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q12LogprobInequalityConfig
@@ -78,6 +79,9 @@ def _get_logprob_from_response(
 def run_q1_2_eval(
     config: Q12LogprobInequalityConfig,
 ):
+    """Main function to run Q1.2 eval."""
+    config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
+    config.csv_output_path = os.path.join(get_original_cwd(), config.csv_output_path)
 
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q1.2 eval.")
