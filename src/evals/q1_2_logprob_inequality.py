@@ -14,6 +14,7 @@ import pandas as pd
 import tiktoken
 from tqdm import tqdm
 
+from src.evals.config import Q12LogprobInequalityConfig
 from src.evals.utils import parse_function_and_model_from_csv
 from src.models.base_model import BaseModel
 from src.models.openai_model import (
@@ -37,12 +38,12 @@ _MIN_LOGPROB = -100.0
 logger = logging.getLogger(__name__)
 
 
-def list_rindex(li, x):
+def list_rindex(li, x, ignore_idx: List[int] = []):
     # Get the index of the last occurrence of x in list
     for i in reversed(range(len(li))):
-        if li[i] == x:
+        if li[i] == x and i not in ignore_idx:
             return i
-    raise ValueError(f"'{x}' is not in list")
+    raise ValueError(f"'{x}' is not in list or is in ignore_idx")
 
 
 def _get_logprob_from_response(
@@ -57,9 +58,15 @@ def _get_logprob_from_response(
     string_tokens = [
         encoding.decode([tkn]) for tkn in encoding.encode(completion_string)
     ]
-    # TODO: how to handle repeated tokens?
     try:
-        logprobs = [token_logprobs[list_rindex(tokens, tkn)] for tkn in string_tokens]
+        # get logprob for each token in completion string
+        # ensure that repeated tokens are handled correctly, i.e.
+        tkn_indices: List[int] = []
+        for tkn in string_tokens:
+            idx = list_rindex(tokens, tkn, tkn_indices)
+            tkn_indices.append(idx)
+
+        logprobs = [token_logprobs[idx] for idx in tkn_indices]
         logprob = sum(logprobs) / len(logprobs)
     except ValueError as e:
         logger.error(f"Completion not found, return min logprob: {repr(e)}")
@@ -69,19 +76,12 @@ def _get_logprob_from_response(
 
 
 def run_q1_2_eval(
-    csv_path: str,
-    results_csv_path="results/q1_2_results.csv",
-    num_shots=4,
-    num_valid=2,
-    num_invalid=3,
-    cot=False,
-    few_shot_prompt_type="random",
-    invalid_fn_type="random",
+    config: Q12LogprobInequalityConfig,
 ):
 
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q1.2 eval.")
-    amb_seqs, data = get_data_q1_2(csv_path, num_valid, num_invalid, invalid_fn_type)
+    amb_seqs, data = get_data_q1_2(config)
     results = []
     for entry in tqdm(data):
         try:
@@ -95,12 +95,12 @@ def run_q1_2_eval(
             invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
-            completion_responses, possible_completions = eval_sequence_completion(
+            completion_responses, possible_completions = _eval_sequence_completion(
                 model,
                 org_func,
-                num_shots,
-                cot,
-                few_shot_prompt_type,
+                config.num_shots,
+                config.cot,
+                config.few_shot_prompt_type,
                 amb_seqs,
                 sequence,
                 valid_completions,
@@ -110,12 +110,12 @@ def run_q1_2_eval(
             test_passing_completion = evaluate_logprob_inequality(completion_responses)
 
             # run eval for sequence explanation
-            explanation_responses, possible_explanations = eval_sequence_explanation(
+            explanation_responses, possible_explanations = _eval_sequence_explanation(
                 model,
                 org_func,
-                num_shots,
-                cot,
-                few_shot_prompt_type,
+                config.num_shots,
+                config.cot,
+                config.few_shot_prompt_type,
                 amb_seqs,
                 sequence,
                 valid_fns,
@@ -138,8 +138,8 @@ def run_q1_2_eval(
                 "model": model.value,
                 "sequence": sequence,
                 "org_func": org_func,
-                "test_passing_completion": test_passing_completion,
-                "test_passing_explanation": test_passing_explanation,
+                "test_passing_completion": int(test_passing_completion),
+                "test_passing_explanation": int(test_passing_explanation),
                 "possible_completions_response": possible_completions,
                 "possible_explanations_response": possible_explanations,
             }
@@ -149,7 +149,7 @@ def run_q1_2_eval(
         except Exception as e:
             logger.error(f"Unexpected error in Q1.2 eval: {repr(e)}")
 
-    _save_results_to_csv(results, results_csv_path)
+    _save_results_to_csv(results, config.csv_output_path)
 
 
 def _save_results_to_csv(results: List[Dict[str, Any]], csv_path: str):
@@ -163,8 +163,8 @@ def _save_results_to_csv(results: List[Dict[str, Any]], csv_path: str):
     logger.info(f"Saved results to: {csv_path}.")
 
 
-def get_data_q1_2(csv_path: str, num_valid, num_invalid, invalid_fn_type):
-    base_data = parse_function_and_model_from_csv(csv_path)
+def get_data_q1_2(config: Q12LogprobInequalityConfig):
+    base_data = parse_function_and_model_from_csv(config.csv_input_path)
 
     # filter data to only include text models
     # get_model_from_string(entry["model"]) == OpenAITextModels.TEXT_DAVINCI_003
@@ -195,10 +195,10 @@ def get_data_q1_2(csv_path: str, num_valid, num_invalid, invalid_fn_type):
             entry = {}
             if consistent_func in fns:
                 # sample valid ambiguous functions
-                if len(fns) >= num_valid:
-                    valid_fns = random.sample(fns, num_valid)
+                if len(fns) >= config.num_valid:
+                    valid_fns = random.sample(fns, config.num_valid)
                     while consistent_func not in valid_fns:
-                        valid_fns = random.sample(fns, num_valid)
+                        valid_fns = random.sample(fns, config.num_valid)
                 else:
                     logger.error("Not enough valid candidate functions.")
                     continue
@@ -211,9 +211,9 @@ def get_data_q1_2(csv_path: str, num_valid, num_invalid, invalid_fn_type):
 
                 # generate shots for alternative, invalid explanations
                 invalid_fns = generate_shot_pool(
-                    n_shots=num_invalid,
+                    n_shots=config.num_invalid,
                     base_fn=consistent_func,
-                    shot_type=invalid_fn_type,
+                    shot_type=config.invalid_fn_type,
                     ambiguous_sequences=amb_seqs,
                 )
                 invalid_completions = [
@@ -237,7 +237,7 @@ def get_data_q1_2(csv_path: str, num_valid, num_invalid, invalid_fn_type):
     return amb_seqs, data
 
 
-def eval_sequence_completion(
+def _eval_sequence_completion(
     model: BaseModel,
     org_func: Dict[str, Any],
     num_shots: int,
@@ -290,19 +290,17 @@ def eval_sequence_completion(
     )
     turns[-1] = priming_prompt
 
-    # TODO: uncomment when
     response = generate_response_with_turns(
         model, turns=turns
     )  # completions based on priming the model
     possible_completions = [
         elem.strip() for elem in response.split("\\n")
     ]  # parse response
-    # possible_completions = ["dummy response"]
 
     return completion_responses, possible_completions
 
 
-def eval_sequence_explanation(
+def _eval_sequence_explanation(
     model: BaseModel,
     org_func: Dict[str, Any],
     num_shots: int,
@@ -358,12 +356,12 @@ def eval_sequence_explanation(
         model, turns[-1], "explanation"
     )
     turns[-1] = priming_prompt
-    # TODO: uncomment when possible_explanations is used, for now put dummy response to save token usage
+
     response = generate_response_with_turns(
         model, turns=turns
     )  # explanations based on priming the model
     possible_explanations = [elem.strip() for elem in response.split("\\n")]
-    # possible_explanations = ["dummy response"]
+
     return explanation_responses, possible_explanations
 
 
@@ -415,7 +413,9 @@ def get_model_priming_prompt_possible_options(
 
 if __name__ == "__main__":
 
-    run_q1_2_eval(
-        csv_path="data/q12_functions/consistent_functions_by_model.csv",
-        results_csv_path="/Users/hb/Repos/introspective-self-consistency/results/q1.2/230529_results.csv",
+    config = Q12LogprobInequalityConfig(
+        csv_input_path="data/q12_functions/consistent_functions_by_model.csv",
+        csv_results_path="/Users/hb/Repos/introspective-self-consistency/results/q1.2/230529_results.csv",
     )
+
+    run_q1_2_eval(config)

@@ -1,0 +1,10 @@
+# @package _global_
+task: q1_2_logprob_equality
+csv_input_path: ./data/q1_2_functions/consistent_functions_by_model.csv
+csv_results_path: results/q1_2_results.csv
+num_shots: 4
+num_valid: 2
+num_invalid: 3
+cot: false
+few_shot_prompt_type: "random"
+invalid_fn_type: "random"

@@ -8,6 +8,7 @@ from src.evals.config import (
     AmbibenchCatPredConfig,
     AmbibenchCompletionConfig,
     BaseEvalConfig,
+    Q12LogprobInequalityConfig,
     SequenceCompletionBaseChangeConfig,
     SequenceCompletionEqConfig,
     StringTransformationConfig,
@@ -16,6 +17,7 @@ from src.evals.eval_ambibench_category_prediction import (
     evaluate_ambibench_category_prediction,
 )
 from src.evals.eval_ambibench_completion import evaluate_ambibench_completion
+from src.evals.q1_2_logprob_inequality import run_q1_2_eval
 from src.evals.sequence_completion import evaluate_sequence_completion_equality
 from src.evals.sequence_completion_with_base_change import (
     evaluate_compute_dependence_with_base_changes,
@@ -45,6 +47,10 @@ TASK_FUNS = {
     "ambibench_completion": {
         "fn": evaluate_ambibench_completion,
         "config": AmbibenchCompletionConfig,
+    },
+    "q1_2_logprob_inequality": {
+        "fn": run_q1_2_eval,
+        "config": Q12LogprobInequalityConfig,
     },
 }
 

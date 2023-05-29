@@ -58,3 +58,15 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
     num_samples: int
     on_ambiguous_sequences: bool
     num_shots = NUM_SHOTS
+
+
+@dataclass
+class Q12LogprobInequalityConfig(BaseEvalConfig):
+    csv_input_path: str
+    csv_output_path: str
+    num_shots = 4
+    num_valid = 2
+    num_invalid = 3
+    cot = False
+    few_shot_prompt_type = "random"
+    invalid_fn_type = "random"
