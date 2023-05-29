@@ -4,24 +4,29 @@ and prompt the model for (1) completion, (2) explanation, (3) explanation condit
 We compute/obtain the log probabilities for each answer and evaluate the mass distribution.
 """
 
+import copy
 import logging
+import os
 import random
 from typing import Any, Dict, List, Literal, Union
 
+import pandas as pd
 import tiktoken
 from tqdm import tqdm
 
+from src.evals.utils import parse_function_and_model_from_csv
+from src.models.base_model import BaseModel
 from src.models.openai_model import (
     OpenAITextModels,
     generate_logprob_response_with_turns,
     generate_response_with_turns,
 )
-from src.models.utils import BaseModel
+from src.models.utils import get_model_from_string
 from src.pipelines.sequence_completions import (
-    _generate_shot_pool,
-    _resolve_fn,
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
+    generate_shot_pool,
+    resolve_fn,
 )
 
 _RESPONSE_TYPES = ["completion", "explanation"]
@@ -64,8 +69,8 @@ def _get_logprob_from_response(
 
 
 def run_q1_2_eval(
-    model: BaseModel,
-    max_offset=8,
+    csv_path: str,
+    results_csv_path="results/q1_2_results.csv",
     num_shots=4,
     num_valid=2,
     num_invalid=3,
@@ -75,41 +80,29 @@ def run_q1_2_eval(
 ):
 
     # main function to run this eval which can be called from main.py
-
-    # generate ambiguous sequences
-    # first find amb seqs with 2 possible explanations (generation functions/rules)
-    amb_seqs = find_ambiguous_integer_sequences()
-
-    for sequence, fns in tqdm(list(amb_seqs.items())):
-        valid_fns = random.sample(fns, num_valid) if len(fns) >= num_valid else fns
+    logger.info("Prep data for Q1.2 eval.")
+    amb_seqs, data = get_data_q1_2(csv_path, num_valid, num_invalid, invalid_fn_type)
+    results = []
+    for entry in tqdm(data):
         try:
             # roll out valid fns to obtain valid completions
-            last_step = len(sequence.split(","))
-            valid_completions = [
-                _resolve_fn(fn_item, last_step) for fn_item in valid_fns
-            ]
-
-            # generate shots for alternative, invalid explanations
-            # TODO: decide which function valid func to use
-            invalid_fns = _generate_shot_pool(
-                n_shots=num_invalid,
-                base_fn=valid_fns[0],
-                shot_type=invalid_fn_type,
-                ambiguous_sequences=amb_seqs,
-            )
-            invalid_completions = [
-                _resolve_fn(fn_item, last_step) for fn_item in invalid_fns
-            ]
+            model: BaseModel = entry["model"]
+            sequence = entry["sequence"]
+            org_func = entry["org_func"]
+            valid_fns = entry["valid_fns"]
+            valid_completions = entry["valid_completions"]
+            invalid_fns = entry["invalid_fns"]
+            invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
             completion_responses, possible_completions = eval_sequence_completion(
                 model,
+                org_func,
                 num_shots,
                 cot,
                 few_shot_prompt_type,
                 amb_seqs,
                 sequence,
-                valid_fns,
                 valid_completions,
                 invalid_completions,
             )
@@ -119,6 +112,7 @@ def run_q1_2_eval(
             # run eval for sequence explanation
             explanation_responses, possible_explanations = eval_sequence_explanation(
                 model,
+                org_func,
                 num_shots,
                 cot,
                 few_shot_prompt_type,
@@ -140,27 +134,123 @@ def run_q1_2_eval(
             # # sort completion responses by logprob with largest first
             # completion_responses = sorted(completion_responses, key=lambda x: x["logprob"], reverse=True)
             # print(completion_responses)
+            results_entry = {
+                "model": model.value,
+                "sequence": sequence,
+                "org_func": org_func,
+                "test_passing_completion": test_passing_completion,
+                "test_passing_explanation": test_passing_explanation,
+                "possible_completions_response": possible_completions,
+                "possible_explanations_response": possible_explanations,
+            }
+
+            results.append(results_entry)
 
         except Exception as e:
-            print(e)
+            logger.error(f"Unexpected error in Q1.2 eval: {repr(e)}")
 
-    # TODO: store results in a dataframe
+    _save_results_to_csv(results, results_csv_path)
+
+
+def _save_results_to_csv(results: List[Dict[str, Any]], csv_path: str):
+    df = pd.DataFrame.from_dict(results, orient="index")
+
+    # append to existing csv if exists
+    if os.path.exists(csv_path):
+        df = pd.concat([pd.read_csv(csv_path, sep=","), df], ignore_index=True)
+
+    df.to_csv(csv_path, sep=",", index=False, header=True)
+    logger.info(f"Saved results to: {csv_path}.")
+
+
+def get_data_q1_2(csv_path: str, num_valid, num_invalid, invalid_fn_type):
+    base_data = parse_function_and_model_from_csv(csv_path)
+
+    # filter data to only include text models
+    # get_model_from_string(entry["model"]) == OpenAITextModels.TEXT_DAVINCI_003
+    base_data = [
+        entry
+        for entry in base_data
+        if isinstance(get_model_from_string(entry["model"]), OpenAITextModels)
+    ]  #
+    logger.info("Skipping non-text models as logprobs are not available.")
+
+    amb_seqs = find_ambiguous_integer_sequences()
+
+    data = []
+
+    for entry in tqdm(base_data):
+        model = get_model_from_string(entry["model"])
+        consistent_func = entry["fn_item"]
+        # {'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}
+
+        # generate dataset for this eval:
+        # 1) generate ambiguous sequence given a valid explanation and find alternative, valid explanation
+        # 2) generate valid completions
+        # 3) generate shots for invalid explanations
+        # 4) generate invalid completions
+
+        # find alternative, valid function
+        for sequence, fns in tqdm(list(amb_seqs.items())):
+            entry = {}
+            if consistent_func in fns:
+                # sample valid ambiguous functions
+                if len(fns) >= num_valid:
+                    valid_fns = random.sample(fns, num_valid)
+                    while consistent_func not in valid_fns:
+                        valid_fns = random.sample(fns, num_valid)
+                else:
+                    logger.error("Not enough valid candidate functions.")
+                    continue
+
+                # roll out valid fns to obtain valid completions
+                last_step = len(sequence.split(","))
+                valid_completions = [
+                    resolve_fn(fn_item, last_step) for fn_item in valid_fns
+                ]
+
+                # generate shots for alternative, invalid explanations
+                invalid_fns = generate_shot_pool(
+                    n_shots=num_invalid,
+                    base_fn=consistent_func,
+                    shot_type=invalid_fn_type,
+                    ambiguous_sequences=amb_seqs,
+                )
+                invalid_completions = [
+                    resolve_fn(fn_item, last_step) for fn_item in invalid_fns
+                ]
+
+                entry["sequence"] = sequence
+                entry["org_func"] = consistent_func
+                valids = list(zip(valid_fns, valid_completions))
+                random.shuffle(valids)
+                valid_fns, valid_completions = zip(*valids)
+
+                entry["valid_fns"] = list(valid_fns)
+                entry["valid_completions"] = valid_completions
+                entry["invalid_fns"] = list(invalid_fns)
+                entry["invalid_completions"] = invalid_completions
+                entry["model"] = model
+
+                data.append(entry)
+
+    return amb_seqs, data
 
 
 def eval_sequence_completion(
-    model,
+    model: BaseModel,
+    org_func: Dict[str, Any],
     num_shots: int,
     cot: bool,
     few_shot_prompt_type: str,
     amb_seqs: Dict[str, List[Dict[str, Union[str, int]]]],
     sequence: str,
-    valid_fns: List[Dict[str, Any]],
     valid_completions: List[int],
     invalid_completions: List[int],
 ):
     completion_prompt = generate_sequence_completion_prompt(
         sequence,
-        valid_fns[0],
+        org_func,
         n_shots=num_shots,
         use_cot=cot,
         ambiguous_sequences=amb_seqs,
@@ -174,7 +264,7 @@ def eval_sequence_completion(
         (compl, False) for compl in invalid_completions
     ]:
         # add completion to the last prompt turn
-        turns = completion_prompt["prompt_turns"]
+        turns = copy.deepcopy(completion_prompt["prompt_turns"])
         completion_string = " " + str(completion)
         turns[-1]["content"] += completion_string
 
@@ -193,16 +283,28 @@ def eval_sequence_completion(
         )
 
     turns = completion_prompt["prompt_turns"]
-    turns.append(get_model_priming_prompt(model, "completion"))
+
+    # modify the last turn to ask for possible explanations
+    priming_prompt = get_model_priming_prompt_possible_options(
+        model, turns[-1], "completion"
+    )
+    turns[-1] = priming_prompt
 
     # TODO: uncomment when
-    # possible_completions = generate_response_with_turns(model, turns=turns)  # completions based on priming the model
-    possible_completions = ["dummy response"]
+    response = generate_response_with_turns(
+        model, turns=turns
+    )  # completions based on priming the model
+    possible_completions = [
+        elem.strip() for elem in response.split("\\n")
+    ]  # parse response
+    # possible_completions = ["dummy response"]
+
     return completion_responses, possible_completions
 
 
 def eval_sequence_explanation(
-    model,
+    model: BaseModel,
+    org_func: Dict[str, Any],
     num_shots: int,
     cot: bool,
     few_shot_prompt_type: str,
@@ -214,7 +316,7 @@ def eval_sequence_explanation(
     # construct prompt for model explanation
     explanation_prompt = generate_sequence_completion_prompt(
         sequence,
-        valid_fns[0],
+        org_func,
         prompt_type="explanation",
         n_shots=num_shots,
         use_cot=cot,
@@ -232,7 +334,7 @@ def eval_sequence_explanation(
         # turns[-2] = {'role': 'assistant', 'content': 'lambda x: 4 ** (3 * x)'}
         # turns[-1] = {'role': 'user', 'content': '\nFor the sequence: 0,2,4,6\n
         #   \nGive the code that generates the above sequence.\n'}
-        turns = explanation_prompt["prompt_turns"]
+        turns = copy.deepcopy(explanation_prompt["prompt_turns"])
         explanation_string = " " + str(explanation["fn"])
         turns[-1]["content"] += explanation_string
 
@@ -250,10 +352,18 @@ def eval_sequence_explanation(
         )
 
     turns = explanation_prompt["prompt_turns"]
-    turns.append(get_model_priming_prompt(model, "explanation"))
+
+    # modify the last turn to ask for possible explanations
+    priming_prompt = get_model_priming_prompt_possible_options(
+        model, turns[-1], "explanation"
+    )
+    turns[-1] = priming_prompt
     # TODO: uncomment when possible_explanations is used, for now put dummy response to save token usage
-    # possible_explanations = generate_response_with_turns(model, turns=turns)  # explanations based on priming the model
-    possible_explanations = ["dummy response"]
+    response = generate_response_with_turns(
+        model, turns=turns
+    )  # explanations based on priming the model
+    possible_explanations = [elem.strip() for elem in response.split("\\n")]
+    # possible_explanations = ["dummy response"]
     return explanation_responses, possible_explanations
 
 
@@ -282,25 +392,30 @@ def evaluate_logprob_inequality(
     return all(ineq)
 
 
-def get_model_priming_prompt(
-    model: BaseModel, response_type: Literal["completion", "explanation"]
+def get_model_priming_prompt_possible_options(
+    model: BaseModel,
+    turn: Dict[str, str],
+    response_type: Literal["completion", "explanation"],
 ) -> Dict[str, str]:
     # generate priming prompt for model
-    base = (
-        f"Please list all possible {response_type}s separated by escape character '\\n'"
-    )
-
+    base = f"Please list all possible {response_type}s separated by escape character '\\n' "
+    model_string = f", as determined by you, {model.value}."
+    seq = turn["content"].split("\n")[1]  # start with "For the sequence .."
     if response_type == "completion":
         priming = base + "which could be valid continuations of the sequence"
 
     elif response_type == "explanation":
+        base = f"Please list all possible {response_type}s (as code) separated by escape character '\\n' "
         priming = base + "which could have generated the sequence above"
 
-    model_string = f", as determined by you, {model.value}."
-    return {"role": "user", "content": priming + model_string}
+    turn["content"] = "\n" + seq + "\n\n" + priming + model_string + "\n"
+
+    return turn
 
 
 if __name__ == "__main__":
 
-    model = OpenAITextModels.TEXT_DAVINCI_003
-    run_q1_2_eval(model)
+    run_q1_2_eval(
+        csv_path="data/q12_functions/consistent_functions_by_model.csv",
+        results_csv_path="/Users/hb/Repos/introspective-self-consistency/results/q1.2/230529_results.csv",
+    )
