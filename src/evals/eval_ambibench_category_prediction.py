@@ -9,6 +9,8 @@ import pandas as pd
 from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
+from src.evals.config import AmbibenchCatPredConfig
+from src.models.base_model import BaseModel
 from src.models.openai_model import (
     CHAT_PROMPT_TEMPLATE,
     OpenAIChatModels,
@@ -16,10 +18,8 @@ from src.models.openai_model import (
     generate_chat_completion,
     generate_text_completion,
 )
-from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 from src.structures.ambibench import AmbiBenchDataset
-from src.utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
@@ -114,15 +114,12 @@ def get_text_cat_prediction(prompt: str, model: OpenAITextModels) -> str:
     return text_response.strip()
 
 
-@auto_subdir
-def evaluate_ambibench_category_prediction(
-    model: str,
-    data_glob: str,
-    multiple_choice: bool = False,
-) -> None:
-    model = get_model_from_string(model)
+def evaluate_ambibench_category_prediction(config: AmbibenchCatPredConfig) -> None:
+    model: BaseModel = config.model
+    multiple_choice: bool = config.multiple_choice
+
     # get data
-    data_glob = Path(get_original_cwd()) / data_glob
+    data_glob = Path(get_original_cwd()) / config.data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
     for data_path in glob.glob(str(data_glob)):

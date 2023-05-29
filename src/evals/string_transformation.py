@@ -4,12 +4,12 @@ import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
+from src.evals.config import StringTransformationConfig
 from src.models.openai_model import generate_response_with_turns
 from src.pipelines.string_transformations import (
     find_ambiguous_string_transformations,
     generate_string_transformation_prompt,
 )
-from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
@@ -195,8 +195,11 @@ def string_transformation_equality(
     }
 
 
-@auto_subdir
-def evaluate_string_transformation_equality(model, num_shots=NUM_SHOTS, cot=COT):
+def evaluate_string_transformation_equality(config: StringTransformationConfig) -> None:
+    model = config.model
+    num_shots = config.num_shots
+    cot = config.cot
+
     logger.info("Evaluating string transformation equality...")
     ambiguous_sequences = find_ambiguous_string_transformations("#", "@", 4)
     total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())

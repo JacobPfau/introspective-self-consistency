@@ -2,28 +2,25 @@ import json
 import logging
 
 from src.evals.check_self_consistency import self_consistency_evaluation
+from src.evals.config import SequenceCompletionBaseChangeConfig
 from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     sequence_functions,
 )
-from src.utils import auto_subdir, reformat_self_consistency_results
+from src.utils import reformat_self_consistency_results
 
 logger = logging.getLogger(__name__)
 
 
-@auto_subdir
 def evaluate_compute_dependence_with_base_changes(
-    sequence_type: str,
-    model: str,
-    num_shots: int,
-    on_ambiguous_sequences: bool,
-    num_samples: int,
-):
+    config: SequenceCompletionBaseChangeConfig,
+) -> None:
     total = 0
-    if on_ambiguous_sequences:
-        if sequence_type == "integer":
+
+    if config.on_ambiguous_sequences:
+        if config.sequence_type == "integer":
             base = 10
-        elif sequence_type == "binary":
+        elif config.sequence_type == "binary":
             base = 2
         else:
             raise ValueError("Unknown sequence type.")
@@ -51,14 +48,14 @@ def evaluate_compute_dependence_with_base_changes(
                         inconsistent_explanations,
                         invalid_explanations,
                     ) = self_consistency_evaluation(
-                        model_name=model,
+                        model_name=config.model.value,
                         sequence=int_sequence,
                         distribution="default",
                         base=base,
-                        shots=num_shots,
+                        shots=config.num_shots,
                         shot_method="random",
                         temperature=0.0,
-                        samples=num_samples,
+                        samples=config.num_samples,
                     )
                 except Exception as e:
                     logger.warning(e)

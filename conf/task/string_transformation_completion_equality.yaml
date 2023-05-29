@@ -1,0 +1,5 @@
+# @package _global_
+task: string_transformation_completion_equality
+model: gpt-3.5-turbo
+num_shots: 4
+cot: false
