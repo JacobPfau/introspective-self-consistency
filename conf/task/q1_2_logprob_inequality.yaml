@@ -1,7 +1,8 @@
 # @package _global_
-task: q1_2_logprob_equality
+task: q1_2_logprob_inequality
+model: text-davinci-003  # Note: model is determined by input data
 csv_input_path: ./data/q1_2_functions/consistent_functions_by_model.csv
-csv_results_path: results/q1_2_results.csv
+csv_output_path: results/q1_2_results.csv
 num_shots: 4
 num_valid: 2
 num_invalid: 3
