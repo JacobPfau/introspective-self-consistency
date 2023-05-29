@@ -2,9 +2,9 @@ import logging
 
 import numpy as np
 import pandas as pd
-from omegaconf import DictConfig
 from tqdm.auto import tqdm
 
+from src.evals.config import StringTransformationConfig
 from src.models.openai_model import generate_response_with_turns
 from src.pipelines.string_transformations import (
     find_ambiguous_string_transformations,
@@ -195,10 +195,10 @@ def string_transformation_equality(
     }
 
 
-def evaluate_string_transformation_equality(cfg: DictConfig) -> None:
-    model: str = cfg.model
-    num_shots: int = cfg.get("num_shots", NUM_SHOTS)
-    cot: bool = cfg.get("use_cot", COT)
+def evaluate_string_transformation_equality(config: StringTransformationConfig) -> None:
+    model = config.model
+    num_shots = config.num_shots
+    cot = config.cot
 
     logger.info("Evaluating string transformation equality...")
     ambiguous_sequences = find_ambiguous_string_transformations("#", "@", 4)

@@ -2,9 +2,9 @@ import logging
 
 import numpy as np
 import pandas as pd
-from omegaconf import DictConfig
 from tqdm.auto import tqdm
 
+from src.evals.config import SequenceCompletionEqConfig
 from src.models.openai_model import generate_response_with_turns
 from src.pipelines.sequence_completions import (
     PromptType,
@@ -71,9 +71,9 @@ def sequence_completion_equality(
     sequence: str,
     fn: str,
     model: str,
-    max_offset: int = MAX_OFFSET,
-    num_shots: int = NUM_SHOTS,
-    cot: bool = COT,
+    max_offset: int = 8,
+    num_shots: int = 8,
+    cot: bool = True,
     evaluate_model_completion: bool = True,
     evaluate_model_consistency: bool = True,
     ambiguous_sequences: dict = None,
@@ -166,12 +166,11 @@ def sequence_completion_equality(
     }
 
 
-def evaluate_sequence_completion_equality(cfg: DictConfig) -> None:
-    model: str = cfg.model
-    max_offset: int = cfg.get("max_offset", MAX_OFFSET)
-    num_shots: int = cfg.get("num_shots", NUM_SHOTS)
-    cot: bool = cfg.get("cot", COT)
-    few_shot_prompt_type: PromptType = cfg.get("few_shot_prompt_type", "random")
+def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) -> None:
+    max_offset = config.max_offset
+    num_shots = config.num_shots
+    cot = config.cot
+    few_shot_prompt_type: PromptType = config.few_shot_prompt_type
 
     logger.info("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
@@ -184,7 +183,7 @@ def evaluate_sequence_completion_equality(cfg: DictConfig) -> None:
                     sequence_completion_equality(
                         sequence=sequence,
                         fn=fn,
-                        model=model,
+                        model=config.model,
                         max_offset=max_offset,
                         num_shots=num_shots,
                         cot=cot,
@@ -197,7 +196,7 @@ def evaluate_sequence_completion_equality(cfg: DictConfig) -> None:
                 logger.warning(e)
 
     pd.DataFrame(completion_data).to_csv(
-        f"sequence_completion_equality_evaluation_{model}.csv", index=False
+        f"sequence_completion_equality_evaluation_{config.model.value}.csv", index=False
     )
 
     match_accs, model_match_accs, model_consistency_accs, consistent_and_matched = (
