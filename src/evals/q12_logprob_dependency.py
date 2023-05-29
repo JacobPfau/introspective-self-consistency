@@ -153,7 +153,7 @@ def run_q1_2_eval(
 
 
 def _save_results_to_csv(results: List[Dict[str, Any]], csv_path: str):
-    df = pd.DataFrame.from_dict(results, orient="index")
+    df = pd.DataFrame.from_dict(results, orient="columns")
 
     # append to existing csv if exists
     if os.path.exists(csv_path):
