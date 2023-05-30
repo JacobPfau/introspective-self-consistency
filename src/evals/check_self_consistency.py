@@ -63,7 +63,7 @@ def self_consistency_evaluation(
             temperature=temperature,
         )
 
-        if not valid_continuation(continuation):
+        if not valid_continuation(continuation, base):
             invalid_responses += 1
             continue
 
@@ -97,7 +97,7 @@ def self_consistency_evaluation(
         # Check consistency
         logger.debug("implied_continuation: ", implied_continuation)
         logger.debug("continuation: ", continuation)
-        if int(continuation) == int(implied_continuation):
+        if int(continuation, base) == int(implied_continuation):
             consistent_explanations += 1
         else:
             inconsistent_explanations += 1

@@ -10,14 +10,14 @@ from src.models.openai_model import (
 
 def valid_continuation(
     model_continuation: str,
+    base: int,
 ) -> bool:
     """
     Given a continuation as supplied by the model,
     return whether it is a valid integer or not.
     """
     try:
-        # TODO: Work for arbitrary base continuation
-        int(model_continuation)
+        int(model_continuation, base)
     except ValueError:
         return False
     else:
