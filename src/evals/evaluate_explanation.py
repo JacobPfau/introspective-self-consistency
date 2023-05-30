@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Dict, List, Union
 
 from src.models.openai_model import (
@@ -8,6 +9,8 @@ from src.models.openai_model import (
     generate_chat_completion,
     generate_text_completion,
 )
+
+logger = getLogger(__name__)
 
 
 def valid_explanation(
@@ -76,8 +79,8 @@ def generate_explanation(
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
-    print("explain prompt: ", prompt)
-    print("model_response: ", model_response)
+    logger.debug("explain prompt: ", prompt)
+    logger.debug("model_response: ", model_response)
 
     return model_response
 

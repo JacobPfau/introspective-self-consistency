@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import List
 
 from src.evals.evaluate_continuation import generate_continuation, valid_continuation
@@ -7,7 +8,12 @@ from src.evals.evaluate_explanation import (
     valid_explanation,
 )
 from src.evals.prompts.continuation_prompt import create_continuation_prompt
-from src.evals.prompts.explanation_prompt import create_explanation_prompt, parse_explanation
+from src.evals.prompts.explanation_prompt import (
+    create_explanation_prompt,
+    parse_explanation,
+)
+
+logger = getLogger(__name__)
 
 
 def self_consistency_evaluation(
@@ -50,7 +56,6 @@ def self_consistency_evaluation(
     )
 
     for _ in range(samples):
-        print("eyo")
         # Generate a continuation
         continuation = generate_continuation(
             prompt=continuation_prompt,
@@ -61,8 +66,6 @@ def self_consistency_evaluation(
         if not valid_continuation(continuation):
             invalid_responses += 1
             continue
-        else:
-            int_response = int(continuation)
 
         # Generate an explanation
         explanation = generate_explanation(
@@ -74,7 +77,8 @@ def self_consistency_evaluation(
         # Parse explanation
         try:
             fn, offset = parse_explanation(explanation)
-        except:
+        except Exception as e:
+            logger.debug(e)
             invalid_responses += 1
             continue
 
@@ -91,8 +95,8 @@ def self_consistency_evaluation(
             )
 
         # Check consistency
-        print("implied_continuation: ", implied_continuation)
-        print("continuation: ", continuation)
+        logger.debug("implied_continuation: ", implied_continuation)
+        logger.debug("continuation: ", continuation)
         if int(continuation) == int(implied_continuation):
             consistent_explanations += 1
         else:
