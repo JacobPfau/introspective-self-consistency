@@ -1,4 +1,5 @@
 from dataclasses import dataclass, fields
+from typing import Union
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -19,7 +20,7 @@ class BaseEvalConfig:
             self.model = get_model_from_string(self.model)
 
     @classmethod
-    def from_dict(cls, params: dict):
+    def from_dict(cls, params: Union[dict, DictConfig]):
         if isinstance(params, DictConfig):
             params = OmegaConf.to_container(params)
 
