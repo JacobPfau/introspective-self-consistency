@@ -3,6 +3,8 @@ from typing import Dict, List, Union
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
     generate_chat_completion,
     generate_text_completion,
 )
@@ -56,7 +58,7 @@ def generate_explanation(
     Given a prompt, generate an explanation from the model.
     TODO: refactor code, entirely copied from generate_continuation
     """
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Feed this into the model
         model_response = generate_text_completion(
             prompt=prompt,
@@ -64,7 +66,7 @@ def generate_explanation(
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
         )
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,
