@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
@@ -25,9 +25,9 @@ def valid_continuation(
 
 
 def generate_continuation(
-    prompt: Union[str, List[str]],
+    prompt: Union[str, List[Dict[str, str]]],
     model_name: str,
-    temperature: int,
+    temperature: float,
 ) -> str:
     """
     Given a prompt, generate a continuation from the model.

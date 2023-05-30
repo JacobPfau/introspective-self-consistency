@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
@@ -48,9 +48,9 @@ def correct_explanation(
 
 
 def generate_explanation(
-    prompt: Union[str, List[str]],
+    prompt: Union[str, List[Dict[str, str]]],
     model_name: str,
-    temperature: int,
+    temperature: float,
 ) -> str:
     """
     Given a prompt, generate an explanation from the model.
