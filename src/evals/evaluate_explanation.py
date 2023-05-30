@@ -2,8 +2,6 @@ from logging import getLogger
 from typing import Dict, List, Union
 
 from src.models.openai_model import (
-    CHAT_MODEL_NAME,
-    DAVINCI_MODEL_NAME,
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
@@ -67,7 +65,7 @@ def generate_explanation(
             prompt=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=DAVINCI_MODEL_NAME,
+            model=model_name,
         )
     elif model_name in OpenAIChatModels.list():
         # Feed this into the model
@@ -75,7 +73,7 @@ def generate_explanation(
             prompt_turns=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=CHAT_MODEL_NAME,
+            model=model_name,
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
