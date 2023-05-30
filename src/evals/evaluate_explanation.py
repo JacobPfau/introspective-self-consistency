@@ -23,16 +23,9 @@ def valid_explanation(
     try:
         # TODO: need to have this work for an arbitrary number of arguments
         [eval(fn_form.format(i + offset)) for i in range(sequence_length + 1)]
-    except SyntaxError:
-        return False
-    except NameError:
-        return False
-    except TypeError:
-        return False
-    except ValueError:
-        return False
-    else:
         return True
+    except (SyntaxError, NameError, TypeError, ValueError):
+        return False
 
 
 def correct_explanation(
