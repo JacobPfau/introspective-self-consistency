@@ -1,5 +1,6 @@
 import json
 import logging
+import pandas as pd
 
 from src.evals.check_self_consistency import self_consistency_evaluation
 from src.pipelines.sequence_completions import (
@@ -32,6 +33,7 @@ def evaluate_compute_dependence_with_base_changes(
         # Get the ambiguous sequences
         # Use default parameters for now
         results = {}
+        all_data = []
         ambiguous_sequences = find_ambiguous_integer_sequences(
             valid_sequence_functions={
                 fn: v
@@ -49,13 +51,7 @@ def evaluate_compute_dependence_with_base_changes(
             for _ in range(2):
                 try:
                     logger.info(f"base be: {base}")
-                    (
-                        correct_consistent_explanations,
-                        correct_inconsistent_explanations,
-                        incorrect_consistent_explanations,
-                        incorrect_inconsistent_explanations,
-                        invalid_explanations,
-                    ) = self_consistency_evaluation(
+                    all_data += self_consistency_evaluation(
                         model_name=model,
                         sequence=int_sequence,
                         distribution=distribution,
@@ -69,34 +65,15 @@ def evaluate_compute_dependence_with_base_changes(
                     logger.info("oopies")
                     logger.info(f"Error is: {str(e)}")
                 else:
-                    if sequence in results:
-                        results[sequence][
-                            "correct_consistent"
-                        ] += correct_consistent_explanations
-                        results[sequence][
-                            "correct_inconsistent"
-                        ] += correct_inconsistent_explanations
-                        results[sequence][
-                            "incorrect_consistent"
-                        ] += incorrect_consistent_explanations
-                        results[sequence][
-                            "incorrect_inconsistent"
-                        ] += incorrect_inconsistent_explanations
-                        results[sequence]["invalid"] += invalid_explanations
-                    else:
-                        results[sequence] = {
-                            "correct_consistent": correct_consistent_explanations,
-                            "correct_inconsistent": correct_inconsistent_explanations,
-                            "incorrect_consistent": incorrect_consistent_explanations,
-                            "incorrect_inconsistent": incorrect_inconsistent_explanations,
-                            "invalid": invalid_explanations,
-                        }
                     break
         else:
             pass
             # TODO: have support for general base sequences here
 
     logger.info("Total is: {str(total)}")
+
+    # Log total data
+    pd.DataFrame(all_data).to_csv("all_data.csv")
 
     # Reformat results
     results = reformat_self_consistency_results(results)

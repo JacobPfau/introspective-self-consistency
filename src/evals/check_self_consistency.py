@@ -33,6 +33,8 @@ def self_consistency_evaluation(
     whether the two outputs are consistent.
     """
 
+    total_results = []
+
     correct_consistent_explanations = 0
     correct_inconsistent_explanations = 0
     incorrect_consistent_explanations = 0
@@ -61,13 +63,13 @@ def self_consistency_evaluation(
     for _ in range(samples):
         logger.info("Generating a continuation and explanation")
         # Generate a continuation
-        continuation = generate_continuation(
+        original_continuation = generate_continuation(
             prompt=continuation_prompt,
             model_name=model_name,
             temperature=temperature,
         )
         # strip whitespace
-        continuation = continuation.strip()
+        continuation = original_continuation.strip()
 
         if not valid_continuation(continuation, base):
             logger.info("invalid continuation: ", continuation)
@@ -128,20 +130,18 @@ def self_consistency_evaluation(
             consistent = True
         else:
             consistent = False
+        
+        single_result = {
+        "continuation prompt": continuation_prompt,
+        "explanation prompt": explanation_prompt,
+        "continuation": original_continuation,
+        "explanation": explanation,
+        "implied sequence": implied_sequence,
+        "implied continuation": implied_continuation,
+        "correct": correct,
+        "consistent": consistent,
+        }
+        
+        total_results.append(single_result)
 
-        if correct and consistent:
-            correct_consistent_explanations += 1
-        elif correct and not consistent:
-            correct_inconsistent_explanations += 1
-        elif not correct and consistent:
-            incorrect_consistent_explanations += 1
-        elif not correct and not consistent:
-            incorrect_inconsistent_explanations += 1
-
-    return (
-        correct_consistent_explanations,
-        correct_inconsistent_explanations,
-        incorrect_consistent_explanations,
-        incorrect_inconsistent_explanations,
-        invalid_responses,
-    )
+    return total_results
