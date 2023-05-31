@@ -36,14 +36,8 @@ def evaluate_compute_dependence_with_base_changes(
         # Use default parameters for now
         results = {}
         all_data = []
-        ambiguous_sequences = find_ambiguous_integer_sequences(
-            valid_sequence_functions={
-                fn: v
-                for fn, v in sequence_functions.items()
-                if fn
-                != "indexing_criteria_progression"  # does not work with base change
-            },
-        )
+        ambiguous_sequences = find_ambiguous_integer_sequences()
+        breakpoint()      
         for sequence in ambiguous_sequences:
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
@@ -105,19 +99,10 @@ def evaluate_compute_dependence_with_base_changes(
         incorrect_inconsistent += (
             1 if (not data["correct"] and not data["consistent"]) else 0
         )
-    
-    logger.info(str(correct_consistent))
-    logger.info(str(correct_inconsistent))
-    logger.info(str(incorrect_consistent))
-    logger.info(str(incorrect_inconsistent))
-    logger.info(str(invalid))
-    valid = correct_consistent + correct_inconsistent + incorrect_consistent + incorrect_inconsistent
-    logger.info("valid: " + str(valid))
-
-    correct_consistent_percent = round(correct_consistent / valid, 2) * 100
-    correct_inconsistent_percent = round(correct_inconsistent / valid, 2) * 100
-    incorrect_consistent_percent = round(incorrect_consistent / valid, 2) * 100
-    incorrect_inconsistent_percent = round(incorrect_inconsistent / valid, 2) * 100
+    correct_consistent_percent = round(correct_consistent / total, 2) * 100
+    correct_inconsistent_percent = round(correct_inconsistent / total, 2) * 100
+    incorrect_consistent_percent = round(incorrect_consistent / total, 2) * 100
+    incorrect_inconsistent_percent = round(incorrect_inconsistent / total, 2) * 100
 
     # Save the results
     results = [
@@ -126,7 +111,7 @@ def evaluate_compute_dependence_with_base_changes(
             "sequence_type": sequence_type,
             "total sequences": total,
             "invalid sequences": invalid,
-            "valid sequences": valid,
+            "valid sequences": total - invalid,
             "correct_consistent": correct_consistent_percent,
             "correct_inconsistent": correct_inconsistent_percent,
             "incorrect_consistent": incorrect_consistent_percent,

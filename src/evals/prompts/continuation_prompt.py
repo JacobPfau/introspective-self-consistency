@@ -26,20 +26,13 @@ The sequences will be taken from the list of ambiguous sequences.
 
 import logging
 
-# import random
 from typing import List, Union
 
 from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import OpenAIChatModels, OpenAITextModels
 
-# from evals.utils import _generate_random_function, generate_wrong_functions
 from src.pipelines.sequence_completions import sequence_functions
-
-# from pipelines.sequence_completions import (  # BASE_PROMPT,; COT_PROMPT,; COT_STEP,
-#     SYSTEM_PROMPT,
-#     sequence_functions,
-# )
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 del sequence_functions["recursive_progression"]
@@ -65,7 +58,7 @@ def create_continuation_prompt(
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
             shot_prompt = generate_cont_shot_prompt(
-                shot_method, sequence_length, model_name, base
+                shot_method, sequence_length, model_name, base, i
             )
             prompt_text += shot_prompt
 
@@ -101,7 +94,7 @@ def create_continuation_prompt(
 
 
 def generate_cont_shot_prompt(
-    shot_method, sequence_length, model_name="text-davinci-003", base=10
+    shot_method, sequence_length, model_name="text-davinci-003", base=10, shot = 1
 ):
     """
     Generate a single shot prompt for a continuation.
