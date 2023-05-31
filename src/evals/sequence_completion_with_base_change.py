@@ -37,7 +37,6 @@ def evaluate_compute_dependence_with_base_changes(
         results = {}
         all_data = []
         ambiguous_sequences = find_ambiguous_integer_sequences()
-        breakpoint()      
         for sequence in ambiguous_sequences:
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
@@ -58,7 +57,7 @@ def evaluate_compute_dependence_with_base_changes(
                     )
                 except Exception as e:
                     logger.warning("Error in self consistency evaluation.")
-                    logger.error(f"Error is: {str(e)}")
+                    logger.error(str(e))
                 else:
                     total += 1
                     break

@@ -113,7 +113,7 @@ def generate_exp_shot_prompt(
     if shot_method == "random":
         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
         # Reformat fn to replace every x after the first with x+offset
-        fn = reformat_function(fn, offset)
+        fn = reformat_function(fn, offset, base)
         sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
@@ -129,10 +129,10 @@ def generate_exp_shot_prompt(
         return text
 
     elif model_name in OpenAIChatModels.list():
-        if base == 10:
+        if base == 10 or base == 2:
             q_text = ",".join([str(x) for x in sequence])
-        elif base == 2:
-            q_text = ",".join([bin(x) for x in sequence])
+        # elif base == 2:
+        #     q_text = ",".join([bin(x) for x in sequence])
         response = [{"role": "user", "content": q_text}]
         a_text = "Explanation: " + fn
         response += [{"role": "assistant", "content": a_text}]

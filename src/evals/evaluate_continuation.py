@@ -17,6 +17,7 @@ def valid_continuation(
     """
     Given a continuation as supplied by the model,
     return whether it is a valid integer or not.
+    If in biinary, the continuation will be prefixed with 0b.
     """
     try:
         # TODO: Work for arbitrary base continuation
@@ -25,7 +26,6 @@ def valid_continuation(
         if base == 10:
             int(model_continuation)
         elif base == 2:
-
             int(model_continuation[2:], 2)
     except ValueError:
         return False
