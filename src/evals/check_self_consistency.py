@@ -35,12 +35,6 @@ def self_consistency_evaluation(
 
     total_results = []
 
-    correct_consistent_explanations = 0
-    correct_inconsistent_explanations = 0
-    incorrect_consistent_explanations = 0
-    incorrect_inconsistent_explanations = 0
-    invalid_responses = 0
-
     # Generate a prompt
     continuation_prompt = create_continuation_prompt(
         sequence=sequence,
@@ -61,6 +55,7 @@ def self_consistency_evaluation(
     )
 
     for _ in range(samples):
+        invalid_response = True
         logger.info("Generating a continuation and explanation")
         # Generate a continuation
         original_continuation = generate_continuation(
@@ -73,7 +68,7 @@ def self_consistency_evaluation(
 
         if not valid_continuation(continuation, base):
             logger.info("invalid continuation: ", continuation)
-            invalid_responses += 1
+            invalid_response = True
             continue
         if base == 2:
             continuation = int(continuation, 2)
@@ -89,12 +84,12 @@ def self_consistency_evaluation(
         try:
             fn = parse_explanation(explanation)
         except BaseException:
-            invalid_responses += 1
+            invalid_response = True
             continue
 
         if not valid_explanation(fn, len(sequence)):
             logger.info(f"invalid explanation: {explanation}")
-            invalid_responses += 1
+            invalid_response = True
             continue
         else:
             # check if the explanation is valid up to the continuation
@@ -123,25 +118,26 @@ def self_consistency_evaluation(
             # check if the implied continuation is decimal as specified
             _ = int(implied_continuation)
         except ValueError:
-            invalid_responses += 1
+            invalid_response = True
             continue
 
         if int(continuation) == int(implied_continuation):
             consistent = True
         else:
             consistent = False
-        
+
         single_result = {
-        "continuation prompt": continuation_prompt,
-        "explanation prompt": explanation_prompt,
-        "continuation": original_continuation,
-        "explanation": explanation,
-        "implied sequence": implied_sequence,
-        "implied continuation": implied_continuation,
-        "correct": correct,
-        "consistent": consistent,
+            "continuation prompt": continuation_prompt,
+            "explanation prompt": explanation_prompt,
+            "continuation": original_continuation,
+            "explanation": explanation,
+            "implied sequence": implied_sequence,
+            "implied continuation": implied_continuation,
+            "correct": correct,
+            "consistent": consistent,
+            "invalid": invalid_response,
         }
-        
+
         total_results.append(single_result)
 
     return total_results

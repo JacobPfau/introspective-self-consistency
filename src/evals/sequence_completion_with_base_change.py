@@ -1,5 +1,7 @@
 import json
 import logging
+
+import numpy as np
 import pandas as pd
 
 from src.evals.check_self_consistency import self_consistency_evaluation
@@ -73,10 +75,39 @@ def evaluate_compute_dependence_with_base_changes(
     logger.info("Total is: {str(total)}")
 
     # Log total data
-    pd.DataFrame(all_data).to_csv("all_data.csv")
+    pd.DataFrame(all_data).to_csv(f"all_data.csv")
 
-    # Reformat results
-    results = reformat_self_consistency_results(results)
+    (
+        correct_consistent,
+        correct_inconsistent,
+        incorrect_consistent,
+        incorrect_inconsistent,
+        invalid,
+    ) = (
+        [],
+        [],
+        [],
+        [],
+        [],
+    )
+    for data in all_data:
+        correct_consistent.append(1 if data["correct"] and data["consistent"] else 0)
+        correct_inconsistent.append(
+            1 if data["correct"] and not data["consistent"] else 0
+        )
+        incorrect_consistent.append(
+            1 if not data["correct"] and data["consistent"] else 0
+        )
+        incorrect_inconsistent.append(
+            1 if not data["correct"] and not data["consistent"] else 0
+        )
+        invalid = 1 if data["invalid"] else 0
+
+    correct_consistent_percent = round(np.mean(correct_consistent), 2) * 100
+    correct_inconsistent_percent = round(np.mean(correct_inconsistent), 2) * 100
+    incorrect_consistent_percent = round(np.mean(incorrect_consistent), 2) * 100
+    incorrect_inconsistent_percent = round(np.mean(incorrect_inconsistent), 2) * 100
+    invalid_percent = round(np.mean(invalid), 2) * 100
 
     # Save the results
     with open("results.json", "w") as f:
