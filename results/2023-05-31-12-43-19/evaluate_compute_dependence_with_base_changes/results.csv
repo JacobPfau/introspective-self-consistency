@@ -1,0 +1,2 @@
+,model,sequence_type,total,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent,invalid
+0,gpt-3.5-turbo,integer,48,89.0,9.0,0.0,2.0,100.0

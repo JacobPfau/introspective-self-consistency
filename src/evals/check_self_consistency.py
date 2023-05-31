@@ -55,7 +55,11 @@ def self_consistency_evaluation(
     )
 
     for _ in range(samples):
-        invalid_response = True
+        invalid_response = False
+        correct = False
+        consistent = False
+        original_continuation = None
+        explanation = None
         logger.info("Generating a continuation and explanation")
         # Generate a continuation
         original_continuation = generate_continuation(
@@ -69,6 +73,8 @@ def self_consistency_evaluation(
         if not valid_continuation(continuation, base):
             logger.info("invalid continuation: ", continuation)
             invalid_response = True
+            correct = False
+            consistent = False
             continue
         if base == 2:
             continuation = int(continuation, 2)
@@ -85,6 +91,8 @@ def self_consistency_evaluation(
             fn = parse_explanation(explanation)
         except BaseException:
             invalid_response = True
+            correct = False
+            consistent = False
             continue
 
         if not valid_explanation(fn, len(sequence)):
@@ -119,6 +127,8 @@ def self_consistency_evaluation(
             _ = int(implied_continuation)
         except ValueError:
             invalid_response = True
+            correct = False
+            consistent = False
             continue
 
         if int(continuation) == int(implied_continuation):

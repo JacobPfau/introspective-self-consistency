@@ -64,8 +64,8 @@ def evaluate_compute_dependence_with_base_changes(
                         samples=num_samples,
                     )
                 except Exception as e:
-                    logger.info("oopies")
-                    logger.info(f"Error is: {str(e)}")
+                    logger.warning("Error in self consistency evaluation.")
+                    logger.error(f"Error is: {str(e)}")
                 else:
                     break
         else:
@@ -110,7 +110,18 @@ def evaluate_compute_dependence_with_base_changes(
     invalid_percent = round(np.mean(invalid), 2) * 100
 
     # Save the results
-    with open("results.json", "w") as f:
-        json.dump(results, f)
+    results = [
+        {
+            "model": model,
+            "sequence_type": sequence_type,
+            "total": total,
+            "correct_consistent": correct_consistent_percent,
+            "correct_inconsistent": correct_inconsistent_percent,
+            "incorrect_consistent": incorrect_consistent_percent,
+            "incorrect_inconsistent": incorrect_inconsistent_percent,
+            "invalid": invalid_percent,
+        }
+    ]
+    pd.DataFrame(results).to_csv(f"results.csv")
 
-    logger.info("Results saved to results.json")
+    logger.info("Results saved to results.csv")
