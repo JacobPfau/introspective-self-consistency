@@ -47,7 +47,6 @@ def evaluate_compute_dependence_with_base_changes(
         for sequence in ambiguous_sequences:
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
-            total += 1
             logger.info(f"Total: {total}")
             logger.info(f"Sequence: {sequence}")
             for _ in range(2):
@@ -67,6 +66,7 @@ def evaluate_compute_dependence_with_base_changes(
                     logger.warning("Error in self consistency evaluation.")
                     logger.error(f"Error is: {str(e)}")
                 else:
+                    total += 1
                     break
         else:
             pass
@@ -84,42 +84,53 @@ def evaluate_compute_dependence_with_base_changes(
         incorrect_inconsistent,
         invalid,
     ) = (
-        [],
-        [],
-        [],
-        [],
-        [],
+        0,
+        0,
+        0,
+        0,
+        0,
     )
     for data in all_data:
-        correct_consistent.append(1 if data["correct"] and data["consistent"] else 0)
-        correct_inconsistent.append(
-            1 if data["correct"] and not data["consistent"] else 0
-        )
-        incorrect_consistent.append(
-            1 if not data["correct"] and data["consistent"] else 0
-        )
-        incorrect_inconsistent.append(
-            1 if not data["correct"] and not data["consistent"] else 0
-        )
-        invalid = 1 if data["invalid"] else 0
+        if data["invalid"]:
+            invalid += 1
+            continue
 
-    correct_consistent_percent = round(np.mean(correct_consistent), 2) * 100
-    correct_inconsistent_percent = round(np.mean(correct_inconsistent), 2) * 100
-    incorrect_consistent_percent = round(np.mean(incorrect_consistent), 2) * 100
-    incorrect_inconsistent_percent = round(np.mean(incorrect_inconsistent), 2) * 100
-    invalid_percent = round(np.mean(invalid), 2) * 100
+        correct_consistent += 1 if data["correct"] and data["consistent"] else 0
+        correct_inconsistent += (
+            1 if (data["correct"] and not data["consistent"]) else 0
+        )
+        incorrect_consistent += (
+            1 if (not data["correct"] and data["consistent"]) else 0
+        )
+        incorrect_inconsistent += (
+            1 if (not data["correct"] and not data["consistent"]) else 0
+        )
+    
+    logger.info(str(correct_consistent))
+    logger.info(str(correct_inconsistent))
+    logger.info(str(incorrect_consistent))
+    logger.info(str(incorrect_inconsistent))
+    logger.info(str(invalid))
+    valid = correct_consistent + correct_inconsistent + incorrect_consistent + incorrect_inconsistent
+    logger.info("valid: " + str(valid))
+
+    correct_consistent_percent = round(correct_consistent / valid, 2) * 100
+    correct_inconsistent_percent = round(correct_inconsistent / valid, 2) * 100
+    incorrect_consistent_percent = round(incorrect_consistent / valid, 2) * 100
+    incorrect_inconsistent_percent = round(incorrect_inconsistent / valid, 2) * 100
 
     # Save the results
     results = [
         {
             "model": model,
             "sequence_type": sequence_type,
-            "total": total,
+            "total sequences": total,
+            "invalid sequences": invalid,
+            "valid sequences": valid,
             "correct_consistent": correct_consistent_percent,
             "correct_inconsistent": correct_inconsistent_percent,
             "incorrect_consistent": incorrect_consistent_percent,
             "incorrect_inconsistent": incorrect_inconsistent_percent,
-            "invalid": invalid_percent,
         }
     ]
     pd.DataFrame(results).to_csv(f"results.csv")

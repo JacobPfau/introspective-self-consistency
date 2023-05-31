@@ -1,0 +1,708 @@
+[2023-05-31 16:00:31,802][src.utils][INFO] - Git sha: c9682befdf8128d6b3fce8d11b0ba801924b9170
+[2023-05-31 16:00:31,814][src.utils][INFO] - Changed files: ['conf/tasks/compute_dependence_with_base_changes.yaml', 'src/evals/check_self_consistency.py', 'src/evals/sequence_completion_with_base_change.py']
+[2023-05-31 16:00:31,823][src.utils][INFO] - Git diff:
+diff --git a/conf/tasks/compute_dependence_with_base_changes.yaml b/conf/tasks/compute_dependence_with_base_changes.yaml
+index 366c20f..cdcf592 100644
+--- a/conf/tasks/compute_dependence_with_base_changes.yaml
++++ b/conf/tasks/compute_dependence_with_base_changes.yaml
+@@ -1,6 +1,6 @@
+-sequence_type: binary
++sequence_type: integer
+ model: gpt-3.5-turbo
+-num_shots: 4
++num_shots: 1
+ on_ambiguous_sequences: true
+ num_samples: 1
+ distribution: default
+diff --git a/src/evals/check_self_consistency.py b/src/evals/check_self_consistency.py
+index dc60df0..d1a597e 100644
+--- a/src/evals/check_self_consistency.py
++++ b/src/evals/check_self_consistency.py
+@@ -55,11 +55,18 @@ def self_consistency_evaluation(
+     )
+ 
+     for _ in range(samples):
+-        invalid_response = False
+-        correct = False
+-        consistent = False
+-        original_continuation = None
+-        explanation = None
++        result = {
++            "continuation prompt": continuation_prompt,
++            "explanation prompt": explanation_prompt,
++            "continuation": None,
++            "explanation": None,
++            "implied sequence": None,
++            "implied continuation": None,
++            "correct": None,
++            "consistent": None,
++            "invalid": True,
++        
++        }
+         logger.info("Generating a continuation and explanation")
+         # Generate a continuation
+         original_continuation = generate_continuation(
+@@ -67,14 +74,13 @@ def self_consistency_evaluation(
+             model_name=model_name,
+             temperature=temperature,
+         )
++        result["continuation"] = original_continuation
+         # strip whitespace
+         continuation = original_continuation.strip()
+ 
+         if not valid_continuation(continuation, base):
+             logger.info("invalid continuation: ", continuation)
+-            invalid_response = True
+-            correct = False
+-            consistent = False
++            total_results.append(result)
+             continue
+         if base == 2:
+             continuation = int(continuation, 2)
+@@ -85,19 +91,18 @@ def self_consistency_evaluation(
+             model_name=model_name,
+             temperature=temperature,
+         )
+-
++        result["explanation"] = explanation
+         # Parse explanation
+         try:
+             fn = parse_explanation(explanation)
+         except BaseException:
+-            invalid_response = True
+-            correct = False
+-            consistent = False
++            logger.info(f"invalid explanation: {explanation}")
++            total_results.append(result)
+             continue
+ 
+         if not valid_explanation(fn, len(sequence)):
+             logger.info(f"invalid explanation: {explanation}")
+-            invalid_response = True
++            total_results.append(result)
+             continue
+         else:
+             # check if the explanation is valid up to the continuation
+@@ -110,6 +115,9 @@ def self_consistency_evaluation(
+                 fn_form=fn,
+                 sequence_length=len(sequence),
+             )
++        
++        result["implied sequence"] = implied_sequence
++        result["implied continuation"] = implied_continuation
+ 
+         # Check the explanation is accurate
+         logger.info(f"implied_sequence: {implied_sequence}")
+@@ -126,9 +134,8 @@ def self_consistency_evaluation(
+             # check if the implied continuation is decimal as specified
+             _ = int(implied_continuation)
+         except ValueError:
+-            invalid_response = True
+-            correct = False
+-            consistent = False
++            logger.info(f"invalid implied continuation: {implied_continuation}")
++            total_results.append(result)
+             continue
+ 
+         if int(continuation) == int(implied_continuation):
+@@ -136,18 +143,9 @@ def self_consistency_evaluation(
+         else:
+             consistent = False
+ 
+-        single_result = {
+-            "continuation prompt": continuation_prompt,
+-            "explanation prompt": explanation_prompt,
+-            "continuation": original_continuation,
+-            "explanation": explanation,
+-            "implied sequence": implied_sequence,
+-            "implied continuation": implied_continuation,
+-            "correct": correct,
+-            "consistent": consistent,
+-            "invalid": invalid_response,
+-        }
+-
+-        total_results.append(single_result)
++        result["consistent"] = consistent
++        result["correct"] = correct
++        result["invalid"] = False
++        total_results.append(result)
+ 
+     return total_results
+diff --git a/src/evals/sequence_completion_with_base_change.py b/src/evals/sequence_completion_with_base_change.py
+index 172daf1..26bc28e 100644
+--- a/src/evals/sequence_completion_with_base_change.py
++++ b/src/evals/sequence_completion_with_base_change.py
+@@ -84,42 +84,53 @@ def evaluate_compute_dependence_with_base_changes(
+         incorrect_inconsistent,
+         invalid,
+     ) = (
+-        [],
+-        [],
+-        [],
+-        [],
+-        [],
++        0,
++        0,
++        0,
++        0,
++        0,
+     )
+     for data in all_data:
+-        correct_consistent.append(1 if data["correct"] and data["consistent"] else 0)
+-        correct_inconsistent.append(
+-            1 if data["correct"] and not data["consistent"] else 0
++        if data["invalid"]:
++            invalid += 1
++            continue
++
++        correct_consistent += 1 if data["correct"] and data["consistent"] else 0
++        correct_inconsistent += (
++            1 if (data["correct"] and not data["consistent"]) else 0
+         )
+-        incorrect_consistent.append(
+-            1 if not data["correct"] and data["consistent"] else 0
++        incorrect_consistent += (
++            1 if (not data["correct"] and data["consistent"]) else 0
+         )
+-        incorrect_inconsistent.append(
+-            1 if not data["correct"] and not data["consistent"] else 0
++        incorrect_inconsistent += (
++            1 if (not data["correct"] and not data["consistent"]) else 0
+         )
+-        invalid = 1 if data["invalid"] else 0
++    
++    logger.info(str(correct_consistent))
++    logger.info(str(correct_inconsistent))
++    logger.info(str(incorrect_consistent))
++    logger.info(str(incorrect_inconsistent))
++    logger.info(str(invalid))
++    valid = correct_consistent + correct_inconsistent + incorrect_consistent + incorrect_inconsistent
++    logger.info("valid: " + str(valid))
+ 
+-    correct_consistent_percent = round(np.mean(correct_consistent), 2) * 100
+-    correct_inconsistent_percent = round(np.mean(correct_inconsistent), 2) * 100
+-    incorrect_consistent_percent = round(np.mean(incorrect_consistent), 2) * 100
+-    incorrect_inconsistent_percent = round(np.mean(incorrect_inconsistent), 2) * 100
+-    invalid_percent = round(np.mean(invalid), 2) * 100
++    correct_consistent_percent = round(correct_consistent / valid, 2) * 100
++    correct_inconsistent_percent = round(correct_inconsistent / valid, 2) * 100
++    incorrect_consistent_percent = round(incorrect_consistent / valid, 2) * 100
++    incorrect_inconsistent_percent = round(incorrect_inconsistent / valid, 2) * 100
+ 
+     # Save the results
+     results = [
+         {
+             "model": model,
+             "sequence_type": sequence_type,
+-            "total": total,
++            "total sequences": total,
++            "invalid sequences": invalid,
++            "valid sequences": valid,
+             "correct_consistent": correct_consistent_percent,
+             "correct_inconsistent": correct_inconsistent_percent,
+             "incorrect_consistent": incorrect_consistent_percent,
+             "incorrect_inconsistent": incorrect_inconsistent_percent,
+-            "invalid": invalid_percent,
+         }
+     ]
+     pd.DataFrame(results).to_csv(f"results.csv")
+[2023-05-31 16:00:31,824][src.utils][INFO] - Changed directory to /Users/olejorgensen/Documents/AISC/introspective-self-consistency/results/2023-05-31-16-00-31/evaluate_compute_dependence_with_base_changes
+[2023-05-31 16:00:33,066][src.evals.sequence_completion_with_base_change][INFO] - Total: 1
+[2023-05-31 16:00:33,066][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,3,5,7
+[2023-05-31 16:00:33,066][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:33,066][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:33,066][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '3,7,15,19'}, {'role': 'assistant', 'content': '27'}]
+[2023-05-31 16:00:33,067][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '4,6,8,10'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (2 * (x + 0)) + 4'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 1,3,5,7'}]
+[2023-05-31 16:00:33,067][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:34,231][src.evals.check_self_consistency][INFO] - implied_sequence: [1, 3, 5, 7]
+[2023-05-31 16:00:34,232][src.evals.check_self_consistency][INFO] - sequence: [1, 3, 5, 7]
+[2023-05-31 16:00:34,232][src.evals.check_self_consistency][INFO] - implied_continuation: 9
+[2023-05-31 16:00:34,232][src.evals.check_self_consistency][INFO] - continuation: 9
+[2023-05-31 16:00:34,232][src.evals.sequence_completion_with_base_change][INFO] - Total: 2
+[2023-05-31 16:00:34,232][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,5,7,9
+[2023-05-31 16:00:34,232][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:34,233][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:34,233][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '7,13,13,15'}, {'role': 'assistant', 'content': '23'}]
+[2023-05-31 16:00:34,233][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '6,4,2,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 4) * 5) % (6+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 3,5,7,9'}]
+[2023-05-31 16:00:34,234][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:35,205][src.evals.check_self_consistency][INFO] - implied_sequence: [3, 5, 7, 9]
+[2023-05-31 16:00:35,205][src.evals.check_self_consistency][INFO] - sequence: [3, 5, 7, 9]
+[2023-05-31 16:00:35,205][src.evals.check_self_consistency][INFO] - implied_continuation: 11
+[2023-05-31 16:00:35,205][src.evals.check_self_consistency][INFO] - continuation: 11
+[2023-05-31 16:00:35,205][src.evals.sequence_completion_with_base_change][INFO] - Total: 3
+[2023-05-31 16:00:35,205][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,7,9,11
+[2023-05-31 16:00:35,205][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:35,206][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:35,206][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '2,3,4,5'}, {'role': 'assistant', 'content': '6'}]
+[2023-05-31 16:00:35,206][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '8,9,10,11'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][(x + 6)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 5,7,9,11'}]
+[2023-05-31 16:00:35,206][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:36,280][src.evals.check_self_consistency][INFO] - implied_sequence: [5, 7, 9, 11]
+[2023-05-31 16:00:36,281][src.evals.check_self_consistency][INFO] - sequence: [5, 7, 9, 11]
+[2023-05-31 16:00:36,281][src.evals.check_self_consistency][INFO] - implied_continuation: 13
+[2023-05-31 16:00:36,281][src.evals.check_self_consistency][INFO] - continuation: 13
+[2023-05-31 16:00:36,281][src.evals.sequence_completion_with_base_change][INFO] - Total: 4
+[2023-05-31 16:00:36,281][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 7,9,11,13
+[2023-05-31 16:00:36,281][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:36,282][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:36,282][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '64,4096,262144,16777216'}, {'role': 'assistant', 'content': '1073741824'}]
+[2023-05-31 16:00:36,283][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '3125,9765625,30517578125,95367431640625'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 5 ** (5 * (x + 1))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 7,9,11,13'}]
+[2023-05-31 16:00:36,283][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:37,202][src.evals.check_self_consistency][INFO] - implied_sequence: [7, 9, 11, 13]
+[2023-05-31 16:00:37,202][src.evals.check_self_consistency][INFO] - sequence: [7, 9, 11, 13]
+[2023-05-31 16:00:37,203][src.evals.check_self_consistency][INFO] - implied_continuation: 15
+[2023-05-31 16:00:37,203][src.evals.check_self_consistency][INFO] - continuation: 15
+[2023-05-31 16:00:37,203][src.evals.sequence_completion_with_base_change][INFO] - Total: 5
+[2023-05-31 16:00:37,203][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,4,16,64
+[2023-05-31 16:00:37,203][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:37,203][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:37,203][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:00:37,204][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '5,6,7,8'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (5 + 1) or i % (3 + 1)][(x + 4)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 1,4,16,64'}]
+[2023-05-31 16:00:37,204][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:38,398][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4^x
+[2023-05-31 16:00:38,398][src.evals.sequence_completion_with_base_change][INFO] - Total: 6
+[2023-05-31 16:00:38,399][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,16,64,256
+[2023-05-31 16:00:38,399][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:38,399][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:38,399][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '72,96,120,144'}, {'role': 'assistant', 'content': '168'}]
+[2023-05-31 16:00:38,400][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 6) * 6) % (1+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 4,16,64,256'}]
+[2023-05-31 16:00:38,400][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:39,026][src.evals.sequence_completion_with_base_change][INFO] - Total: 7
+[2023-05-31 16:00:39,026][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 16,64,256,1024
+[2023-05-31 16:00:39,026][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:39,026][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:39,026][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '60,70,80,90'}, {'role': 'assistant', 'content': '100'}]
+[2023-05-31 16:00:39,026][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 0) * 6) % (0+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 16,64,256,1024'}]
+[2023-05-31 16:00:39,026][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:40,274][src.evals.check_self_consistency][INFO] - implied_sequence: [16, 64, 256, 1024]
+[2023-05-31 16:00:40,275][src.evals.check_self_consistency][INFO] - sequence: [16, 64, 256, 1024]
+[2023-05-31 16:00:40,275][src.evals.check_self_consistency][INFO] - implied_continuation: 4096
+[2023-05-31 16:00:40,275][src.evals.check_self_consistency][INFO] - continuation: 4096
+[2023-05-31 16:00:40,275][src.evals.sequence_completion_with_base_change][INFO] - Total: 8
+[2023-05-31 16:00:40,275][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 64,256,1024,4096
+[2023-05-31 16:00:40,275][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:40,276][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:40,276][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1,0,5,4'}, {'role': 'assistant', 'content': '3'}]
+[2023-05-31 16:00:40,276][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '4,5,6,7'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (1 * (x + 4)) * 1'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 64,256,1024,4096'}]
+[2023-05-31 16:00:40,276][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:41,401][src.evals.check_self_consistency][INFO] - implied_sequence: [64, 256, 1024, 4096]
+[2023-05-31 16:00:41,401][src.evals.check_self_consistency][INFO] - sequence: [64, 256, 1024, 4096]
+[2023-05-31 16:00:41,402][src.evals.check_self_consistency][INFO] - implied_continuation: 16384
+[2023-05-31 16:00:41,402][src.evals.check_self_consistency][INFO] - continuation: 16384
+[2023-05-31 16:00:41,402][src.evals.sequence_completion_with_base_change][INFO] - Total: 9
+[2023-05-31 16:00:41,402][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,4,6,8
+[2023-05-31 16:00:41,402][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:41,403][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:41,403][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '5,6,7,8'}, {'role': 'assistant', 'content': '9'}]
+[2023-05-31 16:00:41,403][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '46656,2176782336,101559956668416,4738381338321616896'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 6 ** (6 * (x + 1))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 2,4,6,8'}]
+[2023-05-31 16:00:41,403][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:42,226][src.evals.check_self_consistency][INFO] - implied_sequence: [2, 4, 6, 8]
+[2023-05-31 16:00:42,227][src.evals.check_self_consistency][INFO] - sequence: [2, 4, 6, 8]
+[2023-05-31 16:00:42,227][src.evals.check_self_consistency][INFO] - implied_continuation: 10
+[2023-05-31 16:00:42,227][src.evals.check_self_consistency][INFO] - continuation: 10
+[2023-05-31 16:00:42,227][src.evals.sequence_completion_with_base_change][INFO] - Total: 10
+[2023-05-31 16:00:42,227][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,6,8,10
+[2023-05-31 16:00:42,227][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:42,228][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:42,228][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '21,26,31,36'}, {'role': 'assistant', 'content': '41'}]
+[2023-05-31 16:00:42,229][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '5,7,9,11'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][(x + 2)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 4,6,8,10'}]
+[2023-05-31 16:00:42,229][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:43,239][src.evals.check_self_consistency][INFO] - implied_sequence: [4, 6, 8, 10]
+[2023-05-31 16:00:43,240][src.evals.check_self_consistency][INFO] - sequence: [4, 6, 8, 10]
+[2023-05-31 16:00:43,240][src.evals.check_self_consistency][INFO] - implied_continuation: 12
+[2023-05-31 16:00:43,240][src.evals.check_self_consistency][INFO] - continuation: 12
+[2023-05-31 16:00:43,240][src.evals.sequence_completion_with_base_change][INFO] - Total: 11
+[2023-05-31 16:00:43,240][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,8,10,12
+[2023-05-31 16:00:43,240][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:43,240][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:43,240][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:00:43,241][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '13,15,17,19'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (2 * (x + 5)) + 3'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 6,8,10,12'}]
+[2023-05-31 16:00:43,241][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:44,364][src.evals.check_self_consistency][INFO] - implied_sequence: [6, 8, 10, 12]
+[2023-05-31 16:00:44,365][src.evals.check_self_consistency][INFO] - sequence: [6, 8, 10, 12]
+[2023-05-31 16:00:44,365][src.evals.check_self_consistency][INFO] - implied_continuation: 14
+[2023-05-31 16:00:44,365][src.evals.check_self_consistency][INFO] - continuation: 14
+[2023-05-31 16:00:44,365][src.evals.sequence_completion_with_base_change][INFO] - Total: 12
+[2023-05-31 16:00:44,365][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,2,4,6
+[2023-05-31 16:00:44,365][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:44,366][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:44,366][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:00:44,366][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,5,10,15'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (5 * (x + 0)) ** 1'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,2,4,6'}]
+[2023-05-31 16:00:44,366][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:45,291][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 2, 4, 6]
+[2023-05-31 16:00:45,292][src.evals.check_self_consistency][INFO] - sequence: [0, 2, 4, 6]
+[2023-05-31 16:00:45,292][src.evals.check_self_consistency][INFO] - implied_continuation: 8
+[2023-05-31 16:00:45,292][src.evals.check_self_consistency][INFO] - continuation: 8
+[2023-05-31 16:00:45,292][src.evals.sequence_completion_with_base_change][INFO] - Total: 13
+[2023-05-31 16:00:45,292][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,3,6,9
+[2023-05-31 16:00:45,292][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:45,292][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:45,293][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:00:45,293][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '34012224,85766121,191102976,387420489'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (3 * (x + 6)) ** 6'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,3,6,9'}]
+[2023-05-31 16:00:45,293][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:46,316][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 3, 6, 9]
+[2023-05-31 16:00:46,317][src.evals.check_self_consistency][INFO] - sequence: [0, 3, 6, 9]
+[2023-05-31 16:00:46,317][src.evals.check_self_consistency][INFO] - implied_continuation: 12
+[2023-05-31 16:00:46,317][src.evals.check_self_consistency][INFO] - continuation: 12
+[2023-05-31 16:00:46,317][src.evals.sequence_completion_with_base_change][INFO] - Total: 14
+[2023-05-31 16:00:46,317][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,6,9,12
+[2023-05-31 16:00:46,317][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:46,318][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:46,318][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '42,48,54,60'}, {'role': 'assistant', 'content': '66'}]
+[2023-05-31 16:00:46,318][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (0 * (x + 4)) ** 1'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 3,6,9,12'}]
+[2023-05-31 16:00:46,318][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:47,453][src.evals.check_self_consistency][INFO] - implied_sequence: [3, 6, 9, 12]
+[2023-05-31 16:00:47,453][src.evals.check_self_consistency][INFO] - sequence: [3, 6, 9, 12]
+[2023-05-31 16:00:47,453][src.evals.check_self_consistency][INFO] - implied_continuation: 15
+[2023-05-31 16:00:47,453][src.evals.check_self_consistency][INFO] - continuation: 15
+[2023-05-31 16:00:47,453][src.evals.sequence_completion_with_base_change][INFO] - Total: 15
+[2023-05-31 16:00:47,453][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,9,12,15
+[2023-05-31 16:00:47,453][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:47,454][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:47,454][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '5,10,15,20'}, {'role': 'assistant', 'content': '25'}]
+[2023-05-31 16:00:47,455][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '4,5,6,8'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (6 + 1) or i % (0 + 1)][(x + 3)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 6,9,12,15'}]
+[2023-05-31 16:00:47,455][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:48,773][src.evals.check_self_consistency][INFO] - implied_sequence: [6, 18, 36, 60]
+[2023-05-31 16:00:48,774][src.evals.check_self_consistency][INFO] - sequence: [6, 9, 12, 15]
+[2023-05-31 16:00:48,774][src.evals.check_self_consistency][INFO] - implied_continuation: 90
+[2023-05-31 16:00:48,774][src.evals.check_self_consistency][INFO] - continuation: 18
+[2023-05-31 16:00:48,774][src.evals.sequence_completion_with_base_change][INFO] - Total: 16
+[2023-05-31 16:00:48,774][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 9,12,15,18
+[2023-05-31 16:00:48,774][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:48,774][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:48,775][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '900,1296,1764,2304'}, {'role': 'assistant', 'content': '2916'}]
+[2023-05-31 16:00:48,775][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '4,5,6,7'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][(x + 3)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 9,12,15,18'}]
+[2023-05-31 16:00:48,775][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:49,818][src.evals.check_self_consistency][INFO] - implied_sequence: [9, 12, 15, 18]
+[2023-05-31 16:00:49,818][src.evals.check_self_consistency][INFO] - sequence: [9, 12, 15, 18]
+[2023-05-31 16:00:49,818][src.evals.check_self_consistency][INFO] - implied_continuation: 21
+[2023-05-31 16:00:49,818][src.evals.check_self_consistency][INFO] - continuation: 21
+[2023-05-31 16:00:49,818][src.evals.sequence_completion_with_base_change][INFO] - Total: 17
+[2023-05-31 16:00:49,818][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,2,3
+[2023-05-31 16:00:49,818][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:49,819][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:49,819][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '23,26,29,32'}, {'role': 'assistant', 'content': '35'}]
+[2023-05-31 16:00:49,819][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '28,33,38,43'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (5 * (x + 5)) + 3'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,1,2,3'}]
+[2023-05-31 16:00:49,820][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:50,635][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 1, 2, 3]
+[2023-05-31 16:00:50,635][src.evals.check_self_consistency][INFO] - sequence: [0, 1, 2, 3]
+[2023-05-31 16:00:50,635][src.evals.check_self_consistency][INFO] - implied_continuation: 4
+[2023-05-31 16:00:50,635][src.evals.check_self_consistency][INFO] - continuation: 4
+[2023-05-31 16:00:50,636][src.evals.sequence_completion_with_base_change][INFO] - Total: 18
+[2023-05-31 16:00:50,636][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,3,4
+[2023-05-31 16:00:50,636][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:50,636][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:50,636][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:00:50,637][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '13,15,17,19'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (2 * (x + 4)) + 5'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 1,2,3,4'}]
+[2023-05-31 16:00:50,637][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:51,534][src.evals.check_self_consistency][INFO] - implied_sequence: [1, 2, 3, 4]
+[2023-05-31 16:00:51,534][src.evals.check_self_consistency][INFO] - sequence: [1, 2, 3, 4]
+[2023-05-31 16:00:51,534][src.evals.check_self_consistency][INFO] - implied_continuation: 5
+[2023-05-31 16:00:51,534][src.evals.check_self_consistency][INFO] - continuation: 5
+[2023-05-31 16:00:51,534][src.evals.sequence_completion_with_base_change][INFO] - Total: 19
+[2023-05-31 16:00:51,534][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,3,4,5
+[2023-05-31 16:00:51,534][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:51,535][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:51,535][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '2,0,2,0'}, {'role': 'assistant', 'content': '2'}]
+[2023-05-31 16:00:51,535][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '256,4096,20736,65536'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (4 * (x + 1)) ** 4'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 2,3,4,5'}]
+[2023-05-31 16:00:51,535][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:52,486][src.evals.check_self_consistency][INFO] - implied_sequence: [2, 3, 4, 5]
+[2023-05-31 16:00:52,487][src.evals.check_self_consistency][INFO] - sequence: [2, 3, 4, 5]
+[2023-05-31 16:00:52,487][src.evals.check_self_consistency][INFO] - implied_continuation: 6
+[2023-05-31 16:00:52,487][src.evals.check_self_consistency][INFO] - continuation: 6
+[2023-05-31 16:00:52,487][src.evals.sequence_completion_with_base_change][INFO] - Total: 20
+[2023-05-31 16:00:52,487][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,4,5,6
+[2023-05-31 16:00:52,487][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:52,488][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:52,488][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '120,150,180,210'}, {'role': 'assistant', 'content': '240'}]
+[2023-05-31 16:00:52,488][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 2) * 0) % (6+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 3,4,5,6'}]
+[2023-05-31 16:00:52,489][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:53,365][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = x + 3
+[2023-05-31 16:00:53,366][src.evals.sequence_completion_with_base_change][INFO] - Total: 21
+[2023-05-31 16:00:53,366][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,0,1
+[2023-05-31 16:00:53,366][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:53,366][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:53,367][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '26,31,36,41'}, {'role': 'assistant', 'content': '46'}]
+[2023-05-31 16:00:53,367][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '6,36,216,1296'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 6 ** (1 * (x + 1))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,1,0,1'}]
+[2023-05-31 16:00:53,367][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:54,917][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 1, 0, 1]
+[2023-05-31 16:00:54,917][src.evals.check_self_consistency][INFO] - sequence: [0, 1, 0, 1]
+[2023-05-31 16:00:54,917][src.evals.check_self_consistency][INFO] - implied_continuation: 0
+[2023-05-31 16:00:54,917][src.evals.check_self_consistency][INFO] - continuation: 0
+[2023-05-31 16:00:54,918][src.evals.sequence_completion_with_base_change][INFO] - Total: 22
+[2023-05-31 16:00:54,918][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,0,1,0
+[2023-05-31 16:00:54,918][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:54,918][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:54,918][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '6,6,6,6'}, {'role': 'assistant', 'content': '6'}]
+[2023-05-31 16:00:54,919][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,1,0,1'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 2) * 3) % (1+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 1,0,1,0'}]
+[2023-05-31 16:00:54,919][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:55,942][src.evals.check_self_consistency][INFO] - implied_sequence: [1, 0, 1, 0]
+[2023-05-31 16:00:55,942][src.evals.check_self_consistency][INFO] - sequence: [1, 0, 1, 0]
+[2023-05-31 16:00:55,942][src.evals.check_self_consistency][INFO] - implied_continuation: 1
+[2023-05-31 16:00:55,942][src.evals.check_self_consistency][INFO] - continuation: 1
+[2023-05-31 16:00:55,942][src.evals.sequence_completion_with_base_change][INFO] - Total: 23
+[2023-05-31 16:00:55,942][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,6,10,14
+[2023-05-31 16:00:55,943][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:55,943][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:55,943][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '3,4,5,7'}, {'role': 'assistant', 'content': '8'}]
+[2023-05-31 16:00:55,944][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '1000,1728,2744,4096'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (2 * (x + 5)) ** 3'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 2,6,10,14'}]
+[2023-05-31 16:00:55,944][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:56,864][src.evals.check_self_consistency][INFO] - implied_sequence: [2, 6, 10, 14]
+[2023-05-31 16:00:56,864][src.evals.check_self_consistency][INFO] - sequence: [2, 6, 10, 14]
+[2023-05-31 16:00:56,864][src.evals.check_self_consistency][INFO] - implied_continuation: 18
+[2023-05-31 16:00:56,865][src.evals.check_self_consistency][INFO] - continuation: 18
+[2023-05-31 16:00:56,865][src.evals.sequence_completion_with_base_change][INFO] - Total: 24
+[2023-05-31 16:00:56,865][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,10,14,18
+[2023-05-31 16:00:56,865][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:56,865][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:56,865][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '3,0,1,2'}, {'role': 'assistant', 'content': '3'}]
+[2023-05-31 16:00:56,866][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '1048576,1073741824,1099511627776,1125899906842624'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 4 ** (5 * (x + 2))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 6,10,14,18'}]
+[2023-05-31 16:00:56,866][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:57,794][src.evals.check_self_consistency][INFO] - implied_sequence: [6, 10, 14, 18]
+[2023-05-31 16:00:57,795][src.evals.check_self_consistency][INFO] - sequence: [6, 10, 14, 18]
+[2023-05-31 16:00:57,795][src.evals.check_self_consistency][INFO] - implied_continuation: 22
+[2023-05-31 16:00:57,795][src.evals.check_self_consistency][INFO] - continuation: 22
+[2023-05-31 16:00:57,795][src.evals.sequence_completion_with_base_change][INFO] - Total: 25
+[2023-05-31 16:00:57,795][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 10,14,18,22
+[2023-05-31 16:00:57,795][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:57,796][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:57,796][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '4,5,6,7'}, {'role': 'assistant', 'content': '8'}]
+[2023-05-31 16:00:57,796][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '46656,1679616,60466176,2176782336'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 6 ** (2 * (x + 3))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 10,14,18,22'}]
+[2023-05-31 16:00:57,797][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:58,847][src.evals.check_self_consistency][INFO] - implied_sequence: [10, 14, 18, 22]
+[2023-05-31 16:00:58,847][src.evals.check_self_consistency][INFO] - sequence: [10, 14, 18, 22]
+[2023-05-31 16:00:58,847][src.evals.check_self_consistency][INFO] - implied_continuation: 26
+[2023-05-31 16:00:58,848][src.evals.check_self_consistency][INFO] - continuation: 26
+[2023-05-31 16:00:58,848][src.evals.sequence_completion_with_base_change][INFO] - Total: 26
+[2023-05-31 16:00:58,848][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 14,18,22,26
+[2023-05-31 16:00:58,848][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:58,848][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:58,849][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:00:58,849][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '48,72,96,120'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (4 * (x + 2)) * 6'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 14,18,22,26'}]
+[2023-05-31 16:00:58,849][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:00:59,712][src.evals.check_self_consistency][INFO] - implied_sequence: [14, 18, 22, 26]
+[2023-05-31 16:00:59,713][src.evals.check_self_consistency][INFO] - sequence: [14, 18, 22, 26]
+[2023-05-31 16:00:59,713][src.evals.check_self_consistency][INFO] - implied_continuation: 30
+[2023-05-31 16:00:59,713][src.evals.check_self_consistency][INFO] - continuation: 30
+[2023-05-31 16:00:59,713][src.evals.sequence_completion_with_base_change][INFO] - Total: 27
+[2023-05-31 16:00:59,713][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,3,7,7
+[2023-05-31 16:00:59,713][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:00:59,714][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:00:59,714][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1,1,1,1'}, {'role': 'assistant', 'content': '1'}]
+[2023-05-31 16:00:59,714][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,1,0,1'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 2) * 1) % (1+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 3,3,7,7'}]
+[2023-05-31 16:00:59,715][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:00,870][src.evals.check_self_consistency][INFO] - implied_sequence: [3, 7, 3, 7]
+[2023-05-31 16:01:00,870][src.evals.check_self_consistency][INFO] - sequence: [3, 3, 7, 7]
+[2023-05-31 16:01:00,870][src.evals.check_self_consistency][INFO] - implied_continuation: 3
+[2023-05-31 16:01:00,871][src.evals.check_self_consistency][INFO] - continuation: 7
+[2023-05-31 16:01:00,871][src.evals.sequence_completion_with_base_change][INFO] - Total: 28
+[2023-05-31 16:01:00,871][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,4,8,12
+[2023-05-31 16:01:00,871][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:00,871][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:00,871][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1048576,33554432,1073741824,34359738368'}, {'role': 'assistant', 'content': '1099511627776'}]
+[2023-05-31 16:01:00,872][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,1,2,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 3) * 1) % (2+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,4,8,12'}]
+[2023-05-31 16:01:00,872][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:01,900][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 4, 8, 12]
+[2023-05-31 16:01:01,900][src.evals.check_self_consistency][INFO] - sequence: [0, 4, 8, 12]
+[2023-05-31 16:01:01,901][src.evals.check_self_consistency][INFO] - implied_continuation: 16
+[2023-05-31 16:01:01,901][src.evals.check_self_consistency][INFO] - continuation: 16
+[2023-05-31 16:01:01,901][src.evals.sequence_completion_with_base_change][INFO] - Total: 29
+[2023-05-31 16:01:01,901][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,8,12,16
+[2023-05-31 16:01:01,901][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:01,901][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:01,902][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,3,1,4'}, {'role': 'assistant', 'content': '2'}]
+[2023-05-31 16:01:01,902][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '15,18,21,24'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (3 * (x + 3)) + 6'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 4,8,12,16'}]
+[2023-05-31 16:01:01,902][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:02,957][src.evals.check_self_consistency][INFO] - implied_sequence: [4, 8, 12, 16]
+[2023-05-31 16:01:02,958][src.evals.check_self_consistency][INFO] - sequence: [4, 8, 12, 16]
+[2023-05-31 16:01:02,958][src.evals.check_self_consistency][INFO] - implied_continuation: 20
+[2023-05-31 16:01:02,958][src.evals.check_self_consistency][INFO] - continuation: 20
+[2023-05-31 16:01:02,958][src.evals.sequence_completion_with_base_change][INFO] - Total: 30
+[2023-05-31 16:01:02,958][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 8,12,16,20
+[2023-05-31 16:01:02,958][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:02,959][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:02,959][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '4,4,4,4'}, {'role': 'assistant', 'content': '4'}]
+[2023-05-31 16:01:02,960][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '7,9,11,13'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (2 * (x + 2)) + 3'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 8,12,16,20'}]
+[2023-05-31 16:01:02,960][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:03,929][src.evals.check_self_consistency][INFO] - implied_sequence: [8, 12, 16, 20]
+[2023-05-31 16:01:03,929][src.evals.check_self_consistency][INFO] - sequence: [8, 12, 16, 20]
+[2023-05-31 16:01:03,929][src.evals.check_self_consistency][INFO] - implied_continuation: 24
+[2023-05-31 16:01:03,929][src.evals.check_self_consistency][INFO] - continuation: 24
+[2023-05-31 16:01:03,930][src.evals.sequence_completion_with_base_change][INFO] - Total: 31
+[2023-05-31 16:01:03,930][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 12,16,20,24
+[2023-05-31 16:01:03,930][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:03,930][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:03,930][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': '0'}]
+[2023-05-31 16:01:03,931][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 5) * 3) % (0+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 12,16,20,24'}]
+[2023-05-31 16:01:03,931][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:04,952][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 12
+[2023-05-31 16:01:04,952][src.evals.sequence_completion_with_base_change][INFO] - Total: 32
+[2023-05-31 16:01:04,952][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,2,0
+[2023-05-31 16:01:04,952][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:04,953][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:04,953][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '72,84,96,108'}, {'role': 'assistant', 'content': '120'}]
+[2023-05-31 16:01:04,954][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '28,34,40,46'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (6 * (x + 4)) + 4'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,1,2,0'}]
+[2023-05-31 16:01:04,954][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:06,588][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 1, 2, 0]
+[2023-05-31 16:01:06,588][src.evals.check_self_consistency][INFO] - sequence: [0, 1, 2, 0]
+[2023-05-31 16:01:06,588][src.evals.check_self_consistency][INFO] - implied_continuation: 0
+[2023-05-31 16:01:06,588][src.evals.check_self_consistency][INFO] - continuation: 1
+[2023-05-31 16:01:06,588][src.evals.sequence_completion_with_base_change][INFO] - Total: 33
+[2023-05-31 16:01:06,588][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,0,1
+[2023-05-31 16:01:06,588][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:06,589][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:06,589][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '248832,1889568,7962624,24300000'}, {'role': 'assistant', 'content': '60466176'}]
+[2023-05-31 16:01:06,589][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '7,8,9,10'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (5 + 1) or i % (1 + 1)][(x + 5)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 1,2,0,1'}]
+[2023-05-31 16:01:06,589][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:08,026][src.evals.check_self_consistency][INFO] - implied_sequence: [1, 2, 0, 1]
+[2023-05-31 16:01:08,026][src.evals.check_self_consistency][INFO] - sequence: [1, 2, 0, 1]
+[2023-05-31 16:01:08,026][src.evals.check_self_consistency][INFO] - implied_continuation: 1
+[2023-05-31 16:01:08,026][src.evals.check_self_consistency][INFO] - continuation: 9
+[2023-05-31 16:01:08,027][src.evals.sequence_completion_with_base_change][INFO] - Total: 34
+[2023-05-31 16:01:08,027][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,0,1,2
+[2023-05-31 16:01:08,027][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:08,027][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:08,027][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '4722366482869645213696,19342813113834066795298816,79228162514264337593543950336,324518553658426726783156020576256'}, {'role': 'assistant', 'content': '1329227995784915872903807060280344576'}]
+[2023-05-31 16:01:08,027][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '72,84,96,108'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (6 * (x + 6)) * 2'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 2,0,1,2'}]
+[2023-05-31 16:01:08,028][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:09,178][src.evals.check_self_consistency][INFO] - implied_sequence: [2012, 3012, 4012, 5012]
+[2023-05-31 16:01:09,179][src.evals.check_self_consistency][INFO] - sequence: [2, 0, 1, 2]
+[2023-05-31 16:01:09,179][src.evals.check_self_consistency][INFO] - implied_continuation: 6012
+[2023-05-31 16:01:09,179][src.evals.check_self_consistency][INFO] - continuation: 3
+[2023-05-31 16:01:09,179][src.evals.sequence_completion_with_base_change][INFO] - Total: 35
+[2023-05-31 16:01:09,179][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,6,12,18
+[2023-05-31 16:01:09,179][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:09,180][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:09,180][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '15,23,27,31'}, {'role': 'assistant', 'content': '35'}]
+[2023-05-31 16:01:09,180][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '4,6,12,22'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (6 * (x + 0)) | 4'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 0,6,12,18'}]
+[2023-05-31 16:01:09,180][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:10,081][src.evals.check_self_consistency][INFO] - implied_sequence: [0, 6, 12, 18]
+[2023-05-31 16:01:10,081][src.evals.check_self_consistency][INFO] - sequence: [0, 6, 12, 18]
+[2023-05-31 16:01:10,081][src.evals.check_self_consistency][INFO] - implied_continuation: 24
+[2023-05-31 16:01:10,081][src.evals.check_self_consistency][INFO] - continuation: 24
+[2023-05-31 16:01:10,081][src.evals.sequence_completion_with_base_change][INFO] - Total: 36
+[2023-05-31 16:01:10,082][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,12,18,24
+[2023-05-31 16:01:10,082][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:10,082][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:10,082][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1,0,1,0'}, {'role': 'assistant', 'content': '1'}]
+[2023-05-31 16:01:10,083][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (2 * (x + 6)) * 0'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 6,12,18,24'}]
+[2023-05-31 16:01:10,083][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:11,200][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 6 * (x + 1)
+[2023-05-31 16:01:11,200][src.evals.sequence_completion_with_base_change][INFO] - Total: 37
+[2023-05-31 16:01:11,200][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 12,18,24,30
+[2023-05-31 16:01:11,201][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:11,201][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:11,202][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1,2,3,4'}, {'role': 'assistant', 'content': '5'}]
+[2023-05-31 16:01:11,202][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (0 * (x + 3)) * 4'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 12,18,24,30'}]
+[2023-05-31 16:01:11,202][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:12,316][src.evals.check_self_consistency][INFO] - implied_sequence: [18, 24, 30, 36]
+[2023-05-31 16:01:12,316][src.evals.check_self_consistency][INFO] - sequence: [12, 18, 24, 30]
+[2023-05-31 16:01:12,316][src.evals.check_self_consistency][INFO] - implied_continuation: 42
+[2023-05-31 16:01:12,316][src.evals.check_self_consistency][INFO] - continuation: 36
+[2023-05-31 16:01:12,316][src.evals.sequence_completion_with_base_change][INFO] - Total: 38
+[2023-05-31 16:01:12,316][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 18,24,30,36
+[2023-05-31 16:01:12,316][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:12,317][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:12,317][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '18,24,30,36'}, {'role': 'assistant', 'content': '42'}]
+[2023-05-31 16:01:12,317][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '1296,1679616,2176782336,2821109907456'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 6 ** (4 * (x + 1))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 18,24,30,36'}]
+[2023-05-31 16:01:12,318][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:13,253][src.evals.check_self_consistency][INFO] - implied_sequence: [18, 24, 30, 36]
+[2023-05-31 16:01:13,253][src.evals.check_self_consistency][INFO] - sequence: [18, 24, 30, 36]
+[2023-05-31 16:01:13,254][src.evals.check_self_consistency][INFO] - implied_continuation: 42
+[2023-05-31 16:01:13,254][src.evals.check_self_consistency][INFO] - continuation: 42
+[2023-05-31 16:01:13,254][src.evals.sequence_completion_with_base_change][INFO] - Total: 39
+[2023-05-31 16:01:13,254][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,7,11,15
+[2023-05-31 16:01:13,254][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:13,254][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:13,254][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '1,1,1,1'}, {'role': 'assistant', 'content': '1'}]
+[2023-05-31 16:01:13,255][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '3,4,5,6'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][(x + 2)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 3,7,11,15'}]
+[2023-05-31 16:01:13,255][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:14,272][src.evals.check_self_consistency][INFO] - implied_sequence: [3, 7, 11, 15]
+[2023-05-31 16:01:14,272][src.evals.check_self_consistency][INFO] - sequence: [3, 7, 11, 15]
+[2023-05-31 16:01:14,272][src.evals.check_self_consistency][INFO] - implied_continuation: 19
+[2023-05-31 16:01:14,273][src.evals.check_self_consistency][INFO] - continuation: 19
+[2023-05-31 16:01:14,273][src.evals.sequence_completion_with_base_change][INFO] - Total: 40
+[2023-05-31 16:01:14,273][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 7,11,15,19
+[2023-05-31 16:01:14,273][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:14,273][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:14,273][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '7,13,19,25'}, {'role': 'assistant', 'content': '31'}]
+[2023-05-31 16:01:14,274][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (4 * (x + 3)) * 0'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 7,11,15,19'}]
+[2023-05-31 16:01:14,274][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:15,294][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 7
+[2023-05-31 16:01:15,295][src.evals.sequence_completion_with_base_change][INFO] - Total: 41
+[2023-05-31 16:01:15,295][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 11,15,19,23
+[2023-05-31 16:01:15,295][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:15,295][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:15,295][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '6,7,6,7'}, {'role': 'assistant', 'content': '6'}]
+[2023-05-31 16:01:15,295][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '262144,2985984,16777216,64000000'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (4 * (x + 2)) ** 6'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 11,15,19,23'}]
+[2023-05-31 16:01:15,296][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:16,318][src.evals.check_self_consistency][INFO] - implied_sequence: [11, 15, 19, 23]
+[2023-05-31 16:01:16,319][src.evals.check_self_consistency][INFO] - sequence: [11, 15, 19, 23]
+[2023-05-31 16:01:16,319][src.evals.check_self_consistency][INFO] - implied_continuation: 27
+[2023-05-31 16:01:16,319][src.evals.check_self_consistency][INFO] - continuation: 27
+[2023-05-31 16:01:16,319][src.evals.sequence_completion_with_base_change][INFO] - Total: 42
+[2023-05-31 16:01:16,319][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 15,19,23,27
+[2023-05-31 16:01:16,319][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:16,320][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:16,320][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '0,125,1000,3375'}, {'role': 'assistant', 'content': '8000'}]
+[2023-05-31 16:01:16,320][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: 0 ** (5 * (x + 4))'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 15,19,23,27'}]
+[2023-05-31 16:01:16,320][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:17,444][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 15
+[2023-05-31 16:01:17,444][src.evals.sequence_completion_with_base_change][INFO] - Total: 43
+[2023-05-31 16:01:17,444][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,5,9,13
+[2023-05-31 16:01:17,444][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:17,445][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:17,445][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '256,400,576,784'}, {'role': 'assistant', 'content': '1024'}]
+[2023-05-31 16:01:17,445][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '7,8,9,10'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][(x + 5)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 1,5,9,13'}]
+[2023-05-31 16:01:17,445][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:18,331][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 1
+[2023-05-31 16:01:18,332][src.evals.sequence_completion_with_base_change][INFO] - Total: 44
+[2023-05-31 16:01:18,332][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,9,13,17
+[2023-05-31 16:01:18,332][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:18,333][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:18,333][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '5,6,7,9'}, {'role': 'assistant', 'content': '10'}]
+[2023-05-31 16:01:18,333][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (5 * (x + 4)) * 0'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 5,9,13,17'}]
+[2023-05-31 16:01:18,333][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:19,599][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 5
+[2023-05-31 16:01:19,599][src.evals.sequence_completion_with_base_change][INFO] - Total: 45
+[2023-05-31 16:01:19,599][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 9,13,17,21
+[2023-05-31 16:01:19,599][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:19,600][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:19,600][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '7,9,11,13'}, {'role': 'assistant', 'content': '15'}]
+[2023-05-31 16:01:19,600][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '7,8,9,11'}, {'role': 'assistant', 'content': 'Explanation: lambda x: [i for i in range(100) if i % (1 + 1) or i % (4 + 1)][(x + 6)]'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 9,13,17,21'}]
+[2023-05-31 16:01:19,601][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:20,678][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 9
+[2023-05-31 16:01:20,678][src.evals.sequence_completion_with_base_change][INFO] - Total: 46
+[2023-05-31 16:01:20,678][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 13,17,21,25
+[2023-05-31 16:01:20,678][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:20,679][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:20,679][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '8000,15625,27000,42875'}, {'role': 'assistant', 'content': '64000'}]
+[2023-05-31 16:01:20,679][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 0) * 3) % (0+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 13,17,21,25'}]
+[2023-05-31 16:01:20,679][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:21,645][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = 4x + 13
+[2023-05-31 16:01:21,645][src.evals.sequence_completion_with_base_change][INFO] - Total: 47
+[2023-05-31 16:01:21,645][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,5,6,7
+[2023-05-31 16:01:21,646][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:21,646][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:21,646][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '5,25,125,625'}, {'role': 'assistant', 'content': '3125'}]
+[2023-05-31 16:01:21,647][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '36,42,48,54'}, {'role': 'assistant', 'content': 'Explanation: lambda x: (6 * (x + 6)) + 0'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 4,5,6,7'}]
+[2023-05-31 16:01:21,647][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:22,654][src.evals.check_self_consistency][INFO] - implied_sequence: [4, 5, 6, 7]
+[2023-05-31 16:01:22,654][src.evals.check_self_consistency][INFO] - sequence: [4, 5, 6, 7]
+[2023-05-31 16:01:22,655][src.evals.check_self_consistency][INFO] - implied_continuation: 8
+[2023-05-31 16:01:22,655][src.evals.check_self_consistency][INFO] - continuation: 8
+[2023-05-31 16:01:22,655][src.evals.sequence_completion_with_base_change][INFO] - Total: 48
+[2023-05-31 16:01:22,655][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,6,7,8
+[2023-05-31 16:01:22,655][src.evals.sequence_completion_with_base_change][INFO] - base be: 10
+[2023-05-31 16:01:22,655][src.evals.prompts.continuation_prompt][INFO] - model name is: gpt-3.5-turbo
+[2023-05-31 16:01:22,655][src.evals.prompts.continuation_prompt][INFO] - response is: [{'role': 'user', 'content': '41,47,53,59'}, {'role': 'assistant', 'content': '65'}]
+[2023-05-31 16:01:22,655][src.evals.prompts.explanation_prompt][INFO] - [{'role': 'system', 'content': '\nHere are some examples of sequence explanations, i.e. python functions\nwhich generated the preceding sequences base 10. Assume the first number was generated by f(0),\nthe second by f(1), the third by f(2), and so on.\n'}, {'role': 'user', 'content': '0,0,0,0'}, {'role': 'assistant', 'content': 'Explanation: lambda x: ((x + 5) * 0) % (4+1)'}, {'role': 'user', 'content': '\nIn your opinion, what is the most likely function which generated the following sequence?\nAssume the first number was generated by f(0), the second by f(1), the third by f(2), and so on.\nThe function should output the number in decimal form.\nGive your response in the format:\nExplanation: <function>\n\nThe sequence is in base 10.\nQ: 5,6,7,8'}]
+[2023-05-31 16:01:22,657][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-05-31 16:01:23,896][src.evals.check_self_consistency][INFO] - invalid explanation: Explanation: f(x) = x + 5
+[2023-05-31 16:01:23,897][src.evals.sequence_completion_with_base_change][INFO] - Total is: {str(total)}
+[2023-05-31 16:01:23,906][src.evals.sequence_completion_with_base_change][INFO] - 30
+[2023-05-31 16:01:23,906][src.evals.sequence_completion_with_base_change][INFO] - 2
+[2023-05-31 16:01:23,906][src.evals.sequence_completion_with_base_change][INFO] - 0
+[2023-05-31 16:01:23,906][src.evals.sequence_completion_with_base_change][INFO] - 4
+[2023-05-31 16:01:23,906][src.evals.sequence_completion_with_base_change][INFO] - 12
+[2023-05-31 16:01:23,906][src.evals.sequence_completion_with_base_change][INFO] - valid: 36
+[2023-05-31 16:01:23,907][src.evals.sequence_completion_with_base_change][INFO] - Results saved to results.csv
