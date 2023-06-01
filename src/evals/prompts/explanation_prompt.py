@@ -70,8 +70,6 @@ def create_explanation_prompt(
             )
             prompt_text += shot_prompt
 
-    # TODO: Need to fix!!
-
     text = DISTRIBUTIONS[distribution]["explanation"]
     text += "\n"
     text += f"The sequence is in base {base}."
