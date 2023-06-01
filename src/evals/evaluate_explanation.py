@@ -1,13 +1,16 @@
+import logging
 from typing import List, Union
 
 from src.models.openai_model import (
     CHAT_MODEL_NAME,
     DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
     generate_chat_completion,
     generate_completion,
 )
 
-from src.models.openai_model import OpenAITextModels, OpenAIChatModels
+logger = logging.getLogger(__name__)
 
 
 def valid_explanation(
@@ -21,13 +24,8 @@ def valid_explanation(
     try:
         # TODO: need to have this work for an arbitrary number of arguments
         [eval(fn_form.format(i)) for i in range(sequence_length + 1)]
-    except SyntaxError:
-        return False
-    except NameError:
-        return False
-    except TypeError:
-        return False
-    except ValueError:
+    except Exception as e:
+        logger.info(e)
         return False
     else:
         return True

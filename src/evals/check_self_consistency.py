@@ -54,6 +54,10 @@ def self_consistency_evaluation(
         shot_method=shot_method,
     )
 
+    # Make the sequence base 2 if necessary
+    if base == 2:
+        sequence = [bin(i) for i in sequence]
+
     for _ in range(samples):
         result = {
             "continuation prompt": continuation_prompt,
@@ -65,7 +69,6 @@ def self_consistency_evaluation(
             "correct": None,
             "consistent": None,
             "invalid": True,
-        
         }
         logger.info("Generating a continuation and explanation")
         # Generate a continuation
@@ -74,6 +77,7 @@ def self_consistency_evaluation(
             model_name=model_name,
             temperature=temperature,
         )
+        logger.info(f"continuation: {original_continuation}")
         result["continuation"] = original_continuation
         # strip whitespace
         continuation = original_continuation.strip()
@@ -82,8 +86,6 @@ def self_consistency_evaluation(
             logger.info("invalid continuation: ", continuation)
             total_results.append(result)
             continue
-        if base == 2:
-            continuation = int(continuation, 2)
 
         # Generate an explanation
         explanation = generate_explanation(
@@ -91,6 +93,7 @@ def self_consistency_evaluation(
             model_name=model_name,
             temperature=temperature,
         )
+        logger.info(f"explanation: {explanation}")
         result["explanation"] = explanation
         # Parse explanation
         try:
@@ -115,7 +118,7 @@ def self_consistency_evaluation(
                 fn_form=fn,
                 sequence_length=len(sequence),
             )
-        
+
         result["implied sequence"] = implied_sequence
         result["implied continuation"] = implied_continuation
 
@@ -130,15 +133,16 @@ def self_consistency_evaluation(
         # Check consistency
         logger.info(f"implied_continuation: {implied_continuation}")
         logger.info(f"continuation: {continuation}")
-        try:
-            # check if the implied continuation is decimal as specified
-            _ = int(implied_continuation)
-        except ValueError:
-            logger.info(f"invalid implied continuation: {implied_continuation}")
-            total_results.append(result)
-            continue
 
-        if int(continuation) == int(implied_continuation):
+        # try:
+        #     # check if the implied continuation is decimal as specified
+        #     _ = int(implied_continuation)
+        # except ValueError:
+        #     logger.info(f"invalid implied continuation: {implied_continuation}")
+        #     total_results.append(result)
+        #     continue
+
+        if str(continuation) == str(implied_continuation):
             consistent = True
         else:
             consistent = False
