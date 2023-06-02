@@ -1,0 +1,93 @@
+[2023-05-19 10:35:10,639][src.utils][INFO] - Git sha: 0b8b85f6e6fa2914679f1573d6a33a3ae6a71829
+[2023-05-19 10:35:10,656][src.utils][INFO] - Changed files: ['src/evals/check_self_consistency.py', 'src/evals/evaluate_explanation.py', 'src/evals/prompts/explanation_prompt.py']
+[2023-05-19 10:35:10,667][src.utils][INFO] - Git diff:
+diff --git a/src/evals/check_self_consistency.py b/src/evals/check_self_consistency.py
+index 9cf6817..f48641f 100644
+--- a/src/evals/check_self_consistency.py
++++ b/src/evals/check_self_consistency.py
+@@ -65,15 +65,14 @@ def self_consistency_evaluation(
+         # strip whitespace
+         continuation = continuation.strip()
+
++
++
+         if not valid_continuation(continuation, base):
+             print("invalid continuation: ", continuation)
+             invalid_responses += 1
+             continue
+-        else:
+-            if base == 2:
+-                int_response = int(continuation[2:], 2)
+-            elif base == 10:
+-                int_response = int(continuation)
++        if base == 2:
++            continuation = int(continuation, 2)
+
+         # Generate an explanation
+         explanation = generate_explanation(
+@@ -114,12 +113,9 @@ def self_consistency_evaluation(
+
+         # Check consistency
+         print("implied_continuation: ", implied_continuation)
+-        # get the continuation in decimal
+-        if base == 2:
+-            pass
+
+         print("continuation: ", continuation)
+-        if int_response == int(implied_continuation):
++        if continuation == int(implied_continuation):
+             consistent_explanations += 1
+         else:
+             inconsistent_explanations += 1
+diff --git a/src/evals/evaluate_explanation.py b/src/evals/evaluate_explanation.py
+index e2e5503..cf66d31 100644
+--- a/src/evals/evaluate_explanation.py
++++ b/src/evals/evaluate_explanation.py
+@@ -73,8 +73,8 @@ def generate_explanation(
+         )
+     else:
+         raise ValueError(f"Invalid model name: {model_name}")
+-    print("explain prompt: ", prompt)
+-    print("model_response: ", model_response)
++    #print("explain prompt: ", prompt)
++    #print("model_response: ", model_response)
+
+     return model_response
+
+diff --git a/src/evals/prompts/explanation_prompt.py b/src/evals/prompts/explanation_prompt.py
+index 5891940..a9349b0 100644
+--- a/src/evals/prompts/explanation_prompt.py
++++ b/src/evals/prompts/explanation_prompt.py
+@@ -73,10 +73,10 @@ def create_explanation_prompt(
+         text += ",".join([str(x) for x in sequence])
+     elif base == 2:
+         text += ",".join([bin(x) for x in sequence])
+-    print("siiii")
++    # print("siiii")
+     pre_prompt = PRE_PROMPT
+     pre_prompt = pre_prompt.format(base)
+-    print(pre_prompt)
++    # print(pre_prompt)
+     if model_name == "text-davinci-003":
+         # Prepend to the shots
+         pretext = pre_prompt + "\n"
+@@ -105,10 +105,10 @@ def generate_exp_shot_prompt(
+     """
+     if shot_method == "random":
+         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
+-        print("og fn is", fn)
++        #print("og fn is", fn)
+         # Reformat fn to replace every x after the first with x+offset
+         fn = reformat_function(fn, offset)
+-        print(fn)
++        #print(fn)
+         sequence = [eval(fn)(x) for x in range(sequence_length)]
+     else:
+         raise ValueError(f"Invalid shot method: {shot_method}")
+@@ -156,5 +156,5 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
+             # Saving the value based on the key
+             if key == "Explanation":
+                 x = value
+-    print(x)
++    #print(x)
+     return x
