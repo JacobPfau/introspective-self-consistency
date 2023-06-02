@@ -35,8 +35,32 @@ pip install -e human-eval
 ```
 # Experiments
 
+To run a specific task, we simply specify it via the "task" parameter in the call to main.py:
+```sh
+python main.py +task=ambibench_completion # runs exactly that task  ("+" before task needed for hydra weirdness reasons)
+```
+
+Note that a single "hydra run" is not the same as a single invocation of `python main.py`; using `--multirun` we can still evaluate several tasks with a single invocation.
+
+
+## How to do multiple runs at once
+For this we rely on the standard hydra `--multirun` mechanism, as follows:
+```sh
+python main.py --multirun +task=ambibench_completion,ambi_bench_category_prediction  # '-m' can be used as shorthand for '--multirun'
+```
+
+## How to sweep over both tasks _and_ custom configurations per task
+This can be achieved by "packaging" each configuration to be swept over (including both the "task" parameter and the configuration for the chosen task) in a separate yaml file (conventionally under `conf/experiments/`).
+
+See `conf/experiment/demo_1.yaml` and `conf/experiment/demo_2.yaml` for extensively commented example files.
+
+Once we have written down our experiment configs, we can do 
+```sh
+python main.py -m +experiment=demo_1,demo_2
+```
+
 ## Running Q0
 
 ```sh
-python main.py --multirun sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1 string_transformation_completion_equality=false compute_dependence_with_base_changes=false
+python main.py --multirun +task=sequence_completion_equality sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
 ```
