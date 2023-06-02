@@ -24,14 +24,15 @@ Prompts will take the form:
 """
 
 
+from logging import getLogger
 from typing import List, Union
 
+from src.evals.prompts.distributions import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function
-
-# from evals.utils import _generate_random_function, generate_wrong_functions
 from src.models.openai_model import DAVINCI_MODEL_NAME
 from src.pipelines.sequence_completions import sequence_functions
-from src.evals.prompts.distributions import DISTRIBUTIONS
+
+logger = getLogger(__name__)
 
 
 def create_explanation_prompt(
@@ -51,7 +52,9 @@ def create_explanation_prompt(
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_exp_shot_prompt(shot_method, sequence_length, model_name, base)
+            shot_prompt = generate_exp_shot_prompt(
+                shot_method, sequence_length, model_name, base
+            )
             prompt_text += shot_prompt
 
     # TODO: Need to fix!!
@@ -61,10 +64,8 @@ def create_explanation_prompt(
     text += f"The sequence is in base {base}."
     text += "\nQ: "
     text += ",".join([str(x) for x in sequence])
-    pre_prompt = (
-        """Here are some examples of sequence explanations, i.e. python functions 
+    pre_prompt = """Here are some examples of sequence explanations, i.e. python functions
     which could have generated the preceding sequences, with associated offset."""
-    )
     if model_name == "text-davinci-003":
         # Prepend to the shots
         pretext = pre_prompt + "\n"
@@ -130,7 +131,7 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
     Parse an explanation into a function and offset.
     """
     # Splitting the string into lines
-    lines = model_response.split('\n')
+    lines = model_response.split("\n")
 
     # Initializing the variables with None
     x = ""
@@ -139,13 +140,13 @@ def parse_explanation(model_response: str) -> tuple[str, str]:
     # Looping over the lines
     for line in lines:
         # Splitting the line into key and value
-        parts = line.split(': ', 1)
+        parts = line.split(": ", 1)
         if len(parts) == 2:
             key, value = parts
             # Saving the value based on the key
-            if key == 'Explanation':
+            if key == "Explanation":
                 x = value
-            elif key == 'Offset':
+            elif key == "Offset":
                 y = value
-    print(x, y)
+    logger.debug(x, y)
     return x, y

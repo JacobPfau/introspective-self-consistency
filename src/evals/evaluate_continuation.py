@@ -1,8 +1,8 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 from src.models.openai_model import (
-    CHAT_MODEL_NAME,
-    DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
     generate_chat_completion,
     generate_text_completion,
 )
@@ -10,14 +10,14 @@ from src.models.openai_model import (
 
 def valid_continuation(
     model_continuation: str,
+    base: int,
 ) -> bool:
     """
     Given a continuation as supplied by the model,
     return whether it is a valid integer or not.
     """
     try:
-        # TODO: Work for arbitrary base continuation
-        int(model_continuation)
+        int(model_continuation, base)
     except ValueError:
         return False
     else:
@@ -25,28 +25,28 @@ def valid_continuation(
 
 
 def generate_continuation(
-    prompt: Union[str, List[str]],
+    prompt: Union[str, List[Dict[str, str]]],
     model_name: str,
-    temperature: int,
+    temperature: float,
 ) -> str:
     """
     Given a prompt, generate a continuation from the model.
     """
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Feed this into the model
         model_response = generate_text_completion(
             prompt=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=DAVINCI_MODEL_NAME,
+            model=model_name,
         )
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=CHAT_MODEL_NAME,
+            model=model_name,
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
