@@ -1,8 +1,17 @@
 import logging
+from typing import Callable, Tuple
 
 import hydra
 from omegaconf import DictConfig
 
+from src.evals.config import (
+    AmbibenchCatPredConfig,
+    AmbibenchCompletionConfig,
+    BaseEvalConfig,
+    SequenceCompletionBaseChangeConfig,
+    SequenceCompletionEqConfig,
+    StringTransformationConfig,
+)
 from src.evals.eval_ambibench_category_prediction import (
     evaluate_ambibench_category_prediction,
 )
@@ -16,47 +25,46 @@ from src.utils import log_exceptions
 
 logger = logging.getLogger(__name__)
 
+TASK_FUNS = {
+    "string_transformation_completion_equality": {
+        "fn": evaluate_string_transformation_equality,
+        "config": StringTransformationConfig,
+    },
+    "sequence_completion_equality": {
+        "fn": evaluate_sequence_completion_equality,
+        "config": SequenceCompletionEqConfig,
+    },
+    "compute_dependence_with_base_changes": {
+        "fn": evaluate_compute_dependence_with_base_changes,
+        "config": SequenceCompletionBaseChangeConfig,
+    },
+    "ambibench_category_prediction": {
+        "fn": evaluate_ambibench_category_prediction,
+        "config": AmbibenchCatPredConfig,
+    },
+    "ambibench_completion": {
+        "fn": evaluate_ambibench_completion,
+        "config": AmbibenchCompletionConfig,
+    },
+}
+
+
+def get_task_and_config(cfg: DictConfig) -> Tuple[Callable, BaseEvalConfig]:
+    task: str = cfg.task
+    if task not in TASK_FUNS:
+        raise ValueError(f"Task '{task}' not supported.")
+
+    task_fun: Callable = TASK_FUNS[task]["fn"]
+    config: BaseEvalConfig = TASK_FUNS[task]["config"]
+    task_cfg = config.from_dict(cfg)
+    return task_fun, task_cfg
+
 
 @hydra.main(version_base=None, config_path="conf", config_name="main")
 @log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
-    if task_cfg := cfg.string_transformation_completion_equality:
-        evaluate_string_transformation_equality(
-            model=task_cfg.model,
-            num_shots=task_cfg.num_shots,
-            cot=task_cfg.use_cot,
-        )
-
-    if task_cfg := cfg.sequence_completion_equality:
-        evaluate_sequence_completion_equality(
-            model=task_cfg.model,
-            max_offset=task_cfg.max_offset,
-            num_shots=task_cfg.num_shots,
-            cot=task_cfg.use_cot,
-            few_shot_prompt_type=task_cfg.few_shot_prompt_type,
-        )
-
-    if task_cfg := cfg.compute_dependence_with_base_changes:
-        evaluate_compute_dependence_with_base_changes(
-            sequence_type=task_cfg.sequence_type,
-            model=task_cfg.model,
-            num_shots=task_cfg.num_shots,
-            on_ambiguous_sequences=task_cfg.on_ambiguous_sequences,
-            num_samples=task_cfg.num_samples,
-        )
-
-    if task_cfg := cfg.ambibench_category_prediction:
-        evaluate_ambibench_category_prediction(
-            model=task_cfg.model,
-            data_glob=task_cfg.data_glob,
-            multiple_choice=task_cfg.multiple_choice,
-        )
-
-    if task_cfg := cfg.ambibench_completion:
-        evaluate_ambibench_completion(
-            model=task_cfg.model,
-            data_glob=task_cfg.data_glob,
-        )
+    task_fun, task_cfg = get_task_and_config(cfg)
+    task_fun(task_cfg)
 
 
 if __name__ == "__main__":

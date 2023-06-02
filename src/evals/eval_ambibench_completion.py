@@ -20,6 +20,7 @@ import pandas as pd
 from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
+from src.evals.config import AmbibenchCompletionConfig
 from src.models.openai_model import (
     CHAT_PROMPT_TEMPLATE,
     OpenAIChatModels,
@@ -27,9 +28,7 @@ from src.models.openai_model import (
     generate_chat_completion,
     generate_text_completion,
 )
-from src.models.utils import get_model_from_string
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
-from src.utils import auto_subdir
 
 logger = logging.getLogger("EvalAmbiBenchCompletions")
 
@@ -86,15 +85,10 @@ def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
     return completion_response.strip()
 
 
-@auto_subdir
-def evaluate_ambibench_completion(
-    model: str,
-    data_glob: str,
-):
-    model = get_model_from_string(model)
+def evaluate_ambibench_completion(config: AmbibenchCompletionConfig) -> None:
 
     # get data
-    data_glob = Path(get_original_cwd()) / data_glob
+    data_glob = Path(get_original_cwd()) / config.data_glob
     output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
     for data_path in glob.glob(str(data_glob)):
@@ -106,16 +100,18 @@ def evaluate_ambibench_completion(
         (
             formatted_prompts,
             expected_completions,
-        ) = format_completion_prompt_for_model_type(dataset.examples, model.value)
+        ) = format_completion_prompt_for_model_type(
+            dataset.examples, config.model.value
+        )
         logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
 
-        logger.info(f"Start model inference for: {model.value}")
+        logger.info(f"Start model inference for: {config.model.value}")
         pred_completions: List[str] = []
         for prompt in tqdm(formatted_prompts):
-            if isinstance(model, OpenAIChatModels):
-                completion = get_chat_completion(prompt, model)
-            if isinstance(model, OpenAITextModels):
-                completion = get_text_completion(prompt, model)
+            if isinstance(config.model, OpenAIChatModels):
+                completion = get_chat_completion(prompt, config.model)
+            if isinstance(config.model, OpenAITextModels):
+                completion = get_text_completion(prompt, config.model)
 
             pred_completions.append(completion)
 
@@ -126,7 +122,7 @@ def evaluate_ambibench_completion(
         # store results in TSV
         results = {
             "dataset": str(Path(data_path).name),
-            "model": model.value,
+            "model": config.model.value,
             "num_shots": dataset.config.n_shots,
             "num_examples": len(formatted_prompts),
             "num_correct": num_correct_predictions,
