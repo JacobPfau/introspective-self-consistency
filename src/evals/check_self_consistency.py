@@ -1,4 +1,4 @@
-import logging
+from logging import getLogger
 from typing import List
 
 from src.evals.evaluate_continuation import generate_continuation, valid_continuation
@@ -14,7 +14,7 @@ from src.evals.prompts.explanation_prompt import (
     parse_explanation,
 )
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def self_consistency_evaluation(

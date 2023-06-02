@@ -1,8 +1,5 @@
 import functools
 import logging
-import os
-from contextlib import contextmanager
-from pathlib import Path
 from typing import Any
 
 import git  # installed with `pip install gitpython`
@@ -10,38 +7,6 @@ from hydra.experimental.callback import Callback
 from omegaconf import DictConfig
 
 logger = logging.getLogger(__name__)
-
-
-@contextmanager
-def in_subdir(path: str):
-    """
-    Switch into a subdirectory and switch back when leaving the context.
-    """
-    origin = Path.cwd().absolute()
-    subdir = origin / path
-    try:
-        subdir.mkdir(parents=True, exist_ok=True)
-        os.chdir(subdir)
-        yield
-    finally:
-        os.chdir(origin)
-
-
-def auto_subdir(func):
-    """
-    Switch automatically into a subdirectory named after the function name.
-
-    Useful in combination with hydras way of logging and storing results.
-    """
-
-    @functools.wraps(func)
-    def wrapped(*args, **kwargs):
-        subdir = Path.cwd() / func.__name__
-        with in_subdir(subdir):
-            logger.info(f"Changed directory to {subdir}")
-            return func(*args, **kwargs)
-
-    return wrapped
 
 
 def log_exceptions(logger: logging.Logger):

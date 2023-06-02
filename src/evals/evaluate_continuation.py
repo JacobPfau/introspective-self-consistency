@@ -1,13 +1,11 @@
-from typing import List, Union
+from typing import Dict, List, Union
 
 from src.models.openai_model import (
-    CHAT_MODEL_NAME,
-    DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
-
-from src.models.openai_model import OpenAITextModels, OpenAIChatModels
 
 
 def valid_continuation(
@@ -20,13 +18,7 @@ def valid_continuation(
     If in biinary, the continuation will be prefixed with 0b.
     """
     try:
-        # TODO: Work for arbitrary base continuation
-        print("base is: ", base)
-        print("model continuation is: ", model_continuation)
-        if base == 10:
-            int(model_continuation)
-        elif base == 2:
-            int(model_continuation[2:], 2)
+        int(model_continuation, base)
     except ValueError:
         return False
     else:
@@ -34,20 +26,20 @@ def valid_continuation(
 
 
 def generate_continuation(
-    prompt: Union[str, List[str]],
+    prompt: Union[str, List[Dict[str, str]]],
     model_name: str,
-    temperature: int,
+    temperature: float,
 ) -> str:
     """
     Given a prompt, generate a continuation from the model.
     """
     if model_name in OpenAITextModels.list():
         # Feed this into the model
-        model_response = generate_completion(
+        model_response = generate_text_completion(
             prompt=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=DAVINCI_MODEL_NAME,
+            model=model_name,
         )
     elif model_name in OpenAIChatModels.list():
         # Feed this into the model
@@ -55,7 +47,7 @@ def generate_continuation(
             prompt_turns=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=CHAT_MODEL_NAME,
+            model=model_name,
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")

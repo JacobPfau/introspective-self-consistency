@@ -38,9 +38,11 @@ Consistency evaluator - two outputs consistent
 """
 
 import random
-from typing import Literal, Tuple
+from typing import Any, Dict, List, Literal, Tuple, Union
 
 import numpy as np
+
+PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
 
 SYSTEM_PROMPT = """
 You are a mathematical assistant.
@@ -106,7 +108,7 @@ def find_ambiguous_integer_sequences(
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
     valid_sequence_functions: dict = sequence_functions,
-) -> dict:
+) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
     Find ambiguous_integer_sequences using brute force search
     over a set of progressions.
@@ -269,14 +271,14 @@ def check_ambiguity(
                         return
 
 
-def _generate_shot_pool(
+def generate_shot_pool(
     n_shots: int = 8,
     base_fn: dict = None,
     shot_type: Literal[
         "random", "same_fn", "same_class", "ambigious", "exclude_class"
     ] = "random",
     ambiguous_sequences: dict = None,
-):
+) -> List[Dict[str, Any]]:
     fn_pool = []
     if shot_type == "random":
         fn_pool = list(sequence_functions.values())
@@ -320,7 +322,7 @@ def _generate_shot_pool(
     # continue to draw if fn_item in shots
     while base_fn in shots:
         shots = np.random.choice(shot_pool, size=n_shots, replace=False)
-    return shot_pool
+    return shots
 
 
 def _cot(fn_item: dict, steps: int) -> str:
@@ -330,14 +332,14 @@ def _cot(fn_item: dict, steps: int) -> str:
     """
     prompt = COT_PROMPT
     for step in range(steps):
-        completion = _resolve_fn(fn_item, step)
+        completion = resolve_fn(fn_item, step)
         prompt += COT_STEP.format(
             step, fn_item["fn"], step + fn_item["offset"], completion
         )
     return prompt
 
 
-def _resolve_fn(fn_item: dict, step: int) -> int:
+def resolve_fn(fn_item: dict, step: int) -> int:
     # resolve function to a given completion
     # TODO: maybe move offset outside of here to make it clearer
     step = step + fn_item["offset"]
@@ -372,7 +374,7 @@ def _create_sequence_prompt(
     if prompt_type == "completion":
         prompt += BASE_PROMPT_COMPLETION
         last_step = len(sequence.split(","))
-        completion = _resolve_fn(fn_item, last_step)
+        completion = resolve_fn(fn_item, last_step)
     elif prompt_type == "explanation":
         prompt += BASE_PROMPT_EXPLANATION
         completion = fn_item["fn"]
@@ -398,7 +400,7 @@ def _sample_shots(
     Sample `:n_shots` number of shots.
     Initially we randomly generate `:_generate_shot_pool` the shots.
     """
-    shots = _generate_shot_pool(
+    shots = generate_shot_pool(
         n_shots=n_shots,
         base_fn=fn_item,
         shot_type=shot_type,
@@ -409,7 +411,7 @@ def _sample_shots(
     for shot in shots:
         # TODO: make this magic string more obvious
         steps = random.randint(2, 4)
-        sequence = ",".join([str(_resolve_fn(shot, step)) for step in range(steps)])
+        sequence = ",".join([str(resolve_fn(shot, step)) for step in range(steps)])
         prompt, completion, cot = _create_sequence_prompt(
             sequence, shot, prompt_type, use_cot=use_cot
         )
@@ -424,9 +426,7 @@ def generate_sequence_completion_prompt(
     prompt_type: Literal["completion", "explanation"] = "completion",
     use_cot: bool = False,
     n_shots: int = 0,
-    shot_type: Literal[
-        "random", "same_fn", "same_class", "ambigious", "exclude_class"
-    ] = "random",
+    shot_type: PromptType = "random",
     ambiguous_sequences: dict = None,
 ) -> dict:
     """

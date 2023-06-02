@@ -1,16 +1,14 @@
-import logging
-from typing import List, Union
+from logging import getLogger
+from typing import Dict, List, Union
 
 from src.models.openai_model import (
-    CHAT_MODEL_NAME,
-    DAVINCI_MODEL_NAME,
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 def valid_explanation(
@@ -27,8 +25,6 @@ def valid_explanation(
     except Exception as e:
         logger.info(e)
         return False
-    else:
-        return True
 
 
 def correct_explanation(
@@ -47,9 +43,9 @@ def correct_explanation(
 
 
 def generate_explanation(
-    prompt: Union[str, List[str]],
+    prompt: Union[str, List[Dict[str, str]]],
     model_name: str,
-    temperature: int,
+    temperature: float,
 ) -> str:
     """
     Given a prompt, generate an explanation from the model.
@@ -57,11 +53,11 @@ def generate_explanation(
     """
     if model_name in OpenAITextModels.list():
         # Feed this into the model
-        model_response = generate_completion(
+        model_response = generate_text_completion(
             prompt=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=DAVINCI_MODEL_NAME,
+            model=model_name,
         )
     elif model_name in OpenAIChatModels.list():
         # Feed this into the model
@@ -69,12 +65,12 @@ def generate_explanation(
             prompt_turns=prompt,
             temperature=temperature,
             max_tokens=256,
-            model=CHAT_MODEL_NAME,
+            model=model_name,
         )
     else:
         raise ValueError(f"Invalid model name: {model_name}")
-    # print("explain prompt: ", prompt)
-    # print("model_response: ", model_response)
+    logger.debug("explain prompt: ", prompt)
+    logger.debug("model_response: ", model_response)
 
     return model_response
 

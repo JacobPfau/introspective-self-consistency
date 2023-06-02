@@ -1,34 +1,23 @@
-import json
 import logging
 
-import numpy as np
 import pandas as pd
 
 from src.evals.check_self_consistency import self_consistency_evaluation
-from src.pipelines.sequence_completions import (
-    find_ambiguous_integer_sequences,
-    sequence_functions,
-)
-from src.utils import auto_subdir, reformat_self_consistency_results
+from src.evals.config import SequenceCompletionBaseChangeConfig
+from src.pipelines.sequence_completions import find_ambiguous_integer_sequences
 
 logger = logging.getLogger(__name__)
 
 
-@auto_subdir
 def evaluate_compute_dependence_with_base_changes(
-    sequence_type: str,
-    model: str,
-    num_shots: int,
-    on_ambiguous_sequences: bool,
-    num_samples: int,
-    distribution: str = "default",
-    shot_method: str = "random",
-):
+    config: SequenceCompletionBaseChangeConfig,
+) -> None:
     total = 0
-    if on_ambiguous_sequences:
-        if sequence_type == "integer":
+
+    if config.on_ambiguous_sequences:
+        if config.sequence_type == "integer":
             base = 10
-        elif sequence_type == "binary":
+        elif config.sequence_type == "binary":
             base = 2
         else:
             raise ValueError("Unknown sequence type.")
@@ -46,14 +35,14 @@ def evaluate_compute_dependence_with_base_changes(
                 try:
                     logger.info(f"base be: {base}")
                     all_data += self_consistency_evaluation(
-                        model_name=model,
+                        model_name=config.model.value,
                         sequence=int_sequence,
-                        distribution=distribution,
+                        distribution=config.distribution,
                         base=base,
-                        shots=num_shots,
-                        shot_method=shot_method,
+                        shots=config.num_shots,
+                        shot_method=config.shot_method,
                         temperature=0.0,
-                        samples=num_samples,
+                        samples=config.num_samples,
                     )
                 except Exception as e:
                     logger.warning("Error in self consistency evaluation.")
@@ -68,7 +57,7 @@ def evaluate_compute_dependence_with_base_changes(
     logger.info("Total is: {str(total)}")
 
     # Log total data
-    pd.DataFrame(all_data).to_csv(f"all_data.csv")
+    pd.DataFrame(all_data).to_csv("all_data.csv")
 
     (
         correct_consistent,
@@ -89,12 +78,8 @@ def evaluate_compute_dependence_with_base_changes(
             continue
 
         correct_consistent += 1 if data["correct"] and data["consistent"] else 0
-        correct_inconsistent += (
-            1 if (data["correct"] and not data["consistent"]) else 0
-        )
-        incorrect_consistent += (
-            1 if (not data["correct"] and data["consistent"]) else 0
-        )
+        correct_inconsistent += 1 if (data["correct"] and not data["consistent"]) else 0
+        incorrect_consistent += 1 if (not data["correct"] and data["consistent"]) else 0
         incorrect_inconsistent += (
             1 if (not data["correct"] and not data["consistent"]) else 0
         )
@@ -106,8 +91,8 @@ def evaluate_compute_dependence_with_base_changes(
     # Save the results
     results = [
         {
-            "model": model,
-            "sequence_type": sequence_type,
+            "model": config.model,
+            "sequence_type": config.sequence_type,
             "total sequences": total,
             "invalid sequences": invalid,
             "valid sequences": total - invalid,
@@ -117,6 +102,6 @@ def evaluate_compute_dependence_with_base_changes(
             "incorrect_inconsistent": incorrect_inconsistent_percent,
         }
     ]
-    pd.DataFrame(results).to_csv(f"results.csv")
+    pd.DataFrame(results).to_csv("results.csv")
 
     logger.info("Results saved to results.csv")

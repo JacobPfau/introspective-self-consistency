@@ -1,13 +1,14 @@
-defaults:
-- tasks/string_transformation_completion_equality@string_transformation_completion_equality
-- tasks/sequence_completion_equality@sequence_completion_equality
-- tasks/compute_dependence_with_base_changes@compute_dependence_with_base_changes
+task: ???
 
 hydra:
   job:
     chdir: true  # <-- if true Hydra creates a unique time-stamped output dir per run
   run:
     dir: ./results/${now:%Y-%m-%d-%H-%M-%S}  # <-- naming scheme for the unique time-stamped output dir
+  sweep:
+    dir: ./results/${now:%Y-%m-%d-%H-%M-%S}
+    subdir: ${hydra.job.override_dirname}
+
   callbacks:
     git_logging:
       _target_: src.utils.LogGitHashCallback

@@ -1,29 +1,32 @@
-"""This module provides methods to evaluate the correctness and consistency of predicitons
+"""This module provides methods to evaluate the correctness and consistency of predictions
  on basic AmbiBench-style examples. The model is given a prompt with few-shot examples and tested for the following cases:
     1. uninformative completion: predict a binary output {X; Y} on whether or not the last question contains the [category withheld]
 
 Here 'uninformative' refers to [category withheld] in the instruction, i.e. the model is not informed about the category
 
-We are interested in different metrics of correctness and constistency as follows:
+We are interested in different metrics of correctness and consistency as follows:
     1. ground-truth correctness: Does the model correctly predict the completion (X or Y) or category (multiple-choice)?
     2. self-rule-following consistency: Is the predicted completion of the model consistent with the predicted category?
     3. self-comparison consistency:
 
  """
-import datetime
+import glob
 import logging
 import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
+from src.evals.config import AmbibenchCompletionConfig
 from src.models.openai_model import (
     CHAT_PROMPT_TEMPLATE,
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_completion
+    generate_text_completion,
 )
 from src.pipelines.basic_ambibench_completions import load_ambibench_dataset
 
@@ -37,7 +40,7 @@ def format_completion_prompt_for_model_type(
     formatted_prompts: List[dict] = []
     expected_completions: List[str] = []
 
-    if isinstance(model, OpenAIChatModels):
+    if model in [m.value for m in OpenAIChatModels]:
         # Need to format the original prompt structure to run inference for AmbiBench completions?
         # E.g.: 'Output 'X' if the sentence contains a [category withheld] and 'Y' otherwise.\nQ: The bear is in the prairie.\nA: Y
         #   \nQ: The fugitive is in the river.\nA: Y\nQ: The surveyor is in the marsh.\nA:'
@@ -46,7 +49,7 @@ def format_completion_prompt_for_model_type(
             template["content"] = ex["prompt"]
             formatted_prompts.append(template)
             expected_completions.append(ex["completion"].strip())
-    elif isinstance(model, OpenAITextModels):
+    elif model in [m.value for m in OpenAITextModels]:
         for ex in examples:
             formatted_prompts.append(ex["prompt"])
             expected_completions.append(ex["completion"].strip())
@@ -77,61 +80,59 @@ def get_chat_completion(prompt: Dict[str, str], model: OpenAIChatModels) -> str:
 
 
 def get_text_completion(prompt: str, model: OpenAITextModels) -> str:
-    completion_response = generate_completion(prompt, model=model)
+    completion_response = generate_text_completion(prompt, model=model)
     # parse predicted completion from response, i.e. last char of the last line
     return completion_response.strip()
 
 
-if __name__ == "__main__":
+def evaluate_ambibench_completion(config: AmbibenchCompletionConfig) -> None:
 
-    # set params
-    ambibench_data_dir = "./data/ambi-bench"
-    data_file_name = "20230406_12-28_ambibench_examples.json"
-    date = datetime.datetime.now().strftime("%y%m%d")
-    output_tsv = f"./results/{date}_ambibench_completions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35  # OpenAITextModels.TEXT_DAVINCI_003  #
-    date = datetime.datetime.now().strftime("%Y%M%D_%H-%m")
-    output_tsv = f"./results/{date}_ambibench_completions.tsv"
-    model = OpenAIChatModels.CHAT_GPT_35
+    # get data
+    data_glob = Path(get_original_cwd()) / config.data_glob
+    output_tsv = f"{Path(os.path.dirname(data_glob)).stem}_results.tsv"
 
-    ###
+    for data_path in glob.glob(str(data_glob)):
 
-    #
-    dataset = load_ambibench_dataset(os.path.join(ambibench_data_dir, data_file_name))
-    logger.info(f"Dataset config: {repr(dataset.config)}")
+        dataset = load_ambibench_dataset(data_path)
 
-    formatted_prompts, expected_completions = format_completion_prompt_for_model_type(
-        dataset.examples, model
-    )
-    logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
+        logger.debug(f"Dataset config: {repr(dataset.config)}")
 
-    logger.info(f"Start model inference for: {model.value}")
-    pred_completions: List[str] = []
-    for prompt in tqdm(formatted_prompts):
-        if isinstance(model, OpenAIChatModels):
-            completion = get_chat_completion(prompt, model)
-        if isinstance(model, OpenAITextModels):
-            completion = get_text_completion(prompt, model)
+        (
+            formatted_prompts,
+            expected_completions,
+        ) = format_completion_prompt_for_model_type(
+            dataset.examples, config.model.value
+        )
+        logger.info(f"No. prompts for AmbiBench completion: {len(formatted_prompts)}")
 
-        pred_completions.append(completion)
+        logger.info(f"Start model inference for: {config.model.value}")
+        pred_completions: List[str] = []
+        for prompt in tqdm(formatted_prompts):
+            if isinstance(config.model, OpenAIChatModels):
+                completion = get_chat_completion(prompt, config.model)
+            if isinstance(config.model, OpenAITextModels):
+                completion = get_text_completion(prompt, config.model)
 
-    correct_predictions = eval_completions(expected_completions, pred_completions)
+            pred_completions.append(completion)
 
-    # store results in TSV
-    results = {
-        "dataset": data_file_name,
-        "model": model.value,
-        "num_shots": dataset.config.n_shots,
-        "num_examples": len(formatted_prompts),
-        "num_correct": correct_predictions,
-        "acc": round(correct_predictions / len(formatted_prompts), 3),
-    }
-    logger.info(f"Results: {repr(results)}")
-    df = pd.DataFrame.from_dict(results, orient="index")
+        num_correct_predictions = eval_completions(
+            expected_completions, pred_completions
+        )
 
-    if os.path.exists(output_tsv):
-        # append
-        df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
+        # store results in TSV
+        results = {
+            "dataset": str(Path(data_path).name),
+            "model": config.model.value,
+            "num_shots": dataset.config.n_shots,
+            "num_examples": len(formatted_prompts),
+            "num_correct": num_correct_predictions,
+            "acc": round(num_correct_predictions / len(expected_completions), 3),
+        }
+        logger.info(f"Results: {repr(results)}")
+        df = pd.DataFrame.from_dict(results, orient="index")
 
-    os.makedirs(os.path.dirname(output_tsv), exist_ok=True)
-    df.to_csv(output_tsv, sep="\t", index=False, header=True)
+        if os.path.exists(output_tsv):
+            # append
+            df = pd.concat([pd.read_csv(output_tsv, sep="\t"), df], ignore_index=True)
+
+        df.to_csv(output_tsv, sep="\t", index=False, header=True)

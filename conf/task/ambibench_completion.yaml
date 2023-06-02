@@ -1,0 +1,4 @@
+# @package _global_
+task: ambibench_completion
+data_glob: ./data/ambi-bench/amb50/*.json
+model: gpt-3.5-turbo
