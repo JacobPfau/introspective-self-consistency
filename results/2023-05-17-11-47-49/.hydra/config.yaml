@@ -1,0 +1,6 @@
+compute_dependence_with_base_changes:
+  sequence_type: binary
+  model: gpt-3.5-turbo
+  num_shots: 4
+  on_ambiguous_sequences: true
+  num_samples: 1
