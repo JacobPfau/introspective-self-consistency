@@ -55,10 +55,12 @@ class SequenceCompletionEqConfig(BaseEvalConfig):
 
 @dataclass
 class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
-    sequence_type: str
-    num_samples: int
-    on_ambiguous_sequences: bool
-    num_shots = NUM_SHOTS
+    sequence_type: str = "integer"
+    num_samples: int = 1
+    on_ambiguous_sequences: bool = True
+    num_shots = 4
+    shot_method = "random"
+    distribution = "default-change"
 
 
 @dataclass

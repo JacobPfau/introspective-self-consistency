@@ -33,7 +33,6 @@ def evaluate_compute_dependence_with_base_changes(
             logger.info(f"Sequence: {sequence}")
             for _ in range(2):
                 try:
-                    logger.info(f"base be: {base}")
                     all_data += self_consistency_evaluation(
                         model_name=config.model.value,
                         sequence=int_sequence,
@@ -46,7 +45,7 @@ def evaluate_compute_dependence_with_base_changes(
                     )
                 except Exception as e:
                     logger.warning("Error in self consistency evaluation.")
-                    logger.error(str(e))
+                    logger.warning(e)
                 else:
                     total += 1
                     break
