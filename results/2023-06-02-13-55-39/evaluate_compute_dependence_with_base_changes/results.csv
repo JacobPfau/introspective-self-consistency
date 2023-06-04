@@ -1,0 +1,2 @@
+,model,sequence_type,total sequences,invalid sequences,valid sequences,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent
+0,gpt-4-0314,integer,114,2,112,68.0,4.0,2.0,24.0

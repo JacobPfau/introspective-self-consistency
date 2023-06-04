@@ -37,6 +37,10 @@ def evaluate_compute_dependence_with_base_changes(
         results = {}
         all_data = []
         ambiguous_sequences = find_ambiguous_integer_sequences()
+        # Wanted to double the sequences used here just to get a larger sample size
+        ambiguous_sequences = list(ambiguous_sequences.keys())
+        ambiguous_sequences = ambiguous_sequences * 2
+
         for sequence in ambiguous_sequences:
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
