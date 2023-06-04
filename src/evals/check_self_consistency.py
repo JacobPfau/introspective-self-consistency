@@ -99,7 +99,7 @@ def self_consistency_evaluation(
         try:
             fn = parse_explanation(explanation)
         except BaseException:
-            logger.info(f"invalid explanation: {explanation}")
+            logger.info(f"invalid explanation - couldn't parse: {explanation}")
             total_results.append(result)
             continue
 

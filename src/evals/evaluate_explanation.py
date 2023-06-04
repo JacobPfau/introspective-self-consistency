@@ -21,7 +21,8 @@ def valid_explanation(
     """
     try:
         # TODO: need to have this work for an arbitrary number of arguments
-        [eval(fn_form.format(i)) for i in range(sequence_length + 1)]
+        [eval(fn_form)(i) for i in range(sequence_length + 1)]
+        return True
     except Exception as e:
         logger.info(e)
         return False
@@ -29,7 +30,6 @@ def valid_explanation(
 
 def correct_explanation(
     fn_form: str,
-    offset: int,
     sequence_length: int,
     sequence: List[int],
 ) -> bool:
@@ -38,7 +38,7 @@ def correct_explanation(
     return whether the function correctly generates the sequence.
     """
     return all(
-        eval(fn_form.format(i + offset)) == sequence[i] for i in range(sequence_length)
+        eval(fn_form(i)) == sequence[i] for i in range(sequence_length)
     )
 
 

@@ -1,4 +1,3 @@
-# @package _global_
 task: compute_dependence_with_base_changes
 sequence_type: integer
 model: gpt-3.5-turbo
