@@ -28,20 +28,6 @@ def valid_explanation(
         return False
 
 
-def correct_explanation(
-    fn_form: str,
-    sequence_length: int,
-    sequence: List[int],
-) -> bool:
-    """
-    Given a function form and an offset as supplied by the model,
-    return whether the function correctly generates the sequence.
-    """
-    return all(
-        eval(fn_form(i)) == sequence[i] for i in range(sequence_length)
-    )
-
-
 def generate_explanation(
     prompt: Union[str, List[Dict[str, str]]],
     model_name: str,

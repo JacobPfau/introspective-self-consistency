@@ -1,6 +1,6 @@
+from src.evals.check_self_consistency import self_consistency_evaluation
 from src.evals.prompts.continuation_prompt import create_continuation_prompt
 from src.evals.prompts.explanation_prompt import create_explanation_prompt
-from src.evals.check_self_consistency import self_consistency_evaluation
 
 
 def test_completion_prompt():
@@ -40,8 +40,8 @@ def test_create_explanation_prompt():
     sequence = [1, 2, 3, 4, 5, 6]
     distribution = "default"
     model_name = "gpt-3.5-turbo"
-    base = 2
-    shots = 5
+    base = 10
+    shots = 1
     shot_method = "random"
     prompt = create_explanation_prompt(
         sequence=sequence,
@@ -79,4 +79,4 @@ def test_self_consistency_evaluation():
 
 
 if __name__ == "__main__":
-    test_self_consistency_evaluation()
+    test_create_explanation_prompt()
