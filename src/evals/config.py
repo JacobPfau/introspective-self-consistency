@@ -64,7 +64,6 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
 @dataclass
 class Q12LogprobInequalityConfig(BaseEvalConfig):
     csv_input_path: str
-    csv_output_path: str
     num_shots = 4
     num_valid = 2
     num_invalid = 3

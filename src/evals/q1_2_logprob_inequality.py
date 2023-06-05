@@ -81,7 +81,6 @@ def run_q1_2_eval(
 ):
     """Main function to run Q1.2 eval."""
     config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
-    config.csv_output_path = os.path.join(get_original_cwd(), config.csv_output_path)
 
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q1.2 eval.")
@@ -153,13 +152,14 @@ def run_q1_2_eval(
         except Exception as e:
             logger.error(f"Unexpected error in Q1.2 eval: {repr(e)}")
 
-    _save_results_to_csv(results, config.csv_output_path)
+    _save_results_to_csv(results)
 
 
-def _save_results_to_csv(results: List[Dict[str, Any]], csv_path: str):
+def _save_results_to_csv(results: List[Dict[str, Any]]):
     df = pd.DataFrame.from_dict(results, orient="columns")
 
     # append to existing csv if exists
+    csv_path = "results.csv"
     if os.path.exists(csv_path):
         df = pd.concat([pd.read_csv(csv_path, sep=","), df], ignore_index=True)
 
