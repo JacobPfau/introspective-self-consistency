@@ -2,12 +2,13 @@ import openai
 import pytest
 import tiktoken
 
-from models.openai_model import (
+from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
     generate_response_with_turns,
-     generate_completion,
+    generate_text_completion,
+    generate_text_completion_with_logprobs,
 )
 
 
@@ -19,14 +20,41 @@ def test_all_openai_models_found():
 
 
 @pytest.mark.parametrize("model", OpenAITextModels.list())
-def test_ generate_completion(model):
+def test_generate_text_completion(model):
     test_prompt = "Once upon a time,"
     max_tokens = 5
-    text =  generate_completion(test_prompt, model=model, max_tokens=max_tokens)
+    text = generate_text_completion(test_prompt, model=model, max_tokens=max_tokens)
     tokens = tiktoken.encoding_for_model(model).encode(text)
     assert len(tokens) == max_tokens
     assert (
         len(set(tokens)) == max_tokens
+    )  # sanity check: assume all tokens are unique (reasonable for short text)
+
+
+@pytest.mark.parametrize("model", OpenAITextModels.list())
+def test_generate_text_completion_with_logprobs(model):
+    prompt = "It was a bright cold day in April,"
+    max_tokens = 4
+    tokens, logprobs = generate_text_completion_with_logprobs(
+        prompt, model=model, max_tokens=max_tokens, echo=False
+    )
+    assert len(tokens) == max_tokens
+    assert len(tokens) == len(logprobs)
+    assert (
+        len(set(tokens)) == max_tokens
+    )  # sanity check: assume all tokens are unique (reasonable for short text)
+
+    # echo=True
+    tokens, logprobs = generate_text_completion_with_logprobs(
+        prompt, model=model, max_tokens=max_tokens, echo=True
+    )
+    expected_tokens = max_tokens + len(
+        tiktoken.encoding_for_model(model).encode(prompt)
+    )
+    assert len(tokens) == expected_tokens
+    assert len(tokens) == len(logprobs)
+    assert (
+        len(set(tokens)) == expected_tokens
     )  # sanity check: assume all tokens are unique (reasonable for short text)
 
 
