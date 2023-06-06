@@ -4,13 +4,13 @@ import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
+from src.evals.config import SequenceCompletionEqConfig
 from src.models.openai_model import generate_response_with_turns
 from src.pipelines.sequence_completions import (
     PromptType,
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
-from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +71,9 @@ def sequence_completion_equality(
     sequence: str,
     fn: str,
     model: str,
-    max_offset: int = MAX_OFFSET,
-    num_shots: int = NUM_SHOTS,
-    cot: bool = COT,
+    max_offset: int = 8,
+    num_shots: int = 8,
+    cot: bool = True,
     evaluate_model_completion: bool = True,
     evaluate_model_consistency: bool = True,
     ambiguous_sequences: dict = None,
@@ -119,7 +119,7 @@ def sequence_completion_equality(
             model, [{"role": "user", "content": consistency_prompt}]
         )
 
-    # check what the model would have generated
+    # check what completion the model would have generated given the explanation/rule
     model_completion_resp = None
     if evaluate_model_completion:
         model_completion_prompt = _generate_completion_check_prompt(
@@ -166,14 +166,12 @@ def sequence_completion_equality(
     }
 
 
-@auto_subdir
-def evaluate_sequence_completion_equality(
-    model: str,
-    max_offset: int = MAX_OFFSET,
-    num_shots: int = NUM_SHOTS,
-    cot: bool = COT,
-    few_shot_prompt_type: PromptType = "random",
-):
+def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) -> None:
+    max_offset = config.max_offset
+    num_shots = config.num_shots
+    cot = config.cot
+    few_shot_prompt_type: PromptType = config.few_shot_prompt_type
+
     logger.info("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
     total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())
@@ -185,7 +183,7 @@ def evaluate_sequence_completion_equality(
                     sequence_completion_equality(
                         sequence=sequence,
                         fn=fn,
-                        model=model,
+                        model=config.model,
                         max_offset=max_offset,
                         num_shots=num_shots,
                         cot=cot,
@@ -198,7 +196,7 @@ def evaluate_sequence_completion_equality(
                 logger.warning(e)
 
     pd.DataFrame(completion_data).to_csv(
-        f"sequence_completion_equality_evaluation_{model}.csv", index=False
+        f"sequence_completion_equality_evaluation_{config.model.value}.csv", index=False
     )
 
     match_accs, model_match_accs, model_consistency_accs, consistent_and_matched = (

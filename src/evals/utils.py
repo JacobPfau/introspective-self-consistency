@@ -1,12 +1,15 @@
+import ast
+import csv
 import random
 import re
-from typing import Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     generate_chat_completion,
-    generate_completion,
+    generate_text_completion,
 )
+from src.pipelines.baseb_sequence_completions import numberToBase
 from src.pipelines.sequence_completions import sequence_functions
 
 
@@ -63,6 +66,29 @@ def _generate_random_function(
     )
     offset = random.choice(list(range(offset_range[0], offset_range[1])))
     return (fn, offset)
+
+
+def reformat_function(fn: str, offset: int, base: int = 10) -> str:
+    """
+    Reformat a function to incorporate an offset, so the function is zero indexed.
+    """
+    first_occurrence = fn.find("x")
+    replacement = f"(x + {offset})"
+    if first_occurrence != -1:
+        fn = fn[:first_occurrence] + "<placeholder>" + fn[first_occurrence + len("x") :]
+
+    # replace all occurrences of x
+    fn = fn.replace("x", replacement)
+    # restore the first occurrence
+    fn = fn.replace("<placeholder>", "x", 1)
+
+    if base == 2:
+        # Wrap the output in a binary conversion
+        prefix, suffix = fn.split(":", 1)
+        # Add bin around the calculation part and join back together
+        fn = prefix + ": bin(" + suffix.strip() + ")"
+
+    return fn
 
 
 def format_question(
@@ -143,7 +169,7 @@ def choose_function(
     if model_name == "text-davinci-003":
 
         # Feed this into the model
-        model_response = generate_completion(
+        model_response = generate_text_completion(
             prompt=formatted_prompt,
             temperature=temperature,
             max_tokens=256,
@@ -155,7 +181,7 @@ def choose_function(
             prompt_turns=formatted_prompt,
             temperature=temperature,
             max_tokens=256,
-            model=CHAT_MODEL_NAME,
+            model=model_name,
         )
         # print("model response is: ", model_response)
     # Parse the model's response to get the index of the function it chose
@@ -298,3 +324,24 @@ def reformat_ambiguous_sequences(ambiguous_sequences, base=2, max_length=30):
                 reformatted_ambiguous_sequence
             ] = ambiguous_sequences[ambiguous_sequence]
     return reformatted_ambiguous_sequences
+
+
+def parse_function_and_model_from_csv(
+    csv_path: str, delimiter=","
+) -> List[Dict[str, Any]]:
+    """
+    Parse the function and model from a csv file.
+    """
+    data = []
+
+    with open(csv_path) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=delimiter)
+        for row in csv_reader:
+            if row[0] == "":
+                continue
+            entry = {}
+            entry["fn_item"] = ast.literal_eval(row[1])  # convert string to dict
+            entry["model"] = row[2]
+            data.append(entry)
+
+    return data

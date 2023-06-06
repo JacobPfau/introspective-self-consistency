@@ -1,5 +1,0 @@
-model: gpt-3.5-turbo
-max_offset: 8
-num_shots: 4
-use_cot: false
-few_shot_prompt_type: random

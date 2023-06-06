@@ -1,0 +1,64 @@
+[2023-05-17 11:47:49,214][src.utils][INFO] - Git sha: cb572d459e45d11a84e5cdc86b6603901f676290
+[2023-05-17 11:47:49,225][src.utils][INFO] - Changed files: ['conf/main.yaml', 'main.py']
+[2023-05-17 11:47:49,234][src.utils][INFO] - Git diff:
+diff --git a/conf/main.yaml b/conf/main.yaml
+index 831f4d3..94cc388 100644
+--- a/conf/main.yaml
++++ b/conf/main.yaml
+@@ -1,6 +1,6 @@
+ defaults:
+-- tasks/string_transformation_completion_equality@string_transformation_completion_equality
+-- tasks/sequence_completion_equality@sequence_completion_equality
++- tasks/string_transformation_completion_equality@string_transformation_completion_equality: null
++- tasks/sequence_completion_equality@sequence_completion_equality: null
+ - tasks/compute_dependence_with_base_changes@compute_dependence_with_base_changes
+
+ hydra:
+diff --git a/main.py b/main.py
+index 083b705..a363731 100644
+--- a/main.py
++++ b/main.py
+@@ -8,7 +8,7 @@ from src.evals.sequence_completion_with_base_change import (
+     evaluate_compute_dependence_with_base_changes,
+ )
+ from src.evals.string_transformation import evaluate_string_transformation_equality
+-from utils import log_exceptions
++from src.utils import log_exceptions
+
+ logger = logging.getLogger(__name__)
+
+[2023-05-17 11:47:49,235][__main__][ERROR] - Key 'string_transformation_completion_equality' is not in struct
+    full_key: string_transformation_completion_equality
+    object_type=dict
+Traceback (most recent call last):
+  File "/Users/olejorgensen/Documents/AISC/introspective-self-consistency/src/utils.py", line 58, in decorated
+    return func(*args, **kwargs)
+  File "/Users/olejorgensen/Documents/AISC/introspective-self-consistency/main.py", line 19, in main
+    if task_cfg := cfg.string_transformation_completion_equality:
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 359, in __getattr__
+    self._format_and_raise(key=key, value=None, cause=e)
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/base.py", line 231, in _format_and_raise
+    format_and_raise(
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/_utils.py", line 819, in format_and_raise
+    _raise(ex, cause)
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/_utils.py", line 797, in _raise
+    raise ex.with_traceback(sys.exc_info()[2])  # set env var OC_CAUSE=1 for full trace
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 351, in __getattr__
+    return self._get_impl(
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 442, in _get_impl
+    node = self._get_child(
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/basecontainer.py", line 73, in _get_child
+    child = self._get_node(
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 475, in _get_node
+    self._validate_get(key)
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/dictconfig.py", line 164, in _validate_get
+    self._format_and_raise(
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/base.py", line 231, in _format_and_raise
+    format_and_raise(
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/_utils.py", line 899, in format_and_raise
+    _raise(ex, cause)
+  File "/Users/olejorgensen/miniconda3/envs/aisc-env2/lib/python3.10/site-packages/omegaconf/_utils.py", line 797, in _raise
+    raise ex.with_traceback(sys.exc_info()[2])  # set env var OC_CAUSE=1 for full trace
+omegaconf.errors.ConfigAttributeError: Key 'string_transformation_completion_equality' is not in struct
+    full_key: string_transformation_completion_equality
+    object_type=dict

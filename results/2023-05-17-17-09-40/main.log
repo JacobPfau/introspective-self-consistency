@@ -1,0 +1,47 @@
+[2023-05-17 17:09:40,846][src.utils][INFO] - Git sha: 6752585d17fa41f8edc1b227a20a59e422f92359
+[2023-05-17 17:09:40,855][src.utils][INFO] - Changed files: ['conf/tasks/compute_dependence_with_base_changes.yaml', 'src/utils.py']
+[2023-05-17 17:09:40,862][src.utils][INFO] - Git diff:
+diff --git a/conf/tasks/compute_dependence_with_base_changes.yaml b/conf/tasks/compute_dependence_with_base_changes.yaml
+index 43fff5d..d2b79eb 100644
+--- a/conf/tasks/compute_dependence_with_base_changes.yaml
++++ b/conf/tasks/compute_dependence_with_base_changes.yaml
+@@ -1,5 +1,5 @@
+ sequence_type: integer
+-model: text-davinci-003
++model: gpt-3.5-turbo
+ num_shots: 4
+ on_ambiguous_sequences: true
+ num_samples: 1
+diff --git a/src/utils.py b/src/utils.py
+index 991139c..ac97494 100644
+--- a/src/utils.py
++++ b/src/utils.py
+@@ -106,20 +106,24 @@ def reformat_self_consistency_results(results):
+     and inconsistent explanations, alongside invalid explanations. Calculate
+     this average across all sequences, and add it to the results dict.
+     """
+-    consistent, inconsistent, invalid = 0, 0, 0
++    consistent, inconsistent, incorrect, invalid = 0, 0, 0, 0
+     for sequence in results:
+         consistent += results[sequence]["consistent"]
+         inconsistent += results[sequence]["inconsistent"]
++        incorrect += results[sequence]["incorrect"]
+         invalid += results[sequence]["invalid"]
+ 
+-    total = consistent + inconsistent + invalid
++    total = consistent + inconsistent + invalid + incorrect
+     consistent_percentage = consistent / total
+     inconsistent_percentage = inconsistent / total
++    incorrect_percentage = incorrect / total
+     invalid_percentage = invalid / total
+ 
++
+     results["total"] = total
+     results["consistent"] = consistent_percentage
+     results["inconsistent"] = inconsistent_percentage
++    results["incorrect"] = incorrect_percentage
+     results["invalid"] = invalid_percentage
+ 
+     return results
+[2023-05-17 17:10:43,552][openai][INFO] - error_code=None error_message='That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID 8581b0e886ad265427539e8f31de4151 in your message.)' error_param=None error_type=server_error message='OpenAI API error received' stream_error=False
+[2023-05-17 17:11:34,056][openai][INFO] - error_code=None error_message='That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID 407e7a520f0893ea01177c4d2ffa3df7 in your message.)' error_param=None error_type=server_error message='OpenAI API error received' stream_error=False
