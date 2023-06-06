@@ -19,7 +19,7 @@ def test_all_openai_models_found():
 
 
 @pytest.mark.parametrize("model", OpenAITextModels.list())
-def test_generate_completion(model):
+def test_generate_text_completion(model):
     test_prompt = "Once upon a time,"
     max_tokens = 5
     text = generate_text_completion(test_prompt, model=model, max_tokens=max_tokens)
