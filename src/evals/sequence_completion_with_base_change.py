@@ -1,6 +1,7 @@
 import logging
 
 import pandas as pd
+from tqdm import tqdm
 
 from src.evals.check_self_consistency import self_consistency_evaluation
 from src.evals.config import SequenceCompletionBaseChangeConfig
@@ -26,7 +27,7 @@ def evaluate_compute_dependence_with_base_changes(
         results = {}
         all_data = []
         ambiguous_sequences = find_ambiguous_integer_sequences()
-        for sequence in ambiguous_sequences:
+        for sequence in tqdm(ambiguous_sequences):
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
             logger.info(f"Total: {total}")
