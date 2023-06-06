@@ -5,6 +5,7 @@ from src.evals.evaluate_continuation import generate_continuation, valid_continu
 from src.evals.evaluate_explanation import (
     generate_explanation,
     generate_implied_continuation,
+    generate_implied_sequence,
     valid_explanation,
 )
 from src.evals.prompts.continuation_prompt import create_continuation_prompt
@@ -32,9 +33,7 @@ def self_consistency_evaluation(
     whether the two outputs are consistent.
     """
 
-    consistent_explanations = 0
-    inconsistent_explanations = 0
-    invalid_responses = 0
+    total_results = []
 
     # Generate a prompt
     continuation_prompt = create_continuation_prompt(
@@ -55,16 +54,37 @@ def self_consistency_evaluation(
         shot_method=shot_method,
     )
 
+    # Make the sequence base 2 if necessary
+    if base == 2:
+        sequence = [bin(i) for i in sequence]
+
     for _ in range(samples):
+        result = {
+            "continuation prompt": continuation_prompt,
+            "explanation prompt": explanation_prompt,
+            "continuation": None,
+            "explanation": None,
+            "implied sequence": None,
+            "implied continuation": None,
+            "correct": None,
+            "consistent": None,
+            "invalid": True,
+        }
+        logger.info("Generating a continuation and explanation")
         # Generate a continuation
-        continuation = generate_continuation(
+        original_continuation = generate_continuation(
             prompt=continuation_prompt,
             model_name=model_name,
             temperature=temperature,
         )
+        logger.info(f"continuation: {original_continuation}")
+        result["continuation"] = original_continuation
+        # strip whitespace
+        continuation = original_continuation.strip()
 
         if not valid_continuation(continuation, base):
-            invalid_responses += 1
+            logger.info("invalid continuation: ", continuation)
+            total_results.append(result)
             continue
 
         # Generate an explanation
@@ -73,33 +93,63 @@ def self_consistency_evaluation(
             model_name=model_name,
             temperature=temperature,
         )
-
+        logger.info(f"explanation: {explanation}")
+        result["explanation"] = explanation
         # Parse explanation
         try:
-            fn, offset = parse_explanation(explanation)
-        except Exception as e:
-            logger.debug(e)
-            invalid_responses += 1
+            fn = parse_explanation(explanation)
+        except BaseException:
+            logger.info(f"invalid explanation - couldn't parse: {explanation}")
+            total_results.append(result)
             continue
 
-        offset = int(offset)
-
-        if not valid_explanation(fn, offset, len(sequence)):
-            invalid_responses += 1
+        if not valid_explanation(fn, len(sequence)):
+            logger.info(f"invalid explanation: {explanation}")
+            total_results.append(result)
             continue
         else:
-            implied_continuation = generate_implied_continuation(
+            # check if the explanation is valid up to the continuation
+            implied_sequence = generate_implied_sequence(
                 fn_form=fn,
-                offset=offset,
                 sequence_length=len(sequence),
             )
 
-        # Check consistency
-        logger.debug("implied_continuation: ", implied_continuation)
-        logger.debug("continuation: ", continuation)
-        if int(continuation, base) == int(implied_continuation):
-            consistent_explanations += 1
-        else:
-            inconsistent_explanations += 1
+            implied_continuation = generate_implied_continuation(
+                fn_form=fn,
+                sequence_length=len(sequence),
+            )
 
-    return consistent_explanations, inconsistent_explanations, invalid_responses
+        result["implied sequence"] = implied_sequence
+        result["implied continuation"] = implied_continuation
+
+        # Check the explanation is accurate
+        logger.info(f"implied_sequence: {implied_sequence}")
+        logger.info(f"sequence: {sequence}")
+        if implied_sequence == sequence:
+            correct = True
+        else:
+            correct = False
+
+        # Check consistency
+        logger.info(f"implied_continuation: {implied_continuation}")
+        logger.info(f"continuation: {continuation}")
+
+        # try:
+        #     # check if the implied continuation is decimal as specified
+        #     _ = int(implied_continuation)
+        # except ValueError:
+        #     logger.info(f"invalid implied continuation: {implied_continuation}")
+        #     total_results.append(result)
+        #     continue
+
+        if str(continuation) == str(implied_continuation):
+            consistent = True
+        else:
+            consistent = False
+
+        result["consistent"] = consistent
+        result["correct"] = correct
+        result["invalid"] = False
+        total_results.append(result)
+
+    return total_results

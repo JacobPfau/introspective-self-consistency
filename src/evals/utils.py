@@ -68,6 +68,29 @@ def _generate_random_function(
     return (fn, offset)
 
 
+def reformat_function(fn: str, offset: int, base: int = 10) -> str:
+    """
+    Reformat a function to incorporate an offset, so the function is zero indexed.
+    """
+    first_occurrence = fn.find("x")
+    replacement = f"(x + {offset})"
+    if first_occurrence != -1:
+        fn = fn[:first_occurrence] + "<placeholder>" + fn[first_occurrence + len("x") :]
+
+    # replace all occurrences of x
+    fn = fn.replace("x", replacement)
+    # restore the first occurrence
+    fn = fn.replace("<placeholder>", "x", 1)
+
+    if base == 2:
+        # Wrap the output in a binary conversion
+        prefix, suffix = fn.split(":", 1)
+        # Add bin around the calculation part and join back together
+        fn = prefix + ": bin(" + suffix.strip() + ")"
+
+    return fn
+
+
 def format_question(
     prompt: Union[str, List[Dict[str, str]]],
     target_sequence: str,
