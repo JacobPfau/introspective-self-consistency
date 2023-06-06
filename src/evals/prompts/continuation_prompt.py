@@ -29,7 +29,11 @@ from typing import List, Union
 
 from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
 from src.evals.utils import _generate_random_function, reformat_function
-from src.models.openai_model import OpenAIChatModels, OpenAITextModels
+from src.models.openai_model import (
+    DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
+)
 from src.pipelines.sequence_completions import sequence_functions
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
@@ -41,7 +45,7 @@ logger = logging.getLogger(__name__)
 def create_continuation_prompt(
     sequence: List[int],
     distribution: str,
-    model_name: str = "text-davinci-003",
+    model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
     shot_method: str = "random",
@@ -50,7 +54,7 @@ def create_continuation_prompt(
     Create a prompt to continue a sequence of numbers.
     """
     sequence_length = len(sequence)
-    prompt_text = "" if model_name == "text-davinci-003" else []
+    prompt_text = "" if model_name in OpenAITextModels.list() else []
     if shots > 0:
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
@@ -92,7 +96,7 @@ def create_continuation_prompt(
 
 
 def generate_cont_shot_prompt(
-    shot_method, sequence_length, model_name="text-davinci-003", base=10, shot=1
+    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10, shot=1
 ):
     """
     Generate a single shot prompt for a continuation.
