@@ -59,10 +59,33 @@ Once we have written down our experiment configs, we can do
 python main.py -m +experiment=demo_1,demo_2
 ```
 
-## Running Q0
+## Q0
 
 ```sh
 python main.py --multirun +task=sequence_completion_equality sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
+```
+
+## Q2.1
+
+The goal of Q2.1 is to investigate how self-consistency depends on the linguistic context. We very both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
+
+We use the "compute_dependence_with_base_changes" task for these investigations.
+
+a. Task / What we are asking for
+    1. **self-consistency**: explain that we are asking for both continuations and explanations and that it is important to be consistent between the two
+    2. **maximum probability**: explain only that it should provide the continuation or explanation which is most likely
+
+b. Role / Who we are asking it of
+    1. **self**: "continue how you, <MODEL_NAME> would continue"
+    2. **character**: "continue the way a GPT-3 model / skilled human / etc would continue"
+
+Prompts exploring these diferrent options are constructed as follows:
+- We **require** a task prompt. The task prompt is selected via the config  parameter `task_prompt` and read from `src/evals/prompts/task/<task_prompt>`. In each such directory, we have two files `continuation.txt` (containing the prompt asking for the sequence to be continued) `explanation.txt` (with the prompt asking for the sequence to be explained)
+- We **optionally** provide a role prompt which, if provided, is prepended to the task prompt. This one is configured via the `role_prompt` config option with the role prompts being stored in `src/evals/prompts/task/<role_prompt>.txt` (here we only need one file per role since the prefixed role prompt is independent of wheter we are asking for a continuation or explanation)
+
+As a first experiment, we investigate whether asking the model explicitly to be self-consistent makes any difference, i.e. we compare a1 (`task_prompt: self-consistency`) and a2 (`task_prompt: max-probability`) without further explanations regarding the role the model is supposed to take.
+```sh
+python main.py -m +task=compute_dependence_with_base_changes sequence_type=integer task_prompt=self-consistency,max-probability
 ```
 
 # Tests
