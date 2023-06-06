@@ -18,7 +18,7 @@ def test_generate_wrong_functions():
 
 
 def test_choose_function():
-    with open("evals/prompts/choose_function.txt") as f:
+    with open("src/evals/prompts/choose_function.txt") as f:
         prompt = f.read()
         possible_functions = [
             "lambda x: 2 * x",
@@ -63,9 +63,7 @@ def test_function_identification():
 
 def test_result_reformatting():
     # Load the results
-    with open(
-        "evals/results/ambiguous_sequences_function_selection_evaluation/2023-04-12-17-26-45/results.json"
-    ) as f:
+    with open("results/q1.1/2023-04-12-17-26-45/results.json") as f:
         results = json.load(f)
     # Reformat the results
     pprint(results)
@@ -74,9 +72,7 @@ def test_result_reformatting():
 
 
 def test_view_results():
-    with open(
-        "evals/results/ambiguous_sequences_function_selection_evaluation/2023-04-12-18-53-36/results.json"
-    ) as f:
+    with open("results/q1.1/2023-04-12-18-53-36/results.json") as f:
         results = json.load(f)
     pprint(results)
 
