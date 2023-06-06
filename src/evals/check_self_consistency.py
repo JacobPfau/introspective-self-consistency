@@ -156,30 +156,3 @@ def self_consistency_evaluation(
         total_results.append(result)
 
     return total_results
-
-
-if __name__ == "__main__":
-    # def self_consistency_evaluation(
-    #         model_name: str,
-    #         sequence: List[int],
-    #         task_prompt: str,
-    #         base: int,
-    #         shots: int,
-    #         shot_method: str,
-    #         temperature: float,
-    #         samples: int,
-    #         role_prompt: Optional[str] = None,
-    # ):
-    self_consistency_evaluation(
-        model_name="text-davinci-003",
-        # model_name="gpt-3.5-turbo",
-        sequence=[1, 2, 4, 8, 16],
-        task_prompt="max-probability",
-        # task_prompt="self-consistency",
-        base=10,
-        shots=1,
-        shot_method="random",
-        temperature=0.0,
-        samples=1,
-        role_prompt=None,
-    )
