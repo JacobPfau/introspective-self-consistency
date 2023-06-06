@@ -1,4 +1,5 @@
 import logging
+from dataclasses import asdict
 
 import pandas as pd
 from tqdm import tqdm
@@ -16,12 +17,8 @@ def evaluate_compute_dependence_with_base_changes(
     total = 0
 
     if config.on_ambiguous_sequences:
-        if config.sequence_type == "integer":
-            base = 10
-        elif config.sequence_type == "binary":
-            base = 2
-        else:
-            raise ValueError("Unknown sequence type.")
+        if config.base not in [2, 10]:
+            raise ValueError(f"Unsupported base: {config.base}")
         # Get the ambiguous sequences
         # Use default parameters for now
         results = {}
@@ -39,7 +36,7 @@ def evaluate_compute_dependence_with_base_changes(
                         sequence=int_sequence,
                         task_prompt=config.task_prompt,
                         role_prompt=config.role_prompt,
-                        base=base,
+                        base=config.base,
                         shots=config.num_shots,
                         shot_method=config.shot_method,
                         temperature=0.0,
@@ -92,8 +89,7 @@ def evaluate_compute_dependence_with_base_changes(
     # Save the results
     results = [
         {
-            "model": config.model,
-            "sequence_type": config.sequence_type,
+            **asdict(config),
             "total sequences": total,
             "invalid sequences": invalid,
             "valid sequences": total - invalid,
