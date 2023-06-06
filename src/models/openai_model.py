@@ -75,6 +75,7 @@ def _get_raw_text_model_response(
     max_tokens: int = 512,
     model: OpenAITextModels = OpenAITextModels.TEXT_DAVINCI_003,
     logprobs: int = 0,
+    echo: bool = False,
 ) -> Union[str, openai.Completion]:
     # docs: https://platform.openai.com/docs/api-reference/completions/create
     def api_call():
@@ -84,6 +85,7 @@ def _get_raw_text_model_response(
             max_tokens=max_tokens,
             prompt=prompt,
             logprobs=logprobs,
+            echo=echo,
         )
 
     return _with_retries(api_call, invalid_response=model.invalid_response)
@@ -116,18 +118,13 @@ def generate_text_completion_with_logprobs(
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
     logprobs: int = 5,
     echo: bool = True,
-) -> Tuple[List[str], List[float]]:
+) -> Union[str, Tuple[List[str], List[float]]]:
     if isinstance(model, str):
         model = OpenAITextModels(model)
 
-    response = openai.Completion.create(
-        model=model.value,
-        prompt=prompt,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        logprobs=logprobs,
-        echo=echo,
-    )  # echo is required to get the previous tokens logprobs
+    response = _get_raw_text_model_response(
+        prompt, temperature, max_tokens, model, logprobs=logprobs, echo=echo
+    )
 
     if len(response["choices"]) == 0:
         logger.error("Response did not return enough `choices`")
