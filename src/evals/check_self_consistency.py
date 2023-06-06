@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import List
+from typing import List, Optional
 
 from src.evals.evaluate_continuation import generate_continuation, valid_continuation
 from src.evals.evaluate_explanation import (
@@ -20,12 +20,13 @@ logger = getLogger(__name__)
 def self_consistency_evaluation(
     model_name: str,
     sequence: List[int],
-    distribution: str,
+    task_prompt: str,
     base: int,
     shots: int,
     shot_method: str,
     temperature: float,
     samples: int,
+    role_prompt: Optional[str] = None,
 ):
     """
     Given a sequence, prompt the model to both continue the sequence and
@@ -38,7 +39,8 @@ def self_consistency_evaluation(
     # Generate a prompt
     continuation_prompt = create_continuation_prompt(
         sequence=sequence,
-        distribution=distribution,
+        task_prompt=task_prompt,
+        role_prompt=role_prompt,
         model_name=model_name,
         base=base,
         shots=shots,
@@ -47,7 +49,8 @@ def self_consistency_evaluation(
 
     explanation_prompt = create_explanation_prompt(
         sequence=sequence,
-        distribution=distribution,
+        task_prompt=task_prompt,
+        role_prompt=role_prompt,
         model_name=model_name,
         base=base,
         shots=shots,
@@ -153,3 +156,30 @@ def self_consistency_evaluation(
         total_results.append(result)
 
     return total_results
+
+
+if __name__ == "__main__":
+    # def self_consistency_evaluation(
+    #         model_name: str,
+    #         sequence: List[int],
+    #         task_prompt: str,
+    #         base: int,
+    #         shots: int,
+    #         shot_method: str,
+    #         temperature: float,
+    #         samples: int,
+    #         role_prompt: Optional[str] = None,
+    # ):
+    self_consistency_evaluation(
+        model_name="text-davinci-003",
+        # model_name="gpt-3.5-turbo",
+        sequence=[1, 2, 4, 8, 16],
+        task_prompt="max-probability",
+        # task_prompt="self-consistency",
+        base=10,
+        shots=1,
+        shot_method="random",
+        temperature=0.0,
+        samples=1,
+        role_prompt=None,
+    )

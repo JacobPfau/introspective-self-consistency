@@ -37,7 +37,8 @@ def evaluate_compute_dependence_with_base_changes(
                     all_data += self_consistency_evaluation(
                         model_name=config.model.value,
                         sequence=int_sequence,
-                        distribution=config.distribution,
+                        task_prompt=config.task_prompt,
+                        role_prompt=config.role_prompt,
                         base=base,
                         shots=config.num_shots,
                         shot_method=config.shot_method,

@@ -25,9 +25,9 @@ The sequences will be taken from the list of ambiguous sequences.
 """
 
 import logging
-from typing import List, Union
+from typing import List, Optional, Union
 
-from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
+from src.evals.prompts.distribution_prompt import TASK_PROMPTS
 from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
@@ -44,11 +44,12 @@ logger = logging.getLogger(__name__)
 
 def create_continuation_prompt(
     sequence: List[int],
-    distribution: str,
+    task_prompt: str,
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
     shot_method: str = "random",
+    role_prompt: Optional[str] = None,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
@@ -64,7 +65,8 @@ def create_continuation_prompt(
             )
             prompt_text += shot_prompt
 
-    text = DISTRIBUTIONS[distribution]["continuation"]
+    # todo: include role_rompt
+    text = TASK_PROMPTS[task_prompt]["continuation"]
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "

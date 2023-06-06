@@ -23,9 +23,9 @@ Prompts will take the form:
 
 
 from logging import getLogger
-from typing import List, Union
+from typing import List, Optional, Union
 
-from src.evals.prompts.distribution_prompt import DISTRIBUTIONS
+from src.evals.prompts.distribution_prompt import TASK_PROMPTS
 from src.evals.utils import _generate_random_function, reformat_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
@@ -50,11 +50,12 @@ sequence_functions = sequence_functions.copy()
 
 def create_explanation_prompt(
     sequence: List[int],
-    distribution: str,
+    task_prompt: str,
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
     shot_method: str = "random",
+    role_prompt: Optional[str] = None,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
@@ -70,7 +71,8 @@ def create_explanation_prompt(
             )
             prompt_text += shot_prompt
 
-    text = DISTRIBUTIONS[distribution]["explanation"]
+    # todo: include role_rompt
+    text = TASK_PROMPTS[task_prompt]["explanation"]
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
@@ -78,6 +80,8 @@ def create_explanation_prompt(
         text += ",".join([str(x) for x in sequence])
     elif base == 2:
         text += ",".join([bin(x) for x in sequence])
+    else:
+        raise ValueError(f"Invalid base: {base}")
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
     # logger.info(pre_prompt)

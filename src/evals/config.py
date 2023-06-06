@@ -1,5 +1,5 @@
 from dataclasses import dataclass, fields
-from typing import Union
+from typing import Optional, Union
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -58,9 +58,10 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
     sequence_type: str = "integer"
     num_samples: int = 1
     on_ambiguous_sequences: bool = True
-    num_shots = 4
-    shot_method = "random"
-    distribution = "default-change"
+    num_shots: int = 4
+    shot_method: str = "random"
+    task_prompt: str = "self-consistency"
+    role_prompt: Optional[str] = None
 
 
 @dataclass
