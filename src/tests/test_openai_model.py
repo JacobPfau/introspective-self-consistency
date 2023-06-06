@@ -6,8 +6,8 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
     generate_chat_completion,
-    generate_completion,
     generate_response_with_turns,
+    generate_text_completion,
 )
 
 
@@ -22,7 +22,7 @@ def test_all_openai_models_found():
 def test_generate_completion(model):
     test_prompt = "Once upon a time,"
     max_tokens = 5
-    text = generate_completion(test_prompt, model=model, max_tokens=max_tokens)
+    text = generate_text_completion(test_prompt, model=model, max_tokens=max_tokens)
     tokens = tiktoken.encoding_for_model(model).encode(text)
     assert len(tokens) == max_tokens
     assert (
