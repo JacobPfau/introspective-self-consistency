@@ -1,8 +1,0 @@
-task: compute_dependence_with_base_changes
-sequence_type: integer
-model: gpt-3.5-turbo
-num_shots: 4
-on_ambiguous_sequences: true
-num_samples: 1
-distribution: default-change
-shot_method: random
