@@ -54,7 +54,7 @@ def evaluate_compute_dependence_with_base_changes(
             pass
             # TODO: have support for general base sequences here
 
-    logger.info("Total is: {str(total)}")
+    logger.info(f"Total is: {str(total)}")
 
     # Log total data
     pd.DataFrame(all_data).to_csv("all_data.csv")
