@@ -55,7 +55,7 @@ class SequenceCompletionEqConfig(BaseEvalConfig):
 
 @dataclass
 class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
-    sequence_type: str = "integer"
+    base: int = 10
     num_samples: int = 1
     on_ambiguous_sequences: bool = True
     num_shots: int = 4
