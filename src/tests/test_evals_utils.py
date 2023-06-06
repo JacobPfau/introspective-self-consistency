@@ -3,7 +3,6 @@ from pprint import pprint
 
 import evals.utils as utils
 from evals.prompts.choose_function import (
-    convert_numbers_to_base_b,
     create_question_text,
     function_selection_prompt,
 )
@@ -100,7 +99,7 @@ def test_indexing_criteria_regex():
 def test_base_conversion():
     stringo = "lambda x: x ** 420 69 69 16 81"
     base = 10
-    print(convert_numbers_to_base_b(stringo, base))
+    print(utils.convert_numbers_to_base_b(stringo, base))
 
 
 def test_create_question_text_baseb():
