@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Callable, List, Tuple, Union
+from typing import Callable, List, Tuple, TypeVar, Union
 
 import openai
 
@@ -44,7 +44,11 @@ def get_openai_model_from_string(model_name: str) -> BaseModel:
         raise KeyError(f"Invalid OpenAI model name: {model_name}")
 
 
-def _with_retries(api_call: Callable, invalid_response: str) -> str:
+# introduce type variable to avoid circular imports
+T = TypeVar("T")
+
+
+def _with_retries(api_call: Callable[[], T], invalid_response: str) -> T:
     for _ in range(_MAX_RETRIES):
         try:
             return api_call()
@@ -69,23 +73,18 @@ def _get_raw_text_model_response(
     prompt: str,
     temperature: float = 0.0,
     max_tokens: int = 512,
-    model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
+    model: OpenAITextModels = OpenAITextModels.TEXT_DAVINCI_003,
     logprobs: int = 0,
-) -> str:
+) -> Union[str, openai.Completion]:
     # docs: https://platform.openai.com/docs/api-reference/completions/create
-
-    if isinstance(model, str):
-        model = OpenAITextModels(model)
-
     def api_call():
-        response = openai.Completion.create(
+        return openai.Completion.create(
             model=model.value,
             temperature=temperature,
             max_tokens=max_tokens,
             prompt=prompt,
             logprobs=logprobs,
         )
-        return response["choices"][0]["text"]
 
     return _with_retries(api_call, invalid_response=model.invalid_response)
 
@@ -96,6 +95,9 @@ def generate_text_completion(
     max_tokens: int = 512,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
 ) -> str:
+    if isinstance(model, str):
+        model = OpenAITextModels(model)
+
     response = _get_raw_text_model_response(prompt, temperature, max_tokens, model)
 
     if len(response["choices"]) == 0:
@@ -115,6 +117,8 @@ def generate_text_completion_with_logprobs(
     logprobs: int = 5,
     echo: bool = True,
 ) -> Tuple[List[str], List[float]]:
+    if isinstance(model, str):
+        model = OpenAITextModels(model)
 
     response = openai.Completion.create(
         model=model.value,
