@@ -62,7 +62,7 @@ python main.py -m +experiment=demo_1,demo_2
 ## Q0
 
 ```sh
-python main.py --multirun +task=sequence_completion_equality sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
+python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
 ```
 
 ## Q2.1
@@ -85,7 +85,7 @@ Prompts exploring these diferrent options are constructed as follows:
 
 As a first experiment, we investigate whether asking the model explicitly to be self-consistent makes any difference, i.e. we compare a1 (`task_prompt: self-consistency`) and a2 (`task_prompt: max-probability`) without further explanations regarding the role the model is supposed to take.
 ```sh
-python main.py -m +task=compute_dependence_with_base_changes sequence_type=integer task_prompt=self-consistency,max-probability
+python main.py -m +task=compute_dependence_with_base_changes task_prompt=self-consistency,max-probability
 ```
 
 # Tests
