@@ -4,11 +4,15 @@ hydra:
   job:
     chdir: true  # <-- if true Hydra creates a unique time-stamped output dir per run
   run:
-    dir: ./results/${now:%Y-%m-%d-%H-%M-%S}  # <-- naming scheme for the unique time-stamped output dir
+    dir: results/${now:%Y-%m-%d-%H-%M-%S}/${hydra.job.override_dirname}  # <-- naming scheme for unique output dir
   sweep:
-    dir: ./results/${now:%Y-%m-%d-%H-%M-%S}
+    dir: results/${now:%Y-%m-%d-%H-%M-%S}
     subdir: ${hydra.job.override_dirname}
 
   callbacks:
     git_logging:
       _target_: src.utils.LogGitHashCallback
+
+defaults:
+  - _self_
+  - override hydra/launcher: joblib  # joblib launches runs in parallel; comment out if undesired
