@@ -3,7 +3,6 @@ from pprint import pprint
 
 import evals.utils as utils
 from evals.prompts.choose_function import (
-    convert_numbers_to_base_b,
     create_question_text,
     function_selection_prompt,
 )
@@ -19,7 +18,7 @@ def test_generate_wrong_functions():
 
 
 def test_choose_function():
-    with open("evals/prompts/choose_function.txt") as f:
+    with open("src/evals/prompts/choose_function.txt") as f:
         prompt = f.read()
         possible_functions = [
             "lambda x: 2 * x",
@@ -64,9 +63,7 @@ def test_function_identification():
 
 def test_result_reformatting():
     # Load the results
-    with open(
-        "evals/results/ambiguous_sequences_function_selection_evaluation/2023-04-12-17-26-45/results.json"
-    ) as f:
+    with open("results/q1.1/2023-04-12-17-26-45/results.json") as f:
         results = json.load(f)
     # Reformat the results
     pprint(results)
@@ -75,9 +72,7 @@ def test_result_reformatting():
 
 
 def test_view_results():
-    with open(
-        "evals/results/ambiguous_sequences_function_selection_evaluation/2023-04-12-18-53-36/results.json"
-    ) as f:
+    with open("results/q1.1/2023-04-12-18-53-36/results.json") as f:
         results = json.load(f)
     pprint(results)
 
@@ -100,7 +95,7 @@ def test_indexing_criteria_regex():
 def test_base_conversion():
     stringo = "lambda x: x ** 420 69 69 16 81"
     base = 10
-    print(convert_numbers_to_base_b(stringo, base))
+    print(utils.convert_numbers_to_base_b(stringo, base))
 
 
 def test_create_question_text_baseb():

@@ -54,7 +54,7 @@ This can be achieved by "packaging" each configuration to be swept over (includi
 
 See `conf/experiment/demo_1.yaml` and `conf/experiment/demo_2.yaml` for extensively commented example files.
 
-Once we have written down our experiment configs, we can do 
+Once we have written down our experiment configs, we can do
 ```sh
 python main.py -m +experiment=demo_1,demo_2
 ```
@@ -63,4 +63,12 @@ python main.py -m +experiment=demo_1,demo_2
 
 ```sh
 python main.py --multirun +task=sequence_completion_equality sequence_completion_equality.model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
+```
+
+# Tests
+Tests are run using `pytest`.
+The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
+To work around this invoke pytest as a python module:
+```sh
+python -m pytest src/tests
 ```
