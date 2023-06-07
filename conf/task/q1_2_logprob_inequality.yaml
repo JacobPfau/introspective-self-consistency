@@ -7,4 +7,4 @@ num_valid: 2
 num_invalid: 3
 cot: false
 few_shot_prompt_type: "random"
-invalid_fn_type: "random"
+invalid_fn_type: "random"  # "random", "same_fn", "same_class", "ambigious", "exclude_class"

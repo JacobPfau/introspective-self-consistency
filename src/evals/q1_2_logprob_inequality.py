@@ -31,8 +31,6 @@ from src.pipelines.sequence_completions import (
     resolve_fn,
 )
 
-_RESPONSE_TYPES = ["completion", "explanation"]
-
 _MIN_LOGPROB = -100.0
 
 
@@ -84,6 +82,7 @@ def run_q1_2_eval(
 
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q1.2 eval.")
+    logger.info(f"Config: {repr(config)}")
     amb_seqs, data = get_data_q1_2(config)
     results = []
     for entry in tqdm(data):
@@ -134,15 +133,35 @@ def run_q1_2_eval(
                     \n- Explanation test was passed: {test_passing_explanation}"
             )
 
-            # # sort completion responses by logprob with largest first
-            # completion_responses = sorted(completion_responses, key=lambda x: x["logprob"], reverse=True)
-            # print(completion_responses)
+            # determine whether valid completions/explanations are in possible completions/explanations response
+            n_valid_compl_in_primed_resp = len(
+                [c for c in valid_completions if str(c) in possible_completions]
+            )
+            n_invalid_compl_in_primed_resp = len(
+                [c for c in invalid_completions if str(c) in possible_completions]
+            )
+            n_valid_expl_in_primed_resp = len(
+                [e for e in valid_fns if e["fn"] in possible_explanations]
+            )
+            n_invalid_expl_in_primed_resp = len(
+                [e for e in invalid_fns if e["fn"] in possible_explanations]
+            )
+
+            # compose results entry
             results_entry = {
                 "model": model.value,
                 "sequence": sequence,
                 "org_func": org_func,
+                "num_valid": config.num_valid,
+                "num_invalid": config.num_invalid,
+                "num_shots": config.num_shots,
+                "invalid_fn_type": config.invalid_fn_type,
                 "test_passing_completion": int(test_passing_completion),
                 "test_passing_explanation": int(test_passing_explanation),
+                "n_valid_compl_in_primed_resp": n_valid_compl_in_primed_resp,
+                "n_invalid_compl_in_primed_resp": n_invalid_compl_in_primed_resp,
+                "n_valid_expl_in_primed_resp": n_valid_expl_in_primed_resp,
+                "n_invalid_expl_in_primed_resp": n_invalid_expl_in_primed_resp,
                 "possible_completions_response": possible_completions,
                 "possible_explanations_response": possible_explanations,
             }
@@ -168,14 +187,24 @@ def _save_results_to_csv(results: List[Dict[str, Any]]):
 
 
 def get_data_q1_2(config: Q12LogprobInequalityConfig):
+    """Based on consistent function determined in Q0, generate data samples for Q1.2.
+    Each sample consists of:
+        - ambiguous sequence
+        - original function/explanation (i.e. the one determined in Q0)
+        - valid alternative explanations
+        - invalid alternative explanations
+        - valid completions
+        - invalid completions (based on the invalid explanations)
+
+    """
     base_data = parse_function_and_model_from_csv(config.csv_input_path)
 
     # filter data to only include text models
-    # get_model_from_string(entry["model"]) == OpenAITextModels.TEXT_DAVINCI_003
     base_data = [
         entry
         for entry in base_data
-        if isinstance(get_model_from_string(entry["model"]), OpenAITextModels)
+        if get_model_from_string(entry["model"]) == OpenAITextModels.TEXT_DAVINCI_003
+        # isinstance(get_model_from_string(entry["model"]), OpenAITextModels)
     ]  #
     logger.info("Skipping non-text models as logprobs are not available.")
 
@@ -183,7 +212,7 @@ def get_data_q1_2(config: Q12LogprobInequalityConfig):
 
     data = []
 
-    for entry in tqdm(base_data):
+    for entry in tqdm(base_data, desc="Generating data for Q1.2 eval."):
         model = get_model_from_string(entry["model"])
         consistent_func = entry["fn_item"]
         # {'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}
@@ -195,7 +224,7 @@ def get_data_q1_2(config: Q12LogprobInequalityConfig):
         # 4) generate invalid completions
 
         # find alternative, valid function
-        for sequence, fns in tqdm(list(amb_seqs.items())):
+        for sequence, fns in list(amb_seqs.items()):
             entry = {}
             if consistent_func in fns:
                 # sample valid ambiguous functions
@@ -413,13 +442,3 @@ def get_model_priming_prompt_possible_options(
     turn["content"] = "\n" + seq + "\n\n" + priming + model_string + "\n"
 
     return turn
-
-
-if __name__ == "__main__":
-
-    config = Q12LogprobInequalityConfig(
-        csv_input_path="data/q12_functions/consistent_functions_by_model.csv",
-        csv_results_path="/Users/hb/Repos/introspective-self-consistency/results/q1.2/230529_results.csv",
-    )
-
-    run_q1_2_eval(config)

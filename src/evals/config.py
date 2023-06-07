@@ -1,4 +1,4 @@
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from typing import Union
 
 from omegaconf import DictConfig, OmegaConf
@@ -24,7 +24,7 @@ class BaseEvalConfig:
         if isinstance(params, DictConfig):
             params = OmegaConf.to_container(params)
 
-        mandatory_fields = [field.name for field in fields(cls) if field.init]
+        mandatory_fields = [field.name for field in fields(cls)]
         return cls(**{k: v for k, v in params.items() if k in mandatory_fields})
 
 
@@ -64,9 +64,9 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
 @dataclass
 class Q12LogprobInequalityConfig(BaseEvalConfig):
     csv_input_path: str
-    num_shots = 4
-    num_valid = 2
-    num_invalid = 3
-    cot = False
-    few_shot_prompt_type = "random"
-    invalid_fn_type = "random"
+    num_shots: int = field(default=4)
+    num_valid: int = field(default=2)
+    num_invalid: int = field(default=3)
+    cot: bool = field(default=False)
+    few_shot_prompt_type: str = field(default="random")
+    invalid_fn_type: str = field(default="random")
