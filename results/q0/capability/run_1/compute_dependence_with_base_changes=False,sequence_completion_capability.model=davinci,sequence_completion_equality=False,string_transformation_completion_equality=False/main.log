@@ -1,0 +1,131 @@
+[2023-06-07 08:52:50,299][src.utils][INFO] - Git sha: a78aae517535a9760211e71ffc591118b750a75c
+[2023-06-07 08:52:50,317][src.utils][INFO] - Changed files: ['src/evals/sequence_completion.py']
+[2023-06-07 08:52:50,332][src.utils][INFO] - Git diff:
+diff --git a/src/evals/sequence_completion.py b/src/evals/sequence_completion.py
+index a44cbe6..27c3ac5 100644
+--- a/src/evals/sequence_completion.py
++++ b/src/evals/sequence_completion.py
+@@ -149,10 +149,10 @@ def sequence_completion_equality(
+             "sequence": sequence,
+             "generated_completion_rule": explanation,
+             "generated_completion": actual_completion,
+-            "generated_completion_matches": None,
++            "generated_completion_matches": False,
+             "model_self_consistency_evaluation": consistency_resp,
+             "model_completion": model_completion_resp,
+-            "model_completion_matches": None,
++            "model_completion_matches": False,
+         }
+
+     last_completion = eval(explanation)(last_completion_step + 1)
+[2023-06-07 08:52:50,334][src.utils][INFO] - Changed directory to /Users/domenicrosati/src/introspective-self-consistency/results/2023-06-07-08-49-53/compute_dependence_with_base_changes=False,sequence_completion_capability.model=davinci,sequence_completion_equality=False,string_transformation_completion_equality=False/evaluate_sequence_completion_capability
+[2023-06-07 08:52:50,334][src.evals.sequence_completion_capability][INFO] - Evaluating sequence completion capability...
+[2023-06-07 08:55:45,497][src.evals.sequence_completion_capability][ERROR] - '(' was never closed (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (lambda y: (lambda z: (lambda a: (lambda b: (lambda c: (lambda d: (lambda e: (lambda f: (lambda g: (lambda h: (lambda i: (lambda j: (lambda k: (lambda l: (lambda m: (lambda n: (lambda o: (lambda p: (lambda q: (lambda r: (lambda s: (lambda t: (lambda u: (lambda v: (lambda w: (lambda x: (lambda y: (lambda z: (lambda a: (lambda b: (lambda c: (lambda d: (lambda e: (lambda f: (lambda g: (lambda h: (lambda i: (lambda j: (lambda k: (lambda l: (lambda m: (lambda n: (lambda o: (lambda p: (lambda q: (lambda r: (lambda s: (lambda t: (lambda u: (lambda v: (lambda w: (lambda x: (lambda y: (lambda z: (lambda a: (lambda b: (lambda c: (lambda d: (lambda e: (lambda f: (lambda g: (lambda h: (lambda i:
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ^
+SyntaxError: '(' was never closed
+[2023-06-07 08:55:45,498][src.evals.sequence_completion_capability][WARNING] - '(' was never closed (<string>, line 1)
+[2023-06-07 08:56:55,640][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) +
+SyntaxError: invalid syntax
+[2023-06-07 08:56:55,640][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:01:02,520][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) +
+SyntaxError: invalid syntax
+[2023-06-07 09:01:02,521][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:01:54,530][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) *
+SyntaxError: invalid syntax
+[2023-06-07 09:01:54,531][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:03:20,247][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) * (1 * x) *
+SyntaxError: invalid syntax
+[2023-06-07 09:03:20,248][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:11:53,713][src.evals.sequence_completion_capability][ERROR] - '(' was never closed (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (0 if x==0 else 1 if x==1 else 2 if x==2 else 3 if x==3 else 4 if x==4 else 5 if x==5 else 6 if x==6 else 7 if x==7 else 8 if x==8 else 9 if x==9 else 10 if x==10 else 11 if x==11 else 12 if x==12 else 13 if x==13 else 14 if x==14 else 15 if x==15 else 16 if x==16 else 17 if x==17 else 18 if x==18 else 19 if x==19 else 20 if x==20 else 21 if x==21 else 22 if x==22 else 23 if x==23 else 24 if x==24 else 25 if x==25 else 26 if x==26 else 27 if x==27 else 28 if x==28 else 29 if x==29 else 30 if x==30 else 31 if x==31 else 32 if x==32 else 33 if x==33 else 34 if x==34 else 35 if x==35 else 36 if x==36 else 37 if x==37 else 38 if x==38 else 39 if x==39 else 40 if x==40 else 41 if x==41
+              ^
+SyntaxError: '(' was never closed
+[2023-06-07 09:11:53,714][src.evals.sequence_completion_capability][WARNING] - '(' was never closed (<string>, line 1)
+[2023-06-07 09:13:51,007][src.evals.sequence_completion_capability][ERROR] - unsupported operand type(s) for *: 'int' and 'function'
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+  File "<string>", line 1, in <lambda>
+  File "<string>", line 1, in <lambda>
+  [Previous line repeated 1 more time]
+TypeError: unsupported operand type(s) for *: 'int' and 'function'
+[2023-06-07 09:13:51,007][src.evals.sequence_completion_capability][WARNING] - unsupported operand type(s) for *: 'int' and 'function'
+[2023-06-07 09:18:27,134][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) +
+SyntaxError: invalid syntax
+[2023-06-07 09:18:27,135][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:26:23,618][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) | (1 * x) |
+SyntaxError: invalid syntax
+[2023-06-07 09:26:23,618][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:29:27,843][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    lambda x: (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) + (1 * x) +
+SyntaxError: invalid syntax
+[2023-06-07 09:29:27,843][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 09:32:38,725][src.evals.sequence_completion_capability][INFO] -
+        Evaluated 129 ambiguous sequences of 139 total.
+        Resulting in:
+        - 9.0% rules_matches_sequence
+        - 35.0% completion_is_correct

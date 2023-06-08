@@ -1,0 +1,170 @@
+[2023-06-07 10:34:27,872][src.utils][INFO] - Git sha: a78aae517535a9760211e71ffc591118b750a75c
+[2023-06-07 10:34:27,915][src.utils][INFO] - Changed files: ['src/evals/sequence_completion.py']
+[2023-06-07 10:34:27,935][src.utils][INFO] - Git diff:
+diff --git a/src/evals/sequence_completion.py b/src/evals/sequence_completion.py
+index a44cbe6..27c3ac5 100644
+--- a/src/evals/sequence_completion.py
++++ b/src/evals/sequence_completion.py
+@@ -149,10 +149,10 @@ def sequence_completion_equality(
+             "sequence": sequence,
+             "generated_completion_rule": explanation,
+             "generated_completion": actual_completion,
+-            "generated_completion_matches": None,
++            "generated_completion_matches": False,
+             "model_self_consistency_evaluation": consistency_resp,
+             "model_completion": model_completion_resp,
+-            "model_completion_matches": None,
++            "model_completion_matches": False,
+         }
+
+     last_completion = eval(explanation)(last_completion_step + 1)
+[2023-06-07 10:34:27,938][src.utils][INFO] - Changed directory to /Users/domenicrosati/src/introspective-self-consistency/results/2023-06-07-09-46-35/compute_dependence_with_base_changes=False,sequence_completion_capability.model=gpt-4-0314,sequence_completion_equality=False,string_transformation_completion_equality=False/evaluate_sequence_completion_capability
+[2023-06-07 10:34:27,938][src.evals.sequence_completion_capability][INFO] - Evaluating sequence completion capability...
+[2023-06-07 10:35:39,556][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    This sequence appears to be neither arithmetic nor geometric. However, if you still want a code to generate the given terms, you can use a dictionary to map the index to the corresponding term:
+         ^^^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:35:39,557][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:37:26,366][src.evals.sequence_completion_capability][ERROR] - unterminated string literal (detected at line 1) (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    Here's a possible code to generate the sequence:
+        ^
+SyntaxError: unterminated string literal (detected at line 1)
+[2023-06-07 10:37:26,367][src.evals.sequence_completion_capability][WARNING] - unterminated string literal (detected at line 1) (<string>, line 1)
+[2023-06-07 10:37:55,956][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    import math
+    ^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:37:55,957][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:39:13,885][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    This sequence does not follow a simple arithmetic or geometric pattern. However, you can generate the sequence using a more complex function:
+         ^^^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:39:13,885][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:39:45,424][src.evals.sequence_completion_capability][ERROR] - unterminated string literal (detected at line 1) (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    Here's a code that generates the sequence using a recursive function:
+        ^
+SyntaxError: unterminated string literal (detected at line 1)
+[2023-06-07 10:39:45,424][src.evals.sequence_completion_capability][WARNING] - unterminated string literal (detected at line 1) (<string>, line 1)
+[2023-06-07 10:40:19,483][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    This sequence is generated by multiplying the previous term by the next integer in the sequence 1, 2, 3, 4, 5, 6, 7, ...
+         ^^^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:40:19,484][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:40:56,388][src.evals.sequence_completion_capability][ERROR] - unterminated string literal (detected at line 1) (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    Here's a code that generates the given sequence:
+        ^
+SyntaxError: unterminated string literal (detected at line 1)
+[2023-06-07 10:40:56,388][src.evals.sequence_completion_capability][WARNING] - unterminated string literal (detected at line 1) (<string>, line 1)
+[2023-06-07 10:41:23,729][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    This sequence is not an arithmetic or geometric sequence, so it cannot be generated by a simple mathematical function. However, you can create a custom function to generate this specific sequence:
+         ^^^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:41:23,729][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:42:01,874][src.evals.sequence_completion_capability][ERROR] - unterminated string literal (detected at line 1) (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    Here's a code that generates the sequence 1, 3, 7, 9, 13:
+        ^
+SyntaxError: unterminated string literal (detected at line 1)
+[2023-06-07 10:42:01,875][src.evals.sequence_completion_capability][WARNING] - unterminated string literal (detected at line 1) (<string>, line 1)
+[2023-06-07 10:42:41,490][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    I apologize for the confusion in my previous responses. The correct code for generating the sequence 3, 7, 11, 15 is:
+      ^^^^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:42:41,490][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:42:57,785][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    The given sequence does not follow a simple arithmetic or geometric pattern. However, if you still want a code that generates the exact sequence, you can use:
+        ^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:42:57,786][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:44:37,296][src.evals.sequence_completion_capability][ERROR] - unterminated string literal (detected at line 1) (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    Here's a code that generates the sequence, assuming it starts from index 0:
+        ^
+SyntaxError: unterminated string literal (detected at line 1)
+[2023-06-07 10:44:37,296][src.evals.sequence_completion_capability][WARNING] - unterminated string literal (detected at line 1) (<string>, line 1)
+[2023-06-07 10:45:14,742][src.evals.sequence_completion_capability][ERROR] - invalid syntax (<string>, line 1)
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1
+    This sequence appears to be generated by the following code:
+         ^^^^^^^^
+SyntaxError: invalid syntax
+[2023-06-07 10:45:14,742][src.evals.sequence_completion_capability][WARNING] - invalid syntax (<string>, line 1)
+[2023-06-07 10:46:47,829][src.evals.sequence_completion_capability][INFO] -
+        Evaluated 126 ambiguous sequences of 139 total.
+        Resulting in:
+        - 64.0% rules_matches_sequence
+        - 82.0% completion_is_correct

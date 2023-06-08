@@ -150,10 +150,10 @@ def sequence_completion_equality(
             "sequence": sequence,
             "generated_completion_rule": explanation,
             "generated_completion": actual_completion,
-            "generated_completion_matches": None,
+            "generated_completion_matches": False,
             "model_self_consistency_evaluation": consistency_resp,
             "model_completion": model_completion_resp,
-            "model_completion_matches": None,
+            "model_completion_matches": False,
         }
 
     last_completion = eval(explanation)(last_completion_step + 1)
@@ -202,29 +202,41 @@ def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) ->
         f"sequence_completion_equality_evaluation_{config.model.value}.csv", index=False
     )
 
-    match_accs, model_match_accs, model_consistency_accs, consistent_and_matched = (
-        [],
-        [],
-        [],
-        [],
-    )
+    (
+        match_accs,
+        model_match_accs,
+        model_consistency_accs,
+        consistent_and_matched_positive,
+        consistent_and_matched_negative,
+    ) = ([], [], [], [], [])
     for data in completion_data:
         match_accs.append(1 if data["generated_completion_matches"] else 0)
         model_match_accs.append(1 if data["model_completion_matches"] else 0)
         model_consistency_accs.append(
             1 if data["model_self_consistency_evaluation"].strip() == "Y" else 0
         )
-        consistent_and_matched.append(
+        consistent_and_matched_positive.append(
             1
             if data["model_self_consistency_evaluation"].strip() == "Y"
             and data["generated_completion_matches"]
+            else 0
+        )
+        consistent_and_matched_negative.append(
+            1
+            if data["model_self_consistency_evaluation"].strip() == "N"
+            and not data["generated_completion_matches"]
             else 0
         )
 
     ground_truth_consistent = round(np.mean(match_accs), 2) * 100
     self_rule_following_consistency = round(np.mean(model_match_accs), 2) * 100
     self_comparison_consistency = round(np.mean(model_consistency_accs), 2) * 100
-    consistent_and_matched_accuracy = round(np.mean(consistent_and_matched), 2) * 100
+    consistent_and_matched_positive_accuracy = (
+        round(np.mean(consistent_and_matched_positive), 2) * 100
+    )
+    consistent_and_matched_negative_accuracy = (
+        round(np.mean(consistent_and_matched_negative), 2) * 100
+    )
     logger.info(
         f"""
         Evaluated {len(completion_data)} ambiguous sequences of {total_sequences} total.
@@ -232,6 +244,7 @@ def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) ->
         - {ground_truth_consistent}% ground-truth-consistent
         - {self_rule_following_consistency}% self-rule-following-consistency
         - {self_comparison_consistency}% self-comparison-consistency
-        - {consistent_and_matched_accuracy}% self-comparison-consistency and ground-truth-consistent.
+        - {consistent_and_matched_positive_accuracy}% self-comparison-consistency and ground-truth-consistent (positive).
+        - {consistent_and_matched_negative_accuracy}% self-comparison-consistency and ground-truth-consistent (negative).
         """
     )

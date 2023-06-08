@@ -1,0 +1,13 @@
+,model,run,rule_matches_sequence,completion_is_correct,len_completed
+0,davinci,run_1,8.53,34.88,129
+1,davinci,run_2,14.29,37.59,133
+2,davinci,run_3,9.45,31.5,127
+3,gpt-3.5-turbo,run_1,40.77,80.0,130
+4,gpt-3.5-turbo,run_2,53.28,83.61,122
+5,gpt-3.5-turbo,run_3,46.62,77.44,133
+6,gpt-4-0314,run_1,61.11,85.71,126
+7,gpt-4-0314,run_2,64.29,81.75,126
+8,gpt-4-0314,run_3,60.94,82.81,128
+9,text-davinci-003,run_1,47.06,67.65,136
+10,text-davinci-003,run_2,37.31,71.64,134
+11,text-davinci-003,run_3,39.26,69.63,135

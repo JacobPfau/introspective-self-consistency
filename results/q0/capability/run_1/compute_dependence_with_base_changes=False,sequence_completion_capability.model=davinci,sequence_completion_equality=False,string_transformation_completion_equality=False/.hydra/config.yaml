@@ -1,0 +1,9 @@
+string_transformation_completion_equality: false
+sequence_completion_equality: false
+sequence_completion_capability:
+  model: davinci
+  max_offset: 8
+  num_shots: 4
+  use_cot: false
+  few_shot_prompt_type: random
+compute_dependence_with_base_changes: false
