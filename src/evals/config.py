@@ -62,6 +62,7 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
     task_prompt: str = "self-consistency"
     role_prompt: Optional[str] = None
     _base: int = 10
+    seed: int = 21
 
     @property
     def base(self):

@@ -1,4 +1,5 @@
 import logging
+import random
 from dataclasses import asdict
 
 import pandas as pd
@@ -15,6 +16,7 @@ def evaluate_compute_dependence_with_base_changes(
     config: SequenceCompletionBaseChangeConfig,
 ) -> None:
     total = 0
+    random.seed(config.seed)
 
     if config.on_ambiguous_sequences:
         # Get the ambiguous sequences
