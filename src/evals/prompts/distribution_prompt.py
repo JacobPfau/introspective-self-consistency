@@ -30,5 +30,12 @@ for file in HERE.glob("**/explanation.txt"):
 
 TASK_PROMPTS = dict(TASK_PROMPTS)
 
-
 # todo: same for _role_ prompts
+
+ROLE_PROMPTS = defaultdict(dict)
+
+for file in HERE.glob("**/role.txt"):
+    role_prompt = file.parent.name
+    ROLE_PROMPTS[role_prompt] = file.read_text()
+
+ROLE_PROMPTS = dict(ROLE_PROMPTS)

@@ -21,6 +21,7 @@ def test_completion_prompt():
 def test_create_continuation_prompt():
     sequence = [1, 2, 3, 4, 5, 6]
     task_prompt = "max-probability"
+    role_prompt = "gpt-og"
     model_name = "text-davinci-003"
     base = 2
     shots = 5
@@ -28,6 +29,7 @@ def test_create_continuation_prompt():
     prompt = create_continuation_prompt(
         sequence=sequence,
         task_prompt=task_prompt,
+        role_prompt=role_prompt,
         model_name=model_name,
         base=base,
         shots=shots,
@@ -39,13 +41,15 @@ def test_create_continuation_prompt():
 def test_create_explanation_prompt():
     sequence = [1, 2, 3, 4, 5, 6]
     task_prompt = "max-probability"
+    role_prompt = "gpt-og"
     model_name = "gpt-3.5-turbo"
-    base = 10
+    base = 2
     shots = 1
     shot_method = "random"
     prompt = create_explanation_prompt(
         sequence=sequence,
         task_prompt=task_prompt,
+        role_prompt=role_prompt,
         model_name=model_name,
         base=base,
         shots=shots,
@@ -79,4 +83,4 @@ def test_self_consistency_evaluation():
 
 
 if __name__ == "__main__":
-    test_create_explanation_prompt()
+    test_create_continuation_prompt()

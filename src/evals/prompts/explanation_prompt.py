@@ -25,7 +25,7 @@ Prompts will take the form:
 from logging import getLogger
 from typing import List, Optional, Union
 
-from src.evals.prompts.distribution_prompt import TASK_PROMPTS
+from src.evals.prompts.distribution_prompt import ROLE_PROMPTS, TASK_PROMPTS
 from src.evals.utils import _generate_random_function, reformat_function
 
 # from evals.utils import _generate_random_function, generate_wrong_functions
@@ -71,9 +71,12 @@ def create_explanation_prompt(
             )
             prompt_text += shot_prompt
 
-    # todo: include role_rompt
     text = TASK_PROMPTS[task_prompt]["explanation"]
     text += "\n"
+    # TODO: Decide if we want role prompt to go here
+    if role_prompt is not None:
+        text += ROLE_PROMPTS[role_prompt]
+        text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
     if base == 10:
