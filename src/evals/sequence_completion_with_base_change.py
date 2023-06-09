@@ -17,8 +17,6 @@ def evaluate_compute_dependence_with_base_changes(
     total = 0
 
     if config.on_ambiguous_sequences:
-        if config.base not in [2, 10]:
-            raise ValueError(f"Unsupported base: {config.base}")
         # Get the ambiguous sequences
         # Use default parameters for now
         results = {}

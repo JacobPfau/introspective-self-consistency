@@ -67,7 +67,7 @@ python main.py --multirun +task=sequence_completion_equality model=davinci,text-
 
 ## Q2.1
 
-The goal of Q2.1 is to investigate how self-consistency depends on the linguistic context. We very both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
+The goal of Q2.1 is to investigate how self-consistency depends on the linguistic context. We vary both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
 
 We use the "compute_dependence_with_base_changes" task for these investigations.
 

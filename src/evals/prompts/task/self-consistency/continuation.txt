@@ -1,4 +1,4 @@
 Choose a continuation of the following sequence.
 Note that you will be separately asked to choose a function which generated the sequence.
 Please choose a continuation which is consistent with the function you will choose.
-Give the response as a number, with no additional commentary.
+Give the response as a number (with a base prefix if appropriate), with no additional commentary.
