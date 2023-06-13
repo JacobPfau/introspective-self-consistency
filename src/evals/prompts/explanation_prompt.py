@@ -94,6 +94,7 @@ def create_explanation_prompt(
         pretext += "\n"
         text = pretext + prompt_text + text
         text += "\n"
+        text += "A: "
         return text
     elif model_name in OpenAIChatModels.list():
         pretext = [
@@ -102,7 +103,7 @@ def create_explanation_prompt(
                 "content": pre_prompt,
             }
         ]
-        whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}]
+        whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}] + [{"role": "assistant", "content": "A: "}]
         logger.info(str(whole_prompt))
         return whole_prompt
     else:

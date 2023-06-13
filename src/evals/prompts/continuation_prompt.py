@@ -94,7 +94,8 @@ def create_continuation_prompt(
                 "content": "Here are some examples of sequence continuations.",
             }
         ]
-        whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}]
+
+        whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}] + [{"role": "assistant", "content": "A: "}]
         return whole_prompt
     else:
         raise ValueError(f"Invalid model name: {model_name}")
