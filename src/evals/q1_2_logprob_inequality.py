@@ -194,43 +194,45 @@ def _add_logprob_entries(
     completion_responses: List[dict],
     explanation_responses: List[dict],
 ) -> List[dict]:
+    """Add logprob entries to logprob_results."""
+
     for entry in completion_responses:
-        for compl, logprob, valid in entry.items():
+        compl, logprob, valid = entry.values()
 
-            logprob_entry = {
-                "model": model.value,
-                "sequence": sequence,
-                "org_func": org_func,
-                "num_valid": config.num_valid,
-                "num_invalid": config.num_invalid,
-                "num_shots": config.num_shots,
-                "invalid_fn_type": config.invalid_fn_type,
-                "response_type": "completion",
-                "completion": compl,
-                "logprob": logprob,
-                "valid": valid,
-            }
+        logprob_entry = {
+            "model": model.value,
+            "sequence": sequence,
+            "org_func": org_func,
+            "num_valid": config.num_valid,
+            "num_invalid": config.num_invalid,
+            "num_shots": config.num_shots,
+            "invalid_fn_type": config.invalid_fn_type,
+            "response_type": "completion",
+            "completion": compl,
+            "logprob": logprob,
+            "valid": valid,
+        }
 
-            logprob_results.append(logprob_entry)
+        logprob_results.append(logprob_entry)
 
     for entry in explanation_responses:
-        for expl, logprob, valid in entry.items():
+        expl, logprob, valid = entry.values()
 
-            logprob_entry = {
-                "model": model.value,
-                "sequence": sequence,
-                "org_func": org_func,
-                "num_valid": config.num_valid,
-                "num_invalid": config.num_invalid,
-                "num_shots": config.num_shots,
-                "invalid_fn_type": config.invalid_fn_type,
-                "response_type": "explanation",
-                "completion": expl,
-                "logprob": logprob,
-                "valid": valid,
-            }
+        logprob_entry = {
+            "model": model.value,
+            "sequence": sequence,
+            "org_func": org_func,
+            "num_valid": config.num_valid,
+            "num_invalid": config.num_invalid,
+            "num_shots": config.num_shots,
+            "invalid_fn_type": config.invalid_fn_type,
+            "response_type": "explanation",
+            "completion": expl,
+            "logprob": logprob,
+            "valid": valid,
+        }
 
-            logprob_results.append(logprob_entry)
+        logprob_results.append(logprob_entry)
 
     return logprob_results
 
@@ -380,8 +382,12 @@ def _eval_sequence_completion(
     # get prediction for the ambiguous sequence
     pred_completion = generate_response_with_turns(
         model, turns=completion_prompt["prompt_turns"]
-    )
-    # parse result
+    ).strip()
+
+    try:
+        pred_completion = int(pred_completion)
+    except Exception:
+        logger.warning(f"Could not parse predicted completion: {pred_completion}")
 
     # get logprob for the predicted completion
     if pred_completion in valid_completions:
@@ -411,6 +417,7 @@ def _eval_sequence_completion(
 
     # 3)
     # modify the last turn to ask for possible completions
+    turns = completion_prompt["prompt_turns"]
     priming_prompt = get_model_priming_prompt_possible_options(
         model, turns[-1], "completion"
     )
@@ -448,11 +455,12 @@ def _eval_sequence_explanation(
         shot_type=few_shot_prompt_type,
     )
 
+    # 1)
     # prompt model for explanation and obtain log probabilities for each response
     explanation_responses = []
 
-    for explanation, valid in [(expl, True) for expl in valid_fns] + [
-        (expl, False) for expl in invalid_fns
+    for explanation, valid in [(expl, "valid") for expl in valid_fns] + [
+        (expl, "invalid") for expl in invalid_fns
     ]:
         # add explanation to the last prompt turn
         # turns[-2] = {'role': 'assistant', 'content': 'lambda x: 4 ** (3 * x)'}
@@ -475,9 +483,42 @@ def _eval_sequence_explanation(
             {"completion": explanation, "logprob": logprob, "valid": valid}
         )
 
-    turns = explanation_prompt["prompt_turns"]
+    # 2)
+    # get prediction for the ambiguous sequence
+    pred_explanation = generate_response_with_turns(
+        model, turns=explanation_prompt["prompt_turns"]
+    ).strip()
 
+    # logger.debug(f"Predicted explanation: {pred_explanation}")
+    # get logprob for the predicted completion
+    if pred_explanation in [fn["fn"] for fn in valid_fns]:
+        for compl_resp in explanation_responses:
+            if compl_resp["completion"]["fn"] == pred_explanation:
+                pred_logprob = compl_resp["logprob"]
+                break
+    else:
+        # add predicted completion to the last prompt turn
+        turns = copy.deepcopy(explanation_prompt["prompt_turns"])
+        explanation_string = " " + str(pred_explanation)
+        turns[-1]["content"] += explanation_string
+
+        tokens, token_logprobs = generate_logprob_response_with_turns(
+            model,
+            turns=turns,
+            max_tokens=0,
+        )
+
+        pred_logprob = _get_logprob_from_response(
+            model, explanation_string, tokens, token_logprobs
+        )
+
+    explanation_responses.append(
+        {"completion": pred_explanation, "logprob": pred_logprob, "valid": "pred"}
+    )
+
+    # 3)
     # modify the last turn to ask for possible explanations
+    turns = explanation_prompt["prompt_turns"]
     priming_prompt = get_model_priming_prompt_possible_options(
         model, turns[-1], "explanation"
     )
