@@ -82,9 +82,10 @@ def run_q1_2_eval(
 
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q1.2 eval.")
-    logger.info(f"Config: {repr(config)}")
+
     amb_seqs, data = get_data_q1_2(config)
     results = []
+    logprob_results = []
     for entry in tqdm(data):
         try:
             # roll out valid fns to obtain valid completions
@@ -167,18 +168,77 @@ def run_q1_2_eval(
             }
 
             results.append(results_entry)
+            logprob_results = _add_logprob_entries(
+                logprob_results,
+                model,
+                sequence,
+                org_func,
+                config,
+                completion_responses,
+                explanation_responses,
+            )
 
         except Exception as e:
             logger.error(f"Unexpected error in Q1.2 eval: {repr(e)}")
 
     _save_results_to_csv(results)
+    _save_results_to_csv(logprob_results, csv_path="logprobs.csv")
 
 
-def _save_results_to_csv(results: List[Dict[str, Any]]):
+def _add_logprob_entries(
+    logprob_results: List[dict],
+    model: BaseModel,
+    sequence: str,
+    org_func,
+    config: Q12LogprobInequalityConfig,
+    completion_responses: List[dict],
+    explanation_responses: List[dict],
+) -> List[dict]:
+    for entry in completion_responses:
+        for compl, logprob, valid in entry.items():
+
+            logprob_entry = {
+                "model": model.value,
+                "sequence": sequence,
+                "org_func": org_func,
+                "num_valid": config.num_valid,
+                "num_invalid": config.num_invalid,
+                "num_shots": config.num_shots,
+                "invalid_fn_type": config.invalid_fn_type,
+                "response_type": "completion",
+                "completion": compl,
+                "logprob": logprob,
+                "valid": valid,
+            }
+
+            logprob_results.append(logprob_entry)
+
+    for entry in explanation_responses:
+        for expl, logprob, valid in entry.items():
+
+            logprob_entry = {
+                "model": model.value,
+                "sequence": sequence,
+                "org_func": org_func,
+                "num_valid": config.num_valid,
+                "num_invalid": config.num_invalid,
+                "num_shots": config.num_shots,
+                "invalid_fn_type": config.invalid_fn_type,
+                "response_type": "explanation",
+                "completion": expl,
+                "logprob": logprob,
+                "valid": valid,
+            }
+
+            logprob_results.append(logprob_entry)
+
+    return logprob_results
+
+
+def _save_results_to_csv(results: List[Dict[str, Any]], csv_path="results.csv"):
     df = pd.DataFrame.from_dict(results, orient="columns")
 
     # append to existing csv if exists
-    csv_path = "results.csv"
     if os.path.exists(csv_path):
         df = pd.concat([pd.read_csv(csv_path, sep=","), df], ignore_index=True)
 
@@ -207,6 +267,7 @@ def get_data_q1_2(config: Q12LogprobInequalityConfig):
         # isinstance(get_model_from_string(entry["model"]), OpenAITextModels)
     ]  #
     logger.info("Skipping non-text models as logprobs are not available.")
+    logger.info(f"No. base functions: {len(base_data)}")
 
     amb_seqs = find_ambiguous_integer_sequences()
 
@@ -289,12 +350,12 @@ def _eval_sequence_completion(
         ambiguous_sequences=amb_seqs,
         shot_type=few_shot_prompt_type,
     )
-
+    # 1)
     # prompt model for completion and obtain log probabilities for each response
     completion_responses = []
 
-    for completion, valid in [(compl, True) for compl in valid_completions] + [
-        (compl, False) for compl in invalid_completions
+    for completion, valid in [(compl, "valid") for compl in valid_completions] + [
+        (compl, "invalid") for compl in invalid_completions
     ]:
         # add completion to the last prompt turn
         turns = copy.deepcopy(completion_prompt["prompt_turns"])
@@ -315,9 +376,41 @@ def _eval_sequence_completion(
             {"completion": completion, "logprob": logprob, "valid": valid}
         )
 
-    turns = completion_prompt["prompt_turns"]
+    # 2)
+    # get prediction for the ambiguous sequence
+    pred_completion = generate_response_with_turns(
+        model, turns=completion_prompt["prompt_turns"]
+    )
+    # parse result
 
-    # modify the last turn to ask for possible explanations
+    # get logprob for the predicted completion
+    if pred_completion in valid_completions:
+        for compl_resp in completion_responses:
+            if compl_resp["completion"] == pred_completion:
+                pred_logprob = compl_resp["logprob"]
+                break
+    else:
+        # add predicted completion to the last prompt turn
+        turns = copy.deepcopy(completion_prompt["prompt_turns"])
+        completion_string = " " + str(pred_completion)
+        turns[-1]["content"] += completion_string
+
+        tokens, token_logprobs = generate_logprob_response_with_turns(
+            model,
+            turns=turns,
+            max_tokens=0,
+        )
+
+        pred_logprob = _get_logprob_from_response(
+            model, completion_string, tokens, token_logprobs
+        )
+
+    completion_responses.append(
+        {"completion": pred_completion, "logprob": pred_logprob, "valid": "pred"}
+    )
+
+    # 3)
+    # modify the last turn to ask for possible completions
     priming_prompt = get_model_priming_prompt_possible_options(
         model, turns[-1], "completion"
     )
@@ -405,12 +498,14 @@ def evaluate_logprob_inequality(
 
     # separate valid and invalid responses
     logprobs_valid = [
-        response["logprob"] for response in completion_responses if response["valid"]
+        response["logprob"]
+        for response in completion_responses
+        if response["valid"] == "valid"
     ]
     logprobs_invalid = [
         response["logprob"]
         for response in completion_responses
-        if not response["valid"]
+        if response["valid"] == "invalid"
     ]
 
     ineq = []
@@ -442,3 +537,14 @@ def get_model_priming_prompt_possible_options(
     turn["content"] = "\n" + seq + "\n\n" + priming + model_string + "\n"
 
     return turn
+
+
+if __name__ == "__main__":
+
+    config = Q12LogprobInequalityConfig(
+        task="q1_2_inequality",
+        model="text-davinci-003",
+        csv_input_path="/Users/hb/Repos/introspective-self-consistency/data/q1_2_functions/consistent_functions_by_model.csv",
+    )
+
+    run_q1_2_eval(config)
