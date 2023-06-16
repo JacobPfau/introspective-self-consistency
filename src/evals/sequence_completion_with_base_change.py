@@ -1,5 +1,4 @@
 import logging
-import random
 from dataclasses import asdict
 
 import pandas as pd
@@ -16,7 +15,7 @@ def evaluate_compute_dependence_with_base_changes(
     config: SequenceCompletionBaseChangeConfig,
 ) -> None:
     total = 0
-    random.seed(config.seed)
+    seed = config.seed
 
     if config.on_ambiguous_sequences:
         # Get the ambiguous sequences
@@ -25,6 +24,8 @@ def evaluate_compute_dependence_with_base_changes(
         all_data = []
         ambiguous_sequences = find_ambiguous_integer_sequences()
         for sequence in tqdm(ambiguous_sequences):
+            # Use a new seed for each sequence
+            seed += 1
             # turn the sequence from a string into a list of integers
             int_sequence = [int(x) for x in sequence.split(",")]
             logger.info(f"Total: {total}")
@@ -41,6 +42,7 @@ def evaluate_compute_dependence_with_base_changes(
                         shot_method=config.shot_method,
                         temperature=0.0,
                         samples=config.num_samples,
+                        seed=seed,
                     )
                 except Exception as e:
                     logger.warning("Error in self consistency evaluation.")

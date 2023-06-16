@@ -22,6 +22,7 @@ Prompts will take the form:
 """
 
 
+import random
 from logging import getLogger
 from typing import List, Optional, Union
 
@@ -56,10 +57,12 @@ def create_explanation_prompt(
     shots: int = 0,
     shot_method: str = "random",
     role_prompt: Optional[str] = None,
+    seed: int = 0,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
     """
+    random.seed(seed)
     sequence_length = len(sequence)
     prompt_text = "" if model_name in OpenAITextModels.list() else []
     if shots > 0:
@@ -103,7 +106,12 @@ def create_explanation_prompt(
                 "content": pre_prompt,
             }
         ]
-        whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}] + [{"role": "assistant", "content": "A: "}]
+        whole_prompt = (
+            pretext
+            + prompt_text
+            + [{"role": "user", "content": text}]
+            + [{"role": "assistant", "content": "A: "}]
+        )
         logger.info(str(whole_prompt))
         return whole_prompt
     else:
