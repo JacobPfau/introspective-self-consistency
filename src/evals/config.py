@@ -61,18 +61,13 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
     shot_method: str = "random"
     task_prompt: str = "self-consistency"
     role_prompt: Optional[str] = None
-    _base: int = 10
+    base: int = 10
     seed: int = 21
 
-    @property
-    def base(self):
-        return self._base
-
-    @base.setter
-    def base(self, value):
-        if value not in [2, 10]:
-            raise ValueError("base can only be 2 or 10")
-        self._base = value
+    def __post_init__(self):
+        super().__post_init__()
+        if self.base not in [2, 10]:
+            raise ValueError(f"Base must be 2 or 10; got {self.base}")
 
 
 @dataclass
