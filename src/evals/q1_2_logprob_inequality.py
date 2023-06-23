@@ -7,6 +7,7 @@ We compute/obtain the log probabilities for each answer and evaluate the mass di
 import copy
 import logging
 import os
+import random
 from typing import Any, Dict, List, Literal, Optional, Union
 
 import pandas as pd
@@ -79,7 +80,7 @@ def run_q1_2_eval(
     amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=True)
     results = []
     logprob_results = []
-    for entry in tqdm(data):
+    for entry in tqdm(data[6:11]):
         try:
             # roll out valid fns to obtain valid completions
             model: BaseModel = entry["model"]
@@ -91,19 +92,22 @@ def run_q1_2_eval(
             invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
-            completion_responses, possible_completions = _eval_sequence_completion(
-                model,
-                org_func,
-                config.num_shots,
-                config.cot,
-                config.few_shot_prompt_type,
-                amb_seqs,
-                sequence,
-                valid_completions,
-                invalid_completions,
-            )
+            # completion_responses, possible_completions = _eval_sequence_completion(
+            #     model,
+            #     org_func,
+            #     config.num_shots,
+            #     config.cot,
+            #     config.few_shot_prompt_type,
+            #     amb_seqs,
+            #     sequence,
+            #     valid_completions,
+            #     invalid_completions,
+            # )
 
-            test_passing_completion = evaluate_logprob_inequality(completion_responses)
+            # test_passing_completion = evaluate_logprob_inequality(completion_responses)
+            test_passing_completion = False
+            possible_completions = []
+            completion_responses = []
 
             # run eval for sequence explanation
             explanation_responses, possible_explanations = _eval_sequence_explanation(
@@ -291,7 +295,7 @@ def _add_logprob_entries(
             break
 
     for entry in explanation_responses:
-        expl, logprob, valid = entry.values()
+        expl, _, logprob, valid = entry.values()
 
         logprob_entry = {
             "model": model.value,
@@ -439,6 +443,7 @@ def _eval_sequence_explanation(
     valid_fns: List[Dict[str, Any]],
     invalid_fns: List[Dict[str, Any]],
 ):
+    # TODO: consider multiple choice few-shot demonstrations
     # construct prompt for model explanation
     explanation_prompt = generate_sequence_completion_prompt(
         sequence,
@@ -452,18 +457,42 @@ def _eval_sequence_explanation(
 
     # 1)
     # prompt model for explanation and obtain log probabilities for each response
-    explanation_responses = []
-
-    for explanation, valid in [(expl, "valid") for expl in valid_fns] + [
+    multi_choice_options = [(expl, "valid") for expl in valid_fns] + [
         (expl, "invalid") for expl in invalid_fns
-    ]:
-        # add explanation to the last prompt turn
-        # turns[-2] = {'role': 'assistant', 'content': 'lambda x: 4 ** (3 * x)'}
-        # turns[-1] = {'role': 'user', 'content': '\nFor the sequence: 0,2,4,6\n
-        #   \nGive the code that generates the above sequence.\n'}
+    ]
+    random.shuffle(multi_choice_options)  # shuffle options to avoid bias
+
+    # construct multiple choice prompt
+    mc_prompt = "Which of the following functions is a valid explanation for the above sequence? \
+        \nRespond only with the number of the answer.\n"
+    for i, (expl, _) in enumerate(multi_choice_options):
+        mc_prompt += f"{i+1}. {expl['fn']}\n"
+
+    # get sequence from the last prompt turn and add it to the multiple choice prompt
+    # turns[-2] = {'role': 'assistant', 'content': 'lambda x: 4 ** (3 * x)'}
+    # turns[-1] = {'role': 'user', 'content': '\nFor the sequence: 0,2,4,6\n
+    #   \nGive the code that generates the above sequence.\n'}
+    for sent_piece in explanation_prompt["prompt_turns"][-1]["content"].split("\n"):
+        if sent_piece != "":
+            sequence = sent_piece.strip()
+            break
+
+    mc_prompt = "\n" + sequence + "\n" + mc_prompt
+
+    explanation_responses = []
+    for i, (explanation, valid) in enumerate(multi_choice_options):
+        # change the last prompt turn to multiple choice
         turns = copy.deepcopy(explanation_prompt["prompt_turns"])
-        explanation_string = " " + str(explanation["fn"])
-        turns[-1]["content"] += explanation_string
+        turns[-1]["content"] = mc_prompt
+
+        # add mc options of explanation to the last prompt turn
+        explanation_string = f" {i+1}"
+        turns.append(
+            {
+                "role": "assistant",
+                "content": explanation_string,
+            }
+        )
 
         tokens, token_logprobs = generate_logprob_response_with_turns(
             model,
@@ -475,27 +504,41 @@ def _eval_sequence_explanation(
             model, explanation_string, tokens, token_logprobs
         )
         explanation_responses.append(
-            {"completion": explanation, "logprob": logprob, "valid": valid}
+            {
+                "completion": explanation,
+                "choice": str(i + 1),
+                "logprob": logprob,
+                "valid": valid,
+            }
         )
 
     # 2)
     # get prediction for the ambiguous sequence
-    pred_explanation = generate_response_with_turns(
-        model, turns=explanation_prompt["prompt_turns"]
-    ).strip()
+    turns = copy.deepcopy(explanation_prompt["prompt_turns"])
+    turns[-1]["content"] = mc_prompt
+    pred_explanation = generate_response_with_turns(model, turns=turns).strip()
 
-    # logger.debug(f"Predicted explanation: {pred_explanation}")
-    # get logprob for the predicted completion
-    if pred_explanation in [fn["fn"] for fn in valid_fns]:
-        for compl_resp in explanation_responses:
-            if compl_resp["completion"]["fn"] == pred_explanation:
-                pred_logprob = compl_resp["logprob"]
-                break
-    else:
-        # add predicted completion to the last prompt turn
-        turns = copy.deepcopy(explanation_prompt["prompt_turns"])
-        explanation_string = " " + str(pred_explanation)
-        turns[-1]["content"] += explanation_string
+    # since model is primed with multiple choice, the predicted explanation must be a number and part of the explanation options
+    try:
+        pred_parsed = (
+            pred_explanation.split(" ")[0].replace(".", "").strip()
+        )  # number should be the first token, perhaps with a dot
+        pred_parsed = int(pred_parsed)
+        compl_resp = explanation_responses[pred_parsed - 1]
+        pred_logprob = compl_resp["logprob"]  # re-use logprob from that response
+
+    except ValueError:
+        logger.warning(
+            "Could not parse number from predicted explanation and will explicitly"
+        )
+        pred_parsed = pred_explanation.split(" ")[0].replace(".", "").strip()
+        explanation_string = " " + pred_parsed
+        turns.append(
+            {
+                "role": "assistant",
+                "content": explanation_string,
+            }
+        )
 
         tokens, token_logprobs = generate_logprob_response_with_turns(
             model,
@@ -508,7 +551,12 @@ def _eval_sequence_explanation(
         )
 
     explanation_responses.append(
-        {"completion": pred_explanation, "logprob": pred_logprob, "valid": "pred"}
+        {
+            "completion": pred_explanation,
+            "choice": "n/a",
+            "logprob": pred_logprob,
+            "valid": "pred",
+        }
     )
 
     # 3)
