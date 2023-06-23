@@ -80,7 +80,7 @@ def run_q1_2_eval(
     amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=True)
     results = []
     logprob_results = []
-    for entry in tqdm(data[6:11]):
+    for entry in tqdm(data):
         try:
             # roll out valid fns to obtain valid completions
             model: BaseModel = entry["model"]
@@ -92,22 +92,19 @@ def run_q1_2_eval(
             invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
-            # completion_responses, possible_completions = _eval_sequence_completion(
-            #     model,
-            #     org_func,
-            #     config.num_shots,
-            #     config.cot,
-            #     config.few_shot_prompt_type,
-            #     amb_seqs,
-            #     sequence,
-            #     valid_completions,
-            #     invalid_completions,
-            # )
+            completion_responses, possible_completions = _eval_sequence_completion(
+                model,
+                org_func,
+                config.num_shots,
+                config.cot,
+                config.few_shot_prompt_type,
+                amb_seqs,
+                sequence,
+                valid_completions,
+                invalid_completions,
+            )
 
-            # test_passing_completion = evaluate_logprob_inequality(completion_responses)
-            test_passing_completion = False
-            possible_completions = []
-            completion_responses = []
+            test_passing_completion = evaluate_logprob_inequality(completion_responses)
 
             # run eval for sequence explanation
             explanation_responses, possible_explanations = _eval_sequence_explanation(
