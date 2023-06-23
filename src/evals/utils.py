@@ -1,8 +1,6 @@
-import ast
-import csv
 import random
 import re
-from typing import Any, Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
@@ -301,24 +299,3 @@ def reformat_ambiguous_sequences(ambiguous_sequences, base=2, max_length=30):
                 reformatted_ambiguous_sequence
             ] = ambiguous_sequences[ambiguous_sequence]
     return reformatted_ambiguous_sequences
-
-
-def parse_function_and_model_from_csv(
-    csv_path: str, delimiter=","
-) -> List[Dict[str, Any]]:
-    """
-    Parse the function and model from a csv file.
-    """
-    data = []
-
-    with open(csv_path) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=delimiter)
-        for row in csv_reader:
-            if row[0] == "":
-                continue
-            entry = {}
-            entry["fn_item"] = ast.literal_eval(row[1])  # convert string to dict
-            entry["model"] = row[2]
-            data.append(entry)
-
-    return data

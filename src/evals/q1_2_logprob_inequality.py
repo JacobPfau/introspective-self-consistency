@@ -7,8 +7,7 @@ We compute/obtain the log probabilities for each answer and evaluate the mass di
 import copy
 import logging
 import os
-import random
-from typing import Any, Dict, List, Literal, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import pandas as pd
 import tiktoken
@@ -16,20 +15,14 @@ from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q12LogprobInequalityConfig
-from src.evals.utils import parse_function_and_model_from_csv
 from src.models.base_model import BaseModel
 from src.models.openai_model import (
     OpenAITextModels,
     generate_logprob_response_with_turns,
     generate_response_with_turns,
 )
-from src.models.utils import get_model_from_string
-from src.pipelines.sequence_completions import (
-    find_ambiguous_integer_sequences,
-    generate_sequence_completion_prompt,
-    generate_shot_pool,
-    resolve_fn,
-)
+from src.pipelines.alternative_completions import get_data_with_alternatives
+from src.pipelines.sequence_completions import generate_sequence_completion_prompt
 
 _MIN_LOGPROB = -100.0
 
@@ -82,8 +75,8 @@ def run_q1_2_eval(
 
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q1.2 eval.")
-
-    amb_seqs, data = get_data_q1_2(config)
+    logger.info("Skipping non-text models as logprobs are not available.")
+    amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=True)
     results = []
     logprob_results = []
     for entry in tqdm(data):
@@ -176,6 +169,10 @@ def run_q1_2_eval(
                 config,
                 completion_responses,
                 explanation_responses,
+                valid_fns=valid_fns,
+                valid_completions=valid_completions,
+                invalid_fns=invalid_fns,
+                invalid_completions=invalid_completions,
             )
 
         except Exception as e:
@@ -183,6 +180,65 @@ def run_q1_2_eval(
 
     _save_results_to_csv(results)
     _save_results_to_csv(logprob_results, csv_path="logprobs.csv")
+
+
+def _get_completion_value_from_row(row, response_type: Optional[str] = None) -> str:
+    if response_type is None:
+        response_type = row["response_type"]
+    if "completion" == response_type:
+        return row["completion"]
+    elif "explanation" == response_type:
+        if row["valid"] == "pred":
+            fn = row["completion"]
+        else:
+            fn = row["completion"]["fn"]
+        return fn
+    else:
+        raise NotImplementedError(f"Unknown response type: {response_type}")
+
+
+def _get_valid_and_pred_entries(
+    logprob_entry: dict, pred_val: str, valid_vals: List[Any], invalid_vals: List[Any]
+) -> dict:
+    """Determine variations of whether this entry was valid and predicted or not."""
+
+    # update logprob entry
+    if logprob_entry["valid"] in ["valid", "invalid"]:
+        logprob_entry["valid_and_pred"] = (
+            1
+            if logprob_entry["valid"] == "valid"
+            and _get_completion_value_from_row(logprob_entry) == pred_val
+            else 0
+        )
+        logprob_entry["valid_and_not_pred"] = (
+            1
+            if logprob_entry["valid"] == "valid"
+            and _get_completion_value_from_row(logprob_entry) != pred_val
+            else 0
+        )
+        logprob_entry["invalid_and_pred"] = (
+            1
+            if logprob_entry["valid"] == "invalid"
+            and _get_completion_value_from_row(logprob_entry) == pred_val
+            else 0
+        )
+        logprob_entry["invalid_and_not_pred"] = (
+            1
+            if logprob_entry["valid"] == "invalid"
+            and _get_completion_value_from_row(logprob_entry) != pred_val
+            else 0
+        )
+    else:
+        logprob_entry["valid_and_pred"] = (
+            1 if logprob_entry["valid"] == "pred" and pred_val in valid_vals else 0
+        )
+        logprob_entry["valid_and_not_pred"] = 0
+        logprob_entry["invalid_and_pred"] = (
+            1 if logprob_entry["valid"] == "pred" and pred_val in invalid_vals else 0
+        )
+        logprob_entry["invalid_and_not_pred"] = 0
+
+    return logprob_entry
 
 
 def _add_logprob_entries(
@@ -193,8 +249,17 @@ def _add_logprob_entries(
     config: Q12LogprobInequalityConfig,
     completion_responses: List[dict],
     explanation_responses: List[dict],
+    valid_fns: List[dict],
+    valid_completions: List[str],
+    invalid_fns: List[dict],
+    invalid_completions: List[str],
 ) -> List[dict]:
     """Add logprob entries to logprob_results."""
+
+    for entry in completion_responses:
+        if entry["valid"] == "pred":
+            pred_val = _get_completion_value_from_row(entry, "completion")
+            break
 
     for entry in completion_responses:
         compl, logprob, valid = entry.values()
@@ -213,7 +278,17 @@ def _add_logprob_entries(
             "valid": valid,
         }
 
+        logprob_entry = _get_valid_and_pred_entries(
+            logprob_entry, pred_val, valid_completions, invalid_completions
+        )
+
         logprob_results.append(logprob_entry)
+
+    # Explanations
+    for entry in explanation_responses:
+        if entry["valid"] == "pred":
+            pred_val = _get_completion_value_from_row(entry, "explanation")
+            break
 
     for entry in explanation_responses:
         expl, logprob, valid = entry.values()
@@ -231,7 +306,9 @@ def _add_logprob_entries(
             "logprob": logprob,
             "valid": valid,
         }
-
+        logprob_entry = _get_valid_and_pred_entries(
+            logprob_entry, pred_val, valid_fns, invalid_fns
+        )
         logprob_results.append(logprob_entry)
 
     return logprob_results
@@ -246,91 +323,6 @@ def _save_results_to_csv(results: List[Dict[str, Any]], csv_path="results.csv"):
 
     df.to_csv(csv_path, sep=",", index=False, header=True)
     logger.info(f"Saved results to: {csv_path}.")
-
-
-def get_data_q1_2(config: Q12LogprobInequalityConfig):
-    """Based on consistent function determined in Q0, generate data samples for Q1.2.
-    Each sample consists of:
-        - ambiguous sequence
-        - original function/explanation (i.e. the one determined in Q0)
-        - valid alternative explanations
-        - invalid alternative explanations
-        - valid completions
-        - invalid completions (based on the invalid explanations)
-
-    """
-    base_data = parse_function_and_model_from_csv(config.csv_input_path)
-
-    # filter data to only include text models
-    base_data = [
-        entry
-        for entry in base_data
-        if get_model_from_string(entry["model"]) == OpenAITextModels.TEXT_DAVINCI_003
-        # isinstance(get_model_from_string(entry["model"]), OpenAITextModels)
-    ]  #
-    logger.info("Skipping non-text models as logprobs are not available.")
-    logger.info(f"No. base functions: {len(base_data)}")
-
-    amb_seqs = find_ambiguous_integer_sequences()
-
-    data = []
-
-    for entry in tqdm(base_data, desc="Generating data for Q1.2 eval."):
-        model = get_model_from_string(entry["model"])
-        consistent_func = entry["fn_item"]
-        # {'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}
-
-        # generate dataset for this eval:
-        # 1) generate ambiguous sequence given a valid explanation and find alternative, valid explanation
-        # 2) generate valid completions
-        # 3) generate shots for invalid explanations
-        # 4) generate invalid completions
-
-        # find alternative, valid function
-        for sequence, fns in list(amb_seqs.items()):
-            entry = {}
-            if consistent_func in fns:
-                # sample valid ambiguous functions
-                if len(fns) >= config.num_valid:
-                    valid_fns = random.sample(fns, config.num_valid)
-                    while consistent_func not in valid_fns:
-                        valid_fns = random.sample(fns, config.num_valid)
-                else:
-                    logger.error("Not enough valid candidate functions.")
-                    continue
-
-                # roll out valid fns to obtain valid completions
-                last_step = len(sequence.split(","))
-                valid_completions = [
-                    resolve_fn(fn_item, last_step) for fn_item in valid_fns
-                ]
-
-                # generate shots for alternative, invalid explanations
-                invalid_fns = generate_shot_pool(
-                    n_shots=config.num_invalid,
-                    base_fn=consistent_func,
-                    shot_type=config.invalid_fn_type,
-                    ambiguous_sequences=amb_seqs,
-                )
-                invalid_completions = [
-                    resolve_fn(fn_item, last_step) for fn_item in invalid_fns
-                ]
-
-                entry["sequence"] = sequence
-                entry["org_func"] = consistent_func
-                valids = list(zip(valid_fns, valid_completions))
-                random.shuffle(valids)
-                valid_fns, valid_completions = zip(*valids)
-
-                entry["valid_fns"] = list(valid_fns)
-                entry["valid_completions"] = valid_completions
-                entry["invalid_fns"] = list(invalid_fns)
-                entry["invalid_completions"] = invalid_completions
-                entry["model"] = model
-
-                data.append(entry)
-
-    return amb_seqs, data
 
 
 def _eval_sequence_completion(
@@ -385,8 +377,11 @@ def _eval_sequence_completion(
     ).strip()
 
     try:
-        pred_completion = int(pred_completion)
-    except Exception:
+        for pred_piece in pred_completion.split("\n"):
+            if pred_piece != "":
+                pred_completion = int(pred_piece.strip())
+                break
+    except ValueError:
         logger.warning(f"Could not parse predicted completion: {pred_completion}")
 
     # get logprob for the predicted completion
