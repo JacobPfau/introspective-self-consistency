@@ -17,27 +17,6 @@ Prompts will take the form:
     ***CONTINUATION_PROMPT***
 
     A:
---------------------------
-    For (text) explanations, this will be of the form:
---------------------------
-    Here are some examples of sequence explanations, i.e. python functions
-    which could have generated the preceding sequences, with associated offset.
-    Sequence: 2, 4, 6
-    Explanation: lambda x: 2*x
-    Offset: 0
-
-    Sequence: 1, 2, 3, 4, 5
-    Explanation: lambda x: x
-    Offset: 1
-
-    Sequence: 9, 16, 25, 36
-    Explanation: lambda x: x**2
-    Offset: 3
-
-    ***EXPLANATION_PROMPT***
-
-    Explanation:
-
 
 --------------------------
 
@@ -45,44 +24,49 @@ The sequences will be taken from the list of ambiguous sequences.
 
 """
 
-# import random
-from typing import List, Union
+import logging
+from typing import List, Optional, Union
 
-from src.evals.utils import _generate_random_function
-
-# from evals.utils import _generate_random_function, generate_wrong_functions
+from src.evals.prompts.distribution_prompt import TASK_PROMPTS
+from src.evals.utils import _generate_random_function, reformat_function
+from src.models.openai_model import (
+    DAVINCI_MODEL_NAME,
+    OpenAIChatModels,
+    OpenAITextModels,
+)
 from src.pipelines.sequence_completions import sequence_functions
-from src.evals.prompts.distributions import DISTRIBUTIONS
 
-# from pipelines.sequence_completions import (  # BASE_PROMPT,; COT_PROMPT,; COT_STEP,
-#     SYSTEM_PROMPT,
-#     sequence_functions,
-# )
+# TODO: fix generating functions to include recursive progressions, an ok fix for now.
+del sequence_functions["recursive_progression"]
+
+logger = logging.getLogger(__name__)
 
 
 def create_continuation_prompt(
     sequence: List[int],
-    distribution: str,
-    model_name: str = "text-davinci-003",
+    task_prompt: str,
+    model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
     shot_method: str = "random",
+    role_prompt: Optional[str] = None,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
     """
     sequence_length = len(sequence)
-    prompt_text = "" if model_name == "text-davinci-003" else []
+    prompt_text = "" if model_name in OpenAITextModels.list() else []
     if shots > 0:
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
-            shot_prompt = generate_cont_shot_prompt(shot_method, sequence_length, model_name)
+            shot_prompt = generate_cont_shot_prompt(
+                shot_method, sequence_length, model_name, base, i
+            )
             prompt_text += shot_prompt
 
-    # TODO: Need to fix!!
-
-    text = DISTRIBUTIONS[distribution]["continuation"]
+    # todo: include role_rompt
+    text = TASK_PROMPTS[task_prompt]["continuation"]
     text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
@@ -92,7 +76,7 @@ def create_continuation_prompt(
         text += ",".join([bin(x) for x in sequence])
     else:
         raise ValueError(f"Invalid base: {base}")
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         # Prepend to the shots
         pretext = "Here are some examples of sequence continuations."
         pretext += "\n"
@@ -100,7 +84,7 @@ def create_continuation_prompt(
         text += "\n"
         text += "A: "
         return text
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         pretext = [
             {
                 "role": "system",
@@ -114,41 +98,41 @@ def create_continuation_prompt(
 
 
 def generate_cont_shot_prompt(
-    shot_method, sequence_length, model_name="text-davinci-003", base=10
+    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10, shot=1
 ):
     """
     Generate a single shot prompt for a continuation.
     """
     if shot_method == "random":
         fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        sequence = [eval(fn)(x + offset) for x in range(sequence_length)]
+        # replace
+        fn = reformat_function(fn, offset)
+        sequence = [eval(fn)(x) for x in range(sequence_length)]
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
-
-    if model_name == "text-davinci-003":
+    if model_name in OpenAITextModels.list():
         text = "Q: "
         if base == 10:
             text += ",".join([str(x) for x in sequence])
-            a_text = str(eval(fn)(sequence_length + offset))
+            a_text = str(eval(fn)(sequence_length))
         elif base == 2:
             text += ",".join([bin(x) for x in sequence])
-            a_text = bin(eval(fn)(sequence_length + offset))
+            a_text = bin(eval(fn)(sequence_length))
         text += "\n"
         text += "A: "
         text += a_text
         text += "\n"
         return text
 
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name in OpenAIChatModels.list():
         if base == 10:
             q_text = ",".join([str(x) for x in sequence])
-            a_text = str(eval(fn)(sequence_length + offset))
+            a_text = str(eval(fn)(sequence_length))
         elif base == 2:
             q_text = ",".join([bin(x) for x in sequence])
-            a_text = bin(eval(fn)(sequence_length + offset))
+            a_text = bin(eval(fn)(sequence_length))
         response = [{"role": "user", "content": q_text}]
         response += [{"role": "assistant", "content": a_text}]
-        # print("responseo be: ", response)
         return response
 
     else:

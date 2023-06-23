@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field, fields
-from typing import Union
+from typing import Optional, Union
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -55,10 +55,23 @@ class SequenceCompletionEqConfig(BaseEvalConfig):
 
 @dataclass
 class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
-    sequence_type: str
-    num_samples: int
-    on_ambiguous_sequences: bool
-    num_shots = NUM_SHOTS
+    num_samples: int = 1
+    on_ambiguous_sequences: bool = True
+    num_shots: int = 4
+    shot_method: str = "random"
+    task_prompt: str = "self-consistency"
+    role_prompt: Optional[str] = None
+    _base: int = 10
+
+    @property
+    def base(self):
+        return self._base
+
+    @base.setter
+    def base(self, value):
+        if value not in [2, 10]:
+            raise ValueError("base can only be 2 or 10")
+        self._base = value
 
 
 @dataclass

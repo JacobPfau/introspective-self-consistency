@@ -13,7 +13,6 @@ logger = getLogger(__name__)
 
 def valid_explanation(
     fn_form: str,
-    offset: int,
     sequence_length: int,
 ) -> bool:
     """
@@ -22,25 +21,11 @@ def valid_explanation(
     """
     try:
         # TODO: need to have this work for an arbitrary number of arguments
-        [eval(fn_form.format(i + offset)) for i in range(sequence_length + 1)]
+        [eval(fn_form)(i) for i in range(sequence_length + 1)]
         return True
-    except (SyntaxError, NameError, TypeError, ValueError):
+    except Exception as e:
+        logger.info(e)
         return False
-
-
-def correct_explanation(
-    fn_form: str,
-    offset: int,
-    sequence_length: int,
-    sequence: List[int],
-) -> bool:
-    """
-    Given a function form and an offset as supplied by the model,
-    return whether the function correctly generates the sequence.
-    """
-    return all(
-        eval(fn_form.format(i + offset)) == sequence[i] for i in range(sequence_length)
-    )
 
 
 def generate_explanation(
@@ -76,13 +61,23 @@ def generate_explanation(
     return model_response
 
 
+def generate_implied_sequence(
+    fn_form: str,
+    sequence_length: int,
+) -> List[int]:
+    """
+    Given a function form and an offset as supplied by the model,
+    generate the sequence.
+    """
+    return [eval(fn_form)(i) for i in range(sequence_length)]
+
+
 def generate_implied_continuation(
     fn_form: str,
-    offset: int,
     sequence_length: int,
 ) -> int:
     """
     Given a function form and an offset as supplied by the model,
     generate the next element of the sequence.
     """
-    return eval(fn_form)(offset + sequence_length)
+    return eval(fn_form)(sequence_length)

@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Callable, Tuple
 
 import hydra
@@ -71,6 +72,7 @@ def get_task_and_config(cfg: DictConfig) -> Tuple[Callable, BaseEvalConfig]:
 def main(cfg: DictConfig) -> None:
     task_fun, task_cfg = get_task_and_config(cfg)
     task_fun(task_cfg)
+    logger.info(f"Output dir: {str(Path.cwd())}")
 
 
 if __name__ == "__main__":

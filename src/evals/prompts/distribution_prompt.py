@@ -1,13 +1,34 @@
 """
-Generate a prompt which asks the model to choose from some distribution of functions.
-"""
+Create a dictionary of distributions we might use for prompting explanations / continuations.
 
-SELF_CONTINUATION_PROMPT = (
-    "In your opinion, what is the most likely continuation of the following sequence? Give your response as a number, with no additional commentary."
-)
+Read all _task_ prompts from
+ - ./<task_prompt>/continuation.txt
+ - ./<task_prompt>/explanation.txt
 
-SELF_EXPLANATION_PROMPT = """In your opinion, what is the most likely explanation for how the following sequence was generated?
-Give your response in the format:
-Explanation: <function>
-Offset: <offset>
+ and store them in a dictionary of the form:
+ TASK_PROMPTS = {
+        <task_prompt>: {
+            "continuation": Path(./<task_prompt>/continuation.txt).read_text(),
+            "explanation": Path(./<task_prompt>/explanation.txt).read_text(),
+        }
+    }
 """
+from collections import defaultdict
+from pathlib import Path
+
+TASK_PROMPTS = defaultdict(dict)
+HERE = Path(__file__).parent
+
+for file in HERE.glob("**/continuation.txt"):
+    task_prompt = file.parent.name
+    TASK_PROMPTS[task_prompt]["continuation"] = file.read_text()
+
+
+for file in HERE.glob("**/explanation.txt"):
+    task_prompt = file.parent.name
+    TASK_PROMPTS[task_prompt]["explanation"] = file.read_text()
+
+TASK_PROMPTS = dict(TASK_PROMPTS)
+
+
+# todo: same for _role_ prompts
