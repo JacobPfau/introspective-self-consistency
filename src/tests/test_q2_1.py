@@ -1,5 +1,5 @@
 from src.evals.config import Q12LogprobInequalityConfig
-from src.evals.q1_2_logprob_inequality import list_rindex
+from src.evals.q2_1_logprob_inequality import list_rindex
 
 
 def test_list_rindex_with_unique_tokens():
