@@ -1,6 +1,6 @@
-"""Script to evaluate (Q1.2) the dependency on compute by looking at log probabilities.
+"""Script to evaluate (Q2.1) to what extent the model is considering alternatives by looking at log probabilities.
 In this setting, we generate ambiguous sequences with two valid rules and N invalid rules,
-and prompt the model for (1) completion, (2) explanation, (3) explanation conditioned on priming prompt.
+and prompt the model for completion and explanation.
 We compute/obtain the log probabilities for each answer and evaluate the mass distribution.
 """
 
@@ -8,7 +8,7 @@ import copy
 import logging
 import os
 import random
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import tiktoken
@@ -82,7 +82,6 @@ def run_q1_2_eval(
     logprob_results = []
     for entry in tqdm(data):
         try:
-            # roll out valid fns to obtain valid completions
             model: BaseModel = entry["model"]
             sequence = entry["sequence"]
             org_func = entry["org_func"]
@@ -92,7 +91,7 @@ def run_q1_2_eval(
             invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
-            completion_responses, possible_completions = _eval_sequence_completion(
+            completion_responses = _eval_sequence_completion(
                 model,
                 org_func,
                 config.num_shots,
@@ -107,7 +106,7 @@ def run_q1_2_eval(
             test_passing_completion = evaluate_logprob_inequality(completion_responses)
 
             # run eval for sequence explanation
-            explanation_responses, possible_explanations = _eval_sequence_explanation(
+            explanation_responses = _eval_sequence_explanation(
                 model,
                 org_func,
                 config.num_shots,
@@ -128,20 +127,6 @@ def run_q1_2_eval(
                     \n- Explanation test was passed: {test_passing_explanation}"
             )
 
-            # determine whether valid completions/explanations are in possible completions/explanations response
-            n_valid_compl_in_primed_resp = len(
-                [c for c in valid_completions if str(c) in possible_completions]
-            )
-            n_invalid_compl_in_primed_resp = len(
-                [c for c in invalid_completions if str(c) in possible_completions]
-            )
-            n_valid_expl_in_primed_resp = len(
-                [e for e in valid_fns if e["fn"] in possible_explanations]
-            )
-            n_invalid_expl_in_primed_resp = len(
-                [e for e in invalid_fns if e["fn"] in possible_explanations]
-            )
-
             # compose results entry
             results_entry = {
                 "model": model.value,
@@ -153,12 +138,6 @@ def run_q1_2_eval(
                 "invalid_fn_type": config.invalid_fn_type,
                 "test_passing_completion": int(test_passing_completion),
                 "test_passing_explanation": int(test_passing_explanation),
-                "n_valid_compl_in_primed_resp": n_valid_compl_in_primed_resp,
-                "n_invalid_compl_in_primed_resp": n_invalid_compl_in_primed_resp,
-                "n_valid_expl_in_primed_resp": n_valid_expl_in_primed_resp,
-                "n_invalid_expl_in_primed_resp": n_invalid_expl_in_primed_resp,
-                "possible_completions_response": possible_completions,
-                "possible_explanations_response": possible_explanations,
             }
 
             results.append(results_entry)
@@ -411,22 +390,7 @@ def _eval_sequence_completion(
         {"completion": pred_completion, "logprob": pred_logprob, "valid": "pred"}
     )
 
-    # 3)
-    # modify the last turn to ask for possible completions
-    turns = completion_prompt["prompt_turns"]
-    priming_prompt = get_model_priming_prompt_possible_options(
-        model, turns[-1], "completion"
-    )
-    turns[-1] = priming_prompt
-
-    response = generate_response_with_turns(
-        model, turns=turns
-    )  # completions based on priming the model
-    possible_completions = [
-        elem.strip() for elem in response.split("\\n")
-    ]  # parse response
-
-    return completion_responses, possible_completions
+    return completion_responses
 
 
 def _eval_sequence_explanation(
@@ -556,20 +520,7 @@ def _eval_sequence_explanation(
         }
     )
 
-    # 3)
-    # modify the last turn to ask for possible explanations
-    turns = explanation_prompt["prompt_turns"]
-    priming_prompt = get_model_priming_prompt_possible_options(
-        model, turns[-1], "explanation"
-    )
-    turns[-1] = priming_prompt
-
-    response = generate_response_with_turns(
-        model, turns=turns
-    )  # explanations based on priming the model
-    possible_explanations = [elem.strip() for elem in response.split("\\n")]
-
-    return explanation_responses, possible_explanations
+    return explanation_responses
 
 
 def evaluate_logprob_inequality(
@@ -597,27 +548,6 @@ def evaluate_logprob_inequality(
         )
 
     return all(ineq)
-
-
-def get_model_priming_prompt_possible_options(
-    model: BaseModel,
-    turn: Dict[str, str],
-    response_type: Literal["completion", "explanation"],
-) -> Dict[str, str]:
-    # generate priming prompt for model
-    base = f"Please list all possible {response_type}s separated by escape character '\\n' "
-    model_string = f", as determined by you, {model.value}."
-    seq = turn["content"].split("\n")[1]  # start with "For the sequence .."
-    if response_type == "completion":
-        priming = base + "which could be valid continuations of the sequence"
-
-    elif response_type == "explanation":
-        base = f"Please list all possible {response_type}s (as code) separated by escape character '\\n' "
-        priming = base + "which could have generated the sequence above"
-
-    turn["content"] = "\n" + seq + "\n\n" + priming + model_string + "\n"
-
-    return turn
 
 
 if __name__ == "__main__":
