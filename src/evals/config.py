@@ -83,3 +83,14 @@ class Q12LogprobInequalityConfig(BaseEvalConfig):
     cot: bool = field(default=False)
     few_shot_prompt_type: str = field(default="random")
     invalid_fn_type: str = field(default="random")
+
+
+@dataclass
+class Q22ModelVerbalizationConfig(BaseEvalConfig):
+    csv_input_path: str
+    num_shots: int = field(default=4)
+    num_valid: int = field(default=2)
+    num_invalid: int = field(default=3)
+    cot: bool = field(default=False)
+    few_shot_prompt_type: str = field(default="random")
+    invalid_fn_type: str = field(default="random")

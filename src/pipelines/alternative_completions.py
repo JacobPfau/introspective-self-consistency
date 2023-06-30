@@ -69,7 +69,7 @@ def generate_invalid_alternatives(
 def get_data_with_alternatives(
     config: Q12LogprobInequalityConfig, skip_non_text_models=True
 ):
-    """Based on consistent function determined in Q0, generate data samples for Q1.2.
+    """Based on consistent function determined in Q0, generate data samples for Q2
     Each sample consists of:
         - ambiguous sequence
         - original function/explanation (i.e. the one determined in Q0)
