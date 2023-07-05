@@ -46,6 +46,7 @@ def self_consistency_evaluation(
         base=base,
         shots=shots,
         shot_method=shot_method,
+        seed=seed,
     )
 
     explanation_prompt = create_explanation_prompt(
@@ -56,6 +57,7 @@ def self_consistency_evaluation(
         base=base,
         shots=shots,
         shot_method=shot_method,
+        seed=seed,
     )
 
     # Make the sequence base 2 if necessary
