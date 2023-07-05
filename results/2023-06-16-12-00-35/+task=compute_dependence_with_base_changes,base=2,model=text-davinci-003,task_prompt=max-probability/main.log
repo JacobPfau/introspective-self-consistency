@@ -1,0 +1,439 @@
+[2023-06-16 12:00:36,849][src.utils][INFO] - Git sha: d53c8d5cb57880185078a9640662ff19153e56a2
+[2023-06-16 12:00:39,809][src.evals.sequence_completion_with_base_change][INFO] - Total: 0
+[2023-06-16 12:00:39,809][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,6,9,12
+[2023-06-16 12:00:39,810][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:40,276][src.evals.check_self_consistency][INFO] - continuation:  0b11010
+[2023-06-16 12:00:41,590][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 1)
+[2023-06-16 12:00:41,590][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:41,590][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 1)
+[2023-06-16 12:00:41,591][src.evals.sequence_completion_with_base_change][INFO] - Total: 1
+[2023-06-16 12:00:41,591][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,9,12,15
+[2023-06-16 12:00:41,592][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:41,914][src.evals.check_self_consistency][INFO] - continuation:  0b10000
+[2023-06-16 12:00:42,427][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin((2 * (x + 2)) + 3)
+[2023-06-16 12:00:42,428][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b111', '0b1001', '0b1011', '0b1101']
+[2023-06-16 12:00:42,429][src.evals.check_self_consistency][INFO] - sequence: ['0b110', '0b1001', '0b1100', '0b1111']
+[2023-06-16 12:00:42,429][src.evals.check_self_consistency][INFO] - implied_continuation: 0b1111
+[2023-06-16 12:00:42,429][src.evals.check_self_consistency][INFO] - continuation: 0b10000
+[2023-06-16 12:00:42,430][src.evals.sequence_completion_with_base_change][INFO] - Total: 2
+[2023-06-16 12:00:42,430][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 9,12,15,18
+[2023-06-16 12:00:42,432][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:42,845][src.evals.check_self_consistency][INFO] - continuation:  0b10100
+[2023-06-16 12:00:44,496][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (4 * (x + 2)) - 1)
+[2023-06-16 12:00:44,497][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:44,497][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (4 * (x + 2)) - 1)
+[2023-06-16 12:00:44,498][src.evals.sequence_completion_with_base_change][INFO] - Total: 3
+[2023-06-16 12:00:44,498][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,3,4
+[2023-06-16 12:00:44,500][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:44,812][src.evals.check_self_consistency][INFO] - continuation:  0b101
+[2023-06-16 12:00:45,500][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:00:45,500][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b10', '0b100', '0b1000', '0b10000']
+[2023-06-16 12:00:45,500][src.evals.check_self_consistency][INFO] - sequence: ['0b1', '0b10', '0b11', '0b100']
+[2023-06-16 12:00:45,500][src.evals.check_self_consistency][INFO] - implied_continuation: 0b100000
+[2023-06-16 12:00:45,500][src.evals.check_self_consistency][INFO] - continuation: 0b101
+[2023-06-16 12:00:45,501][src.evals.sequence_completion_with_base_change][INFO] - Total: 4
+[2023-06-16 12:00:45,501][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,3,4,5
+[2023-06-16 12:00:45,503][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:45,774][src.evals.check_self_consistency][INFO] - continuation:  0b110
+[2023-06-16 12:00:47,706][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:00:47,706][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:47,706][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:00:47,707][src.evals.sequence_completion_with_base_change][INFO] - Total: 5
+[2023-06-16 12:00:47,707][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,4,5,6
+[2023-06-16 12:00:47,708][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:48,395][src.evals.check_self_consistency][INFO] - continuation:  0b111
+[2023-06-16 12:00:48,847][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 2))
+[2023-06-16 12:00:48,847][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:48,847][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 2))
+[2023-06-16 12:00:48,848][src.evals.sequence_completion_with_base_change][INFO] - Total: 6
+[2023-06-16 12:00:48,848][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,2,3
+[2023-06-16 12:00:48,849][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:49,199][src.evals.check_self_consistency][INFO] - continuation:  0b100
+[2023-06-16 12:00:50,131][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(x)
+[2023-06-16 12:00:50,131][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:50,131][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(x)
+[2023-06-16 12:00:50,132][src.evals.sequence_completion_with_base_change][INFO] - Total: 7
+[2023-06-16 12:00:50,132][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,3,5,7
+[2023-06-16 12:00:50,133][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:50,508][src.evals.check_self_consistency][INFO] - continuation:  0b1001
+[2023-06-16 12:00:51,122][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1) - 1)
+[2023-06-16 12:00:51,122][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:51,122][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1) - 1)
+[2023-06-16 12:00:51,123][src.evals.sequence_completion_with_base_change][INFO] - Total: 8
+[2023-06-16 12:00:51,123][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,5,7,9
+[2023-06-16 12:00:51,125][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:51,702][src.evals.check_self_consistency][INFO] - continuation:  0b10111
+[2023-06-16 12:00:53,270][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin(2 ** (2 * (x + 1)) + 1)
+[2023-06-16 12:00:53,271][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b101', '0b10001', '0b1000001', '0b100000001']
+[2023-06-16 12:00:53,272][src.evals.check_self_consistency][INFO] - sequence: ['0b11', '0b101', '0b111', '0b1001']
+[2023-06-16 12:00:53,272][src.evals.check_self_consistency][INFO] - implied_continuation: 0b10000000001
+[2023-06-16 12:00:53,272][src.evals.check_self_consistency][INFO] - continuation: 0b10111
+[2023-06-16 12:00:53,272][src.evals.sequence_completion_with_base_change][INFO] - Total: 9
+[2023-06-16 12:00:53,272][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,7,9,11
+[2023-06-16 12:00:53,275][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:53,678][src.evals.check_self_consistency][INFO] - continuation:  0b1101
+[2023-06-16 12:00:54,326][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 3) - 1)
+[2023-06-16 12:00:54,326][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:54,326][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 3) - 1)
+[2023-06-16 12:00:54,326][src.evals.sequence_completion_with_base_change][INFO] - Total: 10
+[2023-06-16 12:00:54,327][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 7,9,11,13
+[2023-06-16 12:00:54,327][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:54,790][src.evals.check_self_consistency][INFO] - continuation:  0b1111
+[2023-06-16 12:00:55,868][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin((3 * (x + 1)) + 4)
+[2023-06-16 12:00:55,868][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b111', '0b1010', '0b1101', '0b10000']
+[2023-06-16 12:00:55,868][src.evals.check_self_consistency][INFO] - sequence: ['0b111', '0b1001', '0b1011', '0b1101']
+[2023-06-16 12:00:55,868][src.evals.check_self_consistency][INFO] - implied_continuation: 0b10011
+[2023-06-16 12:00:55,869][src.evals.check_self_consistency][INFO] - continuation: 0b1111
+[2023-06-16 12:00:55,869][src.evals.sequence_completion_with_base_change][INFO] - Total: 11
+[2023-06-16 12:00:55,869][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,5,6,7
+[2023-06-16 12:00:55,871][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:56,213][src.evals.check_self_consistency][INFO] - continuation:  0b1000
+[2023-06-16 12:00:58,412][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin([i for i in range(100) if i % (3 + 1) or i % (6 + 1)][(x + 3)])
+[2023-06-16 12:00:58,413][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b100', '0b101', '0b110', '0b111']
+[2023-06-16 12:00:58,414][src.evals.check_self_consistency][INFO] - sequence: ['0b100', '0b101', '0b110', '0b111']
+[2023-06-16 12:00:58,414][src.evals.check_self_consistency][INFO] - implied_continuation: 0b1000
+[2023-06-16 12:00:58,414][src.evals.check_self_consistency][INFO] - continuation: 0b1000
+[2023-06-16 12:00:58,414][src.evals.sequence_completion_with_base_change][INFO] - Total: 12
+[2023-06-16 12:00:58,414][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,4,16,64
+[2023-06-16 12:00:58,416][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:58,858][src.evals.check_self_consistency][INFO] - continuation:  0b10000000
+[2023-06-16 12:00:59,393][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)))
+[2023-06-16 12:00:59,393][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:00:59,393][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)))
+[2023-06-16 12:00:59,393][src.evals.sequence_completion_with_base_change][INFO] - Total: 13
+[2023-06-16 12:00:59,394][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,16,64,256
+[2023-06-16 12:00:59,395][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:00:59,710][src.evals.check_self_consistency][INFO] - continuation:  0b10000000000
+[2023-06-16 12:01:00,375][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(4 ** (2 * (x + 1)))
+[2023-06-16 12:01:00,376][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:00,376][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(4 ** (2 * (x + 1)))
+[2023-06-16 12:01:00,377][src.evals.sequence_completion_with_base_change][INFO] - Total: 14
+[2023-06-16 12:01:00,377][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 16,64,256,1024
+[2023-06-16 12:01:00,380][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:00,755][src.evals.check_self_consistency][INFO] - continuation:  0b100000000000
+[2023-06-16 12:01:01,847][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin(2 ** (5 * (x + 1)))
+[2023-06-16 12:01:01,848][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b100000', '0b10000000000', '0b1000000000000000', '0b100000000000000000000']
+[2023-06-16 12:01:01,848][src.evals.check_self_consistency][INFO] - sequence: ['0b10000', '0b1000000', '0b100000000', '0b10000000000']
+[2023-06-16 12:01:01,848][src.evals.check_self_consistency][INFO] - implied_continuation: 0b10000000000000000000000000
+[2023-06-16 12:01:01,848][src.evals.check_self_consistency][INFO] - continuation: 0b100000000000
+[2023-06-16 12:01:01,848][src.evals.sequence_completion_with_base_change][INFO] - Total: 15
+[2023-06-16 12:01:01,848][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 64,256,1024,4096
+[2023-06-16 12:01:01,850][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:02,204][src.evals.check_self_consistency][INFO] - continuation:  0b10000000000000
+[2023-06-16 12:01:02,790][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (7 * (x + 1)))
+[2023-06-16 12:01:02,790][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:02,790][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (7 * (x + 1)))
+[2023-06-16 12:01:02,790][src.evals.sequence_completion_with_base_change][INFO] - Total: 16
+[2023-06-16 12:01:02,791][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,4,8,12
+[2023-06-16 12:01:02,792][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:03,139][src.evals.check_self_consistency][INFO] - continuation:  0b11000
+[2023-06-16 12:01:03,671][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin(2 ** (2 * x))
+[2023-06-16 12:01:03,672][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b1', '0b100', '0b10000', '0b1000000']
+[2023-06-16 12:01:03,673][src.evals.check_self_consistency][INFO] - sequence: ['0b0', '0b100', '0b1000', '0b1100']
+[2023-06-16 12:01:03,673][src.evals.check_self_consistency][INFO] - implied_continuation: 0b100000000
+[2023-06-16 12:01:03,673][src.evals.check_self_consistency][INFO] - continuation: 0b11000
+[2023-06-16 12:01:03,675][src.evals.sequence_completion_with_base_change][INFO] - Total: 17
+[2023-06-16 12:01:03,676][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,8,12,16
+[2023-06-16 12:01:03,679][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:04,063][src.evals.check_self_consistency][INFO] - continuation:  0b11000
+[2023-06-16 12:01:04,881][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 2 ** (x + 2))
+[2023-06-16 12:01:04,881][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:04,881][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 2 ** (x + 2))
+[2023-06-16 12:01:04,882][src.evals.sequence_completion_with_base_change][INFO] - Total: 18
+[2023-06-16 12:01:04,882][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 8,12,16,20
+[2023-06-16 12:01:04,884][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:05,398][src.evals.check_self_consistency][INFO] - continuation:  0b11000
+[2023-06-16 12:01:05,986][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (4 * x) + 2 ** (2 * x))
+[2023-06-16 12:01:05,987][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:05,987][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (4 * x) + 2 ** (2 * x))
+[2023-06-16 12:01:05,988][src.evals.sequence_completion_with_base_change][INFO] - Total: 19
+[2023-06-16 12:01:05,988][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 12,16,20,24
+[2023-06-16 12:01:05,993][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:06,525][src.evals.check_self_consistency][INFO] - continuation:  0b110100
+[2023-06-16 12:01:07,283][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (4 * x) + 4 * (x + 1))
+[2023-06-16 12:01:07,284][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:07,284][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (4 * x) + 4 * (x + 1))
+[2023-06-16 12:01:07,285][src.evals.sequence_completion_with_base_change][INFO] - Total: 20
+[2023-06-16 12:01:07,285][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,3,7,7
+[2023-06-16 12:01:07,288][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:07,619][src.evals.check_self_consistency][INFO] - continuation:  0b1111
+[2023-06-16 12:01:08,043][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(3 * (x + 1))
+[2023-06-16 12:01:08,044][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:08,044][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(3 * (x + 1))
+[2023-06-16 12:01:08,045][src.evals.sequence_completion_with_base_change][INFO] - Total: 21
+[2023-06-16 12:01:08,045][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,6,12,18
+[2023-06-16 12:01:08,048][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:08,322][src.evals.check_self_consistency][INFO] - continuation:  0b10100
+[2023-06-16 12:01:08,898][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * x + 2))
+[2023-06-16 12:01:08,899][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:08,899][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * x + 2))
+[2023-06-16 12:01:08,899][src.evals.sequence_completion_with_base_change][INFO] - Total: 22
+[2023-06-16 12:01:08,900][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,12,18,24
+[2023-06-16 12:01:08,902][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:09,226][src.evals.check_self_consistency][INFO] - continuation:  0b110010
+[2023-06-16 12:01:11,934][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)))
+[2023-06-16 12:01:11,935][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:11,935][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)))
+[2023-06-16 12:01:11,936][src.evals.sequence_completion_with_base_change][INFO] - Total: 23
+[2023-06-16 12:01:11,936][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 12,18,24,30
+[2023-06-16 12:01:11,939][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:12,210][src.evals.check_self_consistency][INFO] - continuation:  0b111100
+[2023-06-16 12:01:12,700][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin((2 ** (x + 3)) - 2)
+[2023-06-16 12:01:12,700][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b110', '0b1110', '0b11110', '0b111110']
+[2023-06-16 12:01:12,700][src.evals.check_self_consistency][INFO] - sequence: ['0b1100', '0b10010', '0b11000', '0b11110']
+[2023-06-16 12:01:12,700][src.evals.check_self_consistency][INFO] - implied_continuation: 0b1111110
+[2023-06-16 12:01:12,700][src.evals.check_self_consistency][INFO] - continuation: 0b111100
+[2023-06-16 12:01:12,701][src.evals.sequence_completion_with_base_change][INFO] - Total: 24
+[2023-06-16 12:01:12,701][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 18,24,30,36
+[2023-06-16 12:01:12,702][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:12,957][src.evals.check_self_consistency][INFO] - continuation:  0b100110
+[2023-06-16 12:01:13,605][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin((2 * (x + 3)) + 2)
+[2023-06-16 12:01:13,606][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b1000', '0b1010', '0b1100', '0b1110']
+[2023-06-16 12:01:13,606][src.evals.check_self_consistency][INFO] - sequence: ['0b10010', '0b11000', '0b11110', '0b100100']
+[2023-06-16 12:01:13,607][src.evals.check_self_consistency][INFO] - implied_continuation: 0b10000
+[2023-06-16 12:01:13,607][src.evals.check_self_consistency][INFO] - continuation: 0b100110
+[2023-06-16 12:01:13,607][src.evals.sequence_completion_with_base_change][INFO] - Total: 25
+[2023-06-16 12:01:13,607][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,6,10,14
+[2023-06-16 12:01:13,610][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:13,961][src.evals.check_self_consistency][INFO] - continuation:  0b10000
+[2023-06-16 12:01:14,885][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)) + 2 ** (x + 1))
+[2023-06-16 12:01:14,885][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:14,885][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)) + 2 ** (x + 1))
+[2023-06-16 12:01:14,886][src.evals.sequence_completion_with_base_change][INFO] - Total: 26
+[2023-06-16 12:01:14,886][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,10,14,18
+[2023-06-16 12:01:14,888][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:15,174][src.evals.check_self_consistency][INFO] - continuation:  0b10100
+[2023-06-16 12:01:15,950][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 2 ** (x + 1))
+[2023-06-16 12:01:15,951][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:15,951][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 2 ** (x + 1))
+[2023-06-16 12:01:15,951][src.evals.sequence_completion_with_base_change][INFO] - Total: 27
+[2023-06-16 12:01:15,951][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 10,14,18,22
+[2023-06-16 12:01:15,954][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:16,472][src.evals.check_self_consistency][INFO] - continuation:  0b11000
+[2023-06-16 12:01:16,911][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin((2 * (x + 2)) + 2)
+[2023-06-16 12:01:16,912][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:16,912][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin((2 * (x + 2)) + 2)
+[2023-06-16 12:01:16,913][src.evals.sequence_completion_with_base_change][INFO] - Total: 28
+[2023-06-16 12:01:16,913][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 14,18,22,26
+[2023-06-16 12:01:16,916][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:17,280][src.evals.check_self_consistency][INFO] - continuation:  0b11110
+[2023-06-16 12:01:19,079][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 3) + 2 ** (x + 2))
+[2023-06-16 12:01:19,080][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:19,081][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 3) + 2 ** (x + 2))
+[2023-06-16 12:01:19,082][src.evals.sequence_completion_with_base_change][INFO] - Total: 29
+[2023-06-16 12:01:19,082][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,5,9,13
+[2023-06-16 12:01:19,086][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:19,715][src.evals.check_self_consistency][INFO] - continuation:  0b11001
+[2023-06-16 12:01:20,551][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (2 * x) + 2 ** (x + 1))
+[2023-06-16 12:01:20,552][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:20,552][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (2 * x) + 2 ** (x + 1))
+[2023-06-16 12:01:20,552][src.evals.sequence_completion_with_base_change][INFO] - Total: 30
+[2023-06-16 12:01:20,552][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,9,13,17
+[2023-06-16 12:01:20,554][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:21,014][src.evals.check_self_consistency][INFO] - continuation:  0b100101
+[2023-06-16 12:01:21,748][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 2)) + 1)
+[2023-06-16 12:01:21,749][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:21,749][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 2)) + 1)
+[2023-06-16 12:01:21,750][src.evals.sequence_completion_with_base_change][INFO] - Total: 31
+[2023-06-16 12:01:21,750][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 9,13,17,21
+[2023-06-16 12:01:21,754][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:22,040][src.evals.check_self_consistency][INFO] - continuation:  0b11001
+[2023-06-16 12:01:24,737][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (4 * x) + (2 * x) + 1)
+[2023-06-16 12:01:24,738][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:24,738][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (4 * x) + (2 * x) + 1)
+[2023-06-16 12:01:24,739][src.evals.sequence_completion_with_base_change][INFO] - Total: 32
+[2023-06-16 12:01:24,739][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 13,17,21,25
+[2023-06-16 12:01:24,743][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:25,290][src.evals.check_self_consistency][INFO] - continuation:  0b11101
+[2023-06-16 12:01:26,031][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (4 * x) + (2 * x) + 3)
+[2023-06-16 12:01:26,032][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:26,032][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (4 * x) + (2 * x) + 3)
+[2023-06-16 12:01:26,033][src.evals.sequence_completion_with_base_change][INFO] - Total: 33
+[2023-06-16 12:01:26,033][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,3,5
+[2023-06-16 12:01:26,037][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:26,362][src.evals.check_self_consistency][INFO] - continuation:  0b110
+[2023-06-16 12:01:26,799][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin(2 ** (x + 1) - 1)
+[2023-06-16 12:01:26,800][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b1', '0b11', '0b111', '0b1111']
+[2023-06-16 12:01:26,801][src.evals.check_self_consistency][INFO] - sequence: ['0b1', '0b10', '0b11', '0b101']
+[2023-06-16 12:01:26,801][src.evals.check_self_consistency][INFO] - implied_continuation: 0b11111
+[2023-06-16 12:01:26,801][src.evals.check_self_consistency][INFO] - continuation: 0b110
+[2023-06-16 12:01:26,802][src.evals.sequence_completion_with_base_change][INFO] - Total: 34
+[2023-06-16 12:01:26,802][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,3,5,6
+[2023-06-16 12:01:26,805][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:27,613][src.evals.check_self_consistency][INFO] - continuation:  0b111
+[2023-06-16 12:01:28,696][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:01:28,697][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:28,697][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:01:28,697][src.evals.sequence_completion_with_base_change][INFO] - Total: 35
+[2023-06-16 12:01:28,697][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,5,6,7
+[2023-06-16 12:01:28,699][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:29,479][src.evals.check_self_consistency][INFO] - continuation:  0b1000
+[2023-06-16 12:01:30,092][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1) + 1)
+[2023-06-16 12:01:30,093][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:30,093][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1) + 1)
+[2023-06-16 12:01:30,094][src.evals.sequence_completion_with_base_change][INFO] - Total: 36
+[2023-06-16 12:01:30,094][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,6,7,9
+[2023-06-16 12:01:30,098][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:30,473][src.evals.check_self_consistency][INFO] - continuation:  0b1010
+[2023-06-16 12:01:31,750][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 + x))
+[2023-06-16 12:01:31,751][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:31,751][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 + x))
+[2023-06-16 12:01:31,752][src.evals.sequence_completion_with_base_change][INFO] - Total: 37
+[2023-06-16 12:01:31,752][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,3,6,9
+[2023-06-16 12:01:31,754][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:32,081][src.evals.check_self_consistency][INFO] - continuation:  0b10100
+[2023-06-16 12:01:32,586][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1) + 3)
+[2023-06-16 12:01:32,586][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:32,586][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1) + 3)
+[2023-06-16 12:01:32,587][src.evals.sequence_completion_with_base_change][INFO] - Total: 38
+[2023-06-16 12:01:32,587][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,2,4,6
+[2023-06-16 12:01:32,590][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:32,995][src.evals.check_self_consistency][INFO] - continuation:  0b1000
+[2023-06-16 12:01:33,415][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:01:33,415][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:33,416][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:01:33,416][src.evals.sequence_completion_with_base_change][INFO] - Total: 39
+[2023-06-16 12:01:33,416][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,4,6,8
+[2023-06-16 12:01:33,418][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:33,682][src.evals.check_self_consistency][INFO] - continuation:  0b1010
+[2023-06-16 12:01:35,443][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)))
+[2023-06-16 12:01:35,444][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:35,444][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)))
+[2023-06-16 12:01:35,444][src.evals.sequence_completion_with_base_change][INFO] - Total: 40
+[2023-06-16 12:01:35,444][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,6,8,10
+[2023-06-16 12:01:35,446][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:35,816][src.evals.check_self_consistency][INFO] - continuation:  0b1100
+[2023-06-16 12:01:36,288][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)) + 2)
+[2023-06-16 12:01:36,288][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:36,288][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (2 * (x + 1)) + 2)
+[2023-06-16 12:01:36,289][src.evals.sequence_completion_with_base_change][INFO] - Total: 41
+[2023-06-16 12:01:36,290][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 6,8,10,12
+[2023-06-16 12:01:36,293][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:37,279][src.evals.check_self_consistency][INFO] - continuation:  0b1110
+[2023-06-16 12:01:37,859][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 2)
+[2023-06-16 12:01:37,859][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:37,859][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) + 2)
+[2023-06-16 12:01:37,860][src.evals.sequence_completion_with_base_change][INFO] - Total: 42
+[2023-06-16 12:01:37,860][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,7,11,15
+[2023-06-16 12:01:37,864][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:38,475][src.evals.check_self_consistency][INFO] - continuation:  0b11111
+[2023-06-16 12:01:39,206][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin(2 ** (x + 2) - 1)
+[2023-06-16 12:01:39,208][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b11', '0b111', '0b1111', '0b11111']
+[2023-06-16 12:01:39,208][src.evals.check_self_consistency][INFO] - sequence: ['0b11', '0b111', '0b1011', '0b1111']
+[2023-06-16 12:01:39,208][src.evals.check_self_consistency][INFO] - implied_continuation: 0b111111
+[2023-06-16 12:01:39,208][src.evals.check_self_consistency][INFO] - continuation: 0b11111
+[2023-06-16 12:01:39,208][src.evals.sequence_completion_with_base_change][INFO] - Total: 43
+[2023-06-16 12:01:39,209][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 4,5,7,8
+[2023-06-16 12:01:39,211][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:39,512][src.evals.check_self_consistency][INFO] - continuation:  0b1001
+[2023-06-16 12:01:40,048][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)))
+[2023-06-16 12:01:40,048][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:40,048][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)))
+[2023-06-16 12:01:40,049][src.evals.sequence_completion_with_base_change][INFO] - Total: 44
+[2023-06-16 12:01:40,049][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 3,4,5,7
+[2023-06-16 12:01:40,052][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:40,387][src.evals.check_self_consistency][INFO] - continuation:  0b1000
+[2023-06-16 12:01:41,577][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 2) + 1)
+[2023-06-16 12:01:41,578][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:41,578][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 2) + 1)
+[2023-06-16 12:01:41,578][src.evals.sequence_completion_with_base_change][INFO] - Total: 45
+[2023-06-16 12:01:41,578][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 7,11,15,19
+[2023-06-16 12:01:41,580][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:42,582][src.evals.check_self_consistency][INFO] - continuation:  0b101111
+[2023-06-16 12:01:43,349][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) - 1)
+[2023-06-16 12:01:43,349][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:43,349][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (3 * (x + 1)) - 1)
+[2023-06-16 12:01:43,350][src.evals.sequence_completion_with_base_change][INFO] - Total: 46
+[2023-06-16 12:01:43,350][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 11,15,19,23
+[2023-06-16 12:01:43,354][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:44,636][src.evals.check_self_consistency][INFO] - continuation:  0b11011
+[2023-06-16 12:01:45,254][src.evals.check_self_consistency][INFO] - explanation:
+Explanation: lambda x: bin((2 * (x + 3)) + 3)
+[2023-06-16 12:01:45,256][src.evals.check_self_consistency][INFO] - implied_sequence: ['0b1001', '0b1011', '0b1101', '0b1111']
+[2023-06-16 12:01:45,256][src.evals.check_self_consistency][INFO] - sequence: ['0b1011', '0b1111', '0b10011', '0b10111']
+[2023-06-16 12:01:45,256][src.evals.check_self_consistency][INFO] - implied_continuation: 0b10001
+[2023-06-16 12:01:45,256][src.evals.check_self_consistency][INFO] - continuation: 0b11011
+[2023-06-16 12:01:45,257][src.evals.sequence_completion_with_base_change][INFO] - Total: 47
+[2023-06-16 12:01:45,257][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 15,19,23,27
+[2023-06-16 12:01:45,261][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:45,579][src.evals.check_self_consistency][INFO] - continuation:  0b11101
+[2023-06-16 12:01:46,843][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (4 * x) + 3 ** (2 * x))
+[2023-06-16 12:01:46,844][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:46,844][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (4 * x) + 3 ** (2 * x))
+[2023-06-16 12:01:46,844][src.evals.sequence_completion_with_base_change][INFO] - Total: 48
+[2023-06-16 12:01:46,845][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,2,0
+[2023-06-16 12:01:46,847][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:47,294][src.evals.check_self_consistency][INFO] - continuation:  0b11
+[2023-06-16 12:01:47,806][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:47,806][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:47,806][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:47,807][src.evals.sequence_completion_with_base_change][INFO] - Total: 49
+[2023-06-16 12:01:47,807][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,0,1
+[2023-06-16 12:01:47,810][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:48,143][src.evals.check_self_consistency][INFO] - continuation:  0b10
+[2023-06-16 12:01:48,613][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:48,613][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:48,613][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:48,614][src.evals.sequence_completion_with_base_change][INFO] - Total: 50
+[2023-06-16 12:01:48,614][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,0,1,2
+[2023-06-16 12:01:48,616][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:49,034][src.evals.check_self_consistency][INFO] - continuation:  0b11
+[2023-06-16 12:01:50,100][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:50,101][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:50,101][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:50,101][src.evals.sequence_completion_with_base_change][INFO] - Total: 51
+[2023-06-16 12:01:50,101][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 0,1,0,1
+[2023-06-16 12:01:50,104][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:50,417][src.evals.check_self_consistency][INFO] - continuation:  0b0
+[2023-06-16 12:01:52,515][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:52,516][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:52,516][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:52,517][src.evals.sequence_completion_with_base_change][INFO] - Total: 52
+[2023-06-16 12:01:52,517][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,0,1,0
+[2023-06-16 12:01:52,520][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:52,929][src.evals.check_self_consistency][INFO] - continuation:  0b1
+[2023-06-16 12:01:53,334][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:53,334][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:53,335][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(x % 2)
+[2023-06-16 12:01:53,335][src.evals.sequence_completion_with_base_change][INFO] - Total: 53
+[2023-06-16 12:01:53,335][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,6,7,8
+[2023-06-16 12:01:53,337][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:53,847][src.evals.check_self_consistency][INFO] - continuation:  0b1001
+[2023-06-16 12:01:54,356][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 3))
+[2023-06-16 12:01:54,356][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:54,356][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 3))
+[2023-06-16 12:01:54,356][src.evals.sequence_completion_with_base_change][INFO] - Total: 54
+[2023-06-16 12:01:54,356][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 1,2,4,5
+[2023-06-16 12:01:54,358][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:54,935][src.evals.check_self_consistency][INFO] - continuation:  0b110
+[2023-06-16 12:01:55,723][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** x)
+[2023-06-16 12:01:55,724][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:55,724][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** x)
+[2023-06-16 12:01:55,725][src.evals.sequence_completion_with_base_change][INFO] - Total: 55
+[2023-06-16 12:01:55,725][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 2,4,5,7
+[2023-06-16 12:01:55,729][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:56,102][src.evals.check_self_consistency][INFO] - continuation:  0b1000
+[2023-06-16 12:01:56,662][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:01:56,662][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:56,663][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 1))
+[2023-06-16 12:01:56,663][src.evals.sequence_completion_with_base_change][INFO] - Total: 56
+[2023-06-16 12:01:56,664][src.evals.sequence_completion_with_base_change][INFO] - Sequence: 5,7,8,10
+[2023-06-16 12:01:56,668][src.evals.check_self_consistency][INFO] - Generating a continuation and explanation
+[2023-06-16 12:01:57,125][src.evals.check_self_consistency][INFO] - continuation:  0b1100
+[2023-06-16 12:01:57,564][src.evals.check_self_consistency][INFO] - explanation:  Explanation: lambda x: bin(2 ** (x + 3) + 1)
+[2023-06-16 12:01:57,564][src.evals.evaluate_explanation][INFO] - invalid syntax (<string>, line 0)
+[2023-06-16 12:01:57,564][src.evals.check_self_consistency][INFO] - invalid explanation:  Explanation: lambda x: bin(2 ** (x + 3) + 1)
+[2023-06-16 12:01:57,565][src.evals.sequence_completion_with_base_change][INFO] - Total is: 57
+[2023-06-16 12:01:57,591][src.evals.sequence_completion_with_base_change][INFO] - Results saved to results.csv
+[2023-06-16 12:01:57,592][__main__][INFO] - Output dir: /Users/olejorgensen/Documents/AISC/introspective-self-consistency/results/2023-06-16-12-00-35/+task=compute_dependence_with_base_changes,base=2,model=text-davinci-003,task_prompt=max-probability

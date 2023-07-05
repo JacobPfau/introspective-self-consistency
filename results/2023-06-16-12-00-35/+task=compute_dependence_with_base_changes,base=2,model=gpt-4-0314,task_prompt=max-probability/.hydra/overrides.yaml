@@ -1,0 +1,4 @@
+- +task=compute_dependence_with_base_changes
+- base=2
+- model=gpt-4-0314
+- task_prompt=max-probability

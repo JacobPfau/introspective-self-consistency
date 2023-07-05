@@ -1,0 +1,2 @@
+,task,model,num_samples,on_ambiguous_sequences,num_shots,shot_method,task_prompt,role_prompt,base,seed,total sequences,invalid sequences,valid sequences,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent
+0,compute_dependence_with_base_changes,OpenAITextModels.TEXT_DAVINCI_003,1,True,4,random,max-probability,,2,21,57,45,12,2.0,0.0,0.0,19.0

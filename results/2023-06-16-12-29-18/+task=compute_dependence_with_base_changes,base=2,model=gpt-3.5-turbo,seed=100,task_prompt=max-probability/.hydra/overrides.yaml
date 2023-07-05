@@ -1,0 +1,5 @@
+- +task=compute_dependence_with_base_changes
+- base=2
+- model=gpt-3.5-turbo
+- task_prompt=max-probability
+- seed=100
