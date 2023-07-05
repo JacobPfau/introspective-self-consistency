@@ -1,0 +1,4 @@
+- +task=compute_dependence_with_base_changes
+- task_prompt=max-probability
+- model=gpt-3.5-turbo
+- base=2
