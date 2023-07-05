@@ -22,7 +22,16 @@ def evaluate_compute_dependence_with_base_changes(
         # Use default parameters for now
         results = {}
         all_data = []
-        ambiguous_sequences = find_ambiguous_integer_sequences()
+        if config.custom_sequences:
+            # Use the custom arguments for the ambiguous sequences
+            ambiguous_sequences = find_ambiguous_integer_sequences(
+                max_constant_term_one=config.max_constant_term_one,
+                max_constant_term_two=config.max_constant_term_two,
+                num_steps_to_check=config.num_steps_to_check,
+                step_offsets=config.step_offsets,
+            )
+        else:
+            ambiguous_sequences = find_ambiguous_integer_sequences()
         for sequence in tqdm(ambiguous_sequences):
             # Use a new seed for each sequence
             seed += 1
