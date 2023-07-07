@@ -94,9 +94,7 @@ def run_q1_2_eval(
             invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
-            logger.debug(
-                f"Start eval for sequence completion with model {model.value}."
-            )
+            logger.info(f"Start eval for sequence completion with model {model.value}.")
             completion_responses = _eval_sequence_completion(
                 model,
                 org_func,
@@ -112,7 +110,7 @@ def run_q1_2_eval(
             test_passing_completion = evaluate_logprob_inequality(completion_responses)
 
             # run eval for sequence explanation
-            logger.debug("Start eval for sequence explanation.")
+            logger.info("Start eval for sequence explanation.")
             explanation_responses = _eval_sequence_explanation(
                 model,
                 org_func,
@@ -320,6 +318,7 @@ def _eval_sequence_completion(
     valid_completions: List[int],
     invalid_completions: List[int],
 ):
+    logger.info("Generate sequence completion prompt.")
     completion_prompt = generate_sequence_completion_prompt(
         sequence,
         org_func,
@@ -331,7 +330,7 @@ def _eval_sequence_completion(
     # 1)
     # prompt model for completion and obtain log probabilities for each response
     completion_responses = []
-
+    logger.info("Start logprob generation for completions.")
     for completion, valid in [(compl, "valid") for compl in valid_completions] + [
         (compl, "invalid") for compl in invalid_completions
     ]:
@@ -362,6 +361,7 @@ def _eval_sequence_completion(
 
     # 2)
     # get prediction for the ambiguous sequence
+    logger.info("Get logprob for predicted completion.")
     pred_completion = generate_response_with_turns(
         model, turns=completion_prompt["prompt_turns"]
     ).strip()
@@ -448,6 +448,7 @@ def _eval_sequence_explanation(
     explanation_prompt["prompt_turns"][-1]["content"] += mc_prompt
 
     explanation_responses = []
+    logger.info("Start logprob generation for explanations.")
     for i, (_, valid) in enumerate(multi_choice_options):
         turns = copy.deepcopy(explanation_prompt["prompt_turns"])
 
@@ -479,6 +480,7 @@ def _eval_sequence_explanation(
 
     # 2)
     # get prediction for the ambiguous sequence
+    logger.info("Get logprob for predicted explanation.")
     turns = copy.deepcopy(explanation_prompt["prompt_turns"])  # ends with mc options
     pred_explanation = generate_response_with_turns(model, turns=turns).strip()
 
