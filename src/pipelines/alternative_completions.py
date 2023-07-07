@@ -46,8 +46,8 @@ def generate_invalid_alternatives(
     # ensure that invalid explanations do not lead to valid completions
     invalid_fns = []
     invalid_completions = []
-    tries = 100
-    for _ in range(len(amb_seqs) * tries // config.num_invalid + 1):
+    tries_left = len(amb_seqs) * 100 // config.num_invalid + 1
+    while len(invalid_fns) < config.num_invalid and tries_left > 0:
         invalid_candidates = generate_shot_pool(
             n_shots=config.num_invalid,
             base_fn=org_fn,
@@ -62,6 +62,8 @@ def generate_invalid_alternatives(
                     invalid_fns.append(fn_item)
                     if len(invalid_fns) == config.num_invalid:
                         break
+
+        tries_left -= 1
 
     return invalid_fns, invalid_completions
 
