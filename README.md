@@ -21,18 +21,6 @@ You can read more [here](https://pre-commit.com/).
 
 When you get stuck/annoyed by pre-commit rejecting your commit, you may choose to run `git commit -m "your message" --no-verify` or `-n` to skip the hooks. This is not recommended because it bypasses the linting and can introduce trouble for other devs.
 
-
-# Data
-
-## Human Eval
-Install the library to use the `HumanEval` dataset.
-
-```
-cd ./data
-git clone https://github.com/openai/human-eval
-pip install -e human-eval
-
-```
 # Experiments
 
 To run a specific task, we simply specify it via the "task" parameter in the call to main.py:
@@ -65,7 +53,7 @@ python main.py -m +experiment=demo_1,demo_2
 python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
 ```
 
-## Q2.1
+## Q1.2
 
 The goal of Q2.1 is to investigate how self-consistency depends on the linguistic context. We vary both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
 
@@ -87,6 +75,14 @@ As a first experiment, we investigate whether asking the model explicitly to be 
 ```sh
 python main.py -m +task=compute_dependence_with_base_changes task_prompt=self-consistency,max-probability
 ```
+
+## Q2.1
+This eval addresses the consideration of alternative by obtaining log probabilities of different valid and invalid answers to a given ambiguous sequence. We wish to determine whether the model consistently allocates significant probability mass to valid options and what distribution over log probabilities of alternative answers can be observed.
+
+```sh
+python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10,12
+```
+
 
 # Tests
 Tests are run using `pytest`.

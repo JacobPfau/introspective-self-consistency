@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Tuple
 
 from tqdm import tqdm
 
-from src.evals.config import Q12LogprobInequalityConfig
+from src.evals.config import Q21LogprobInequalityConfig
 from src.models.openai_model import OpenAITextModels
 from src.models.utils import get_model_from_string
 from src.pipelines.sequence_completions import (
@@ -46,8 +46,8 @@ def generate_invalid_alternatives(
     # ensure that invalid explanations do not lead to valid completions
     invalid_fns = []
     invalid_completions = []
-    tries = 0
-    while len(invalid_fns) < config.num_invalid and tries < 100:
+    tries = 100
+    for _ in range(len(amb_seqs) * tries // config.num_invalid + 1):
         invalid_candidates = generate_shot_pool(
             n_shots=config.num_invalid,
             base_fn=org_fn,
@@ -60,14 +60,14 @@ def generate_invalid_alternatives(
                 if invalid_compl not in valid_completions:
                     invalid_completions.append(invalid_compl)
                     invalid_fns.append(fn_item)
-
-        tries += 1
+                    if len(invalid_fns) == config.num_invalid:
+                        break
 
     return invalid_fns, invalid_completions
 
 
 def get_data_with_alternatives(
-    config: Q12LogprobInequalityConfig, skip_non_text_models=True
+    config: Q21LogprobInequalityConfig, skip_non_text_models=True
 ):
     """Based on consistent function determined in Q0, generate data samples for Q2
     Each sample consists of:
