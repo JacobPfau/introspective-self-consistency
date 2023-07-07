@@ -443,7 +443,6 @@ def _eval_sequence_explanation(
     explanation_prompt["prompt_turns"][-1]["content"] += mc_prompt
 
     explanation_responses = []
-    logger.info("Start logprob generation for explanations.")
     for i, (_, valid) in enumerate(multi_choice_options):
         turns = copy.deepcopy(explanation_prompt["prompt_turns"])
 
@@ -475,7 +474,6 @@ def _eval_sequence_explanation(
 
     # 2)
     # get prediction for the ambiguous sequence
-    logger.info("Get logprob for predicted explanation.")
     turns = copy.deepcopy(explanation_prompt["prompt_turns"])  # ends with mc options
     pred_explanation = generate_response_with_turns(model, turns=turns).strip()
 
