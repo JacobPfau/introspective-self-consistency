@@ -30,7 +30,7 @@ from src.pipelines.sequence_completions import (
 
 _MIN_LOGPROB = -100.0
 
-
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -78,12 +78,12 @@ def run_q1_2_eval(
     config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
 
     # main function to run this eval which can be called from main.py
-    logger.info("Prep data for Q1.2 eval.")
+    logger.info("Prep data for Q2.1 eval.")
     logger.info("Skipping non-text models as logprobs are not available.")
     amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=True)
     results = []
     logprob_results = []
-    for entry in tqdm(data[3:10]):
+    for entry in tqdm(data, desc="Evaluating Q2.1"):
         try:
             model: BaseModel = entry["model"]
             sequence = entry["sequence"]
@@ -94,6 +94,9 @@ def run_q1_2_eval(
             invalid_completions = entry["invalid_completions"]
 
             # run eval for sequence completion
+            logger.debug(
+                f"Start eval for sequence completion with model {model.value}."
+            )
             completion_responses = _eval_sequence_completion(
                 model,
                 org_func,
@@ -109,6 +112,7 @@ def run_q1_2_eval(
             test_passing_completion = evaluate_logprob_inequality(completion_responses)
 
             # run eval for sequence explanation
+            logger.debug("Start eval for sequence explanation.")
             explanation_responses = _eval_sequence_explanation(
                 model,
                 org_func,
@@ -160,7 +164,7 @@ def run_q1_2_eval(
             )
 
         except Exception as e:
-            logger.error(f"Unexpected error in Q1.2 eval: {repr(e)}")
+            logger.error(f"Unexpected error in Q2.1 eval: {repr(e)}")
 
     _save_results_to_csv(results)
     _save_results_to_csv(logprob_results, csv_path="logprobs.csv")
@@ -334,7 +338,6 @@ def _eval_sequence_completion(
         # add completion to the last prompt turn
         turns = copy.deepcopy(completion_prompt["prompt_turns"])
         completion_string = " " + str(completion)
-        # turns[-1]["content"] += completion_string
 
         turns.append(
             {
@@ -382,7 +385,6 @@ def _eval_sequence_completion(
         # add predicted completion as the last prompt turn
         turns = copy.deepcopy(completion_prompt["prompt_turns"])
         completion_string = " " + str(pred_completion)
-        # turns[-1]["content"] += completion_string
 
         turns.append(
             {
@@ -554,9 +556,9 @@ def evaluate_logprob_inequality(
 if __name__ == "__main__":
 
     config = Q21LogprobInequalityConfig(
-        task="q1_2_inequality",
+        task="q2_1_inequality",
         model="text-davinci-003",
-        csv_input_path="/Users/hb/Repos/introspective-self-consistency/data/q1_2_functions/consistent_functions_by_model.csv",
+        csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
     )
 
     run_q1_2_eval(config)
