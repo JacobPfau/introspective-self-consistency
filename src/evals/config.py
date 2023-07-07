@@ -75,11 +75,12 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
 
 
 @dataclass
-class Q12LogprobInequalityConfig(BaseEvalConfig):
+class Q21LogprobInequalityConfig(BaseEvalConfig):
     csv_input_path: str
     num_shots: int = field(default=4)
     num_valid: int = field(default=2)
     num_invalid: int = field(default=3)
+    num_multiple_choices: int = field(default=5)  # number of multiple choice options
     cot: bool = field(default=False)
     few_shot_prompt_type: str = field(default="random")
     invalid_fn_type: str = field(default="random")

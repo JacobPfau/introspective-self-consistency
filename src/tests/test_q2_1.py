@@ -1,13 +1,16 @@
-from src.evals.config import Q12LogprobInequalityConfig
+from unittest import TestCase
+
+from src.evals.config import Q21LogprobInequalityConfig
 from src.evals.q2_1_logprob_inequality import list_rindex
 
 
-def test_list_rindex_with_unique_tokens():
-    test_string = list("abcdefghijklmnopqrstuvwxyz")
+class TestQ21(TestCase):
+    def test_list_rindex_with_unique_tokens(self):
+        test_string = list("abcdefghijklmnopqrstuvwxyz")
 
-    assert list_rindex(test_string, "z") == 25
-    assert list_rindex(test_string, "a") == 0
-    assert list_rindex(test_string, "b") == 1
+        assert list_rindex(test_string, "z") == 25
+        assert list_rindex(test_string, "a") == 0
+        assert list_rindex(test_string, "b") == 1
 
 
 def test_list_rindex_with_repeated_token():
@@ -41,12 +44,18 @@ def test_eval_config_from_dict_initializes_correctly():
         "num_invalid": 1,
     }
 
-    config = Q12LogprobInequalityConfig.from_dict(test_dict)
+    config = Q21LogprobInequalityConfig.from_dict(test_dict)
 
     assert config.task == "q1_2_logprob_inequality"
     assert config.num_shots == 13
     assert config.num_invalid == 1
     assert config.num_valid == 2
+
+
+def test_generate_sequence_explanation_prompts_proper_mc_format():
+    # check whether the generated sequence explanation prompts are in the
+    # proper multiple choice format
+    raise NotImplementedError()
 
 
 if __name__ == "__main__":
