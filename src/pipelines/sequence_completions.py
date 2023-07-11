@@ -79,6 +79,13 @@ Only respond with the number of the valid option.
 Options:
 """
 
+# BASE_PROMPT_COMPLETION_LIST_VALID = """
+# Complete the next number and only the next number"""
+
+# BASE_PROMPT_EXPLANATION_LIST_VALID = """
+# Give the code that generates the above sequence
+# """
+
 COT_PROMPT = """
 Let's solve this step by step:
 """
@@ -529,7 +536,6 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
 
     prompt_type = "explanation"
 
-    # prompt_turns = get_prompt_turns_for_model(model)
     prompt_turns = [
         {
             "role": "system",

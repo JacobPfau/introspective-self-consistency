@@ -1,19 +1,19 @@
 import logging
-import os
 from typing import Any, Dict, List, Literal, Tuple, Union
 
-from hydra.utils import get_original_cwd
+# from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
-from src.evals.q1_2_logprob_inequality import _save_results_to_csv
+from src.evals.config import Q22ModelVerbalizationConfig
+from src.evals.q2_1_logprob_inequality import _save_results_to_csv
 from src.models.base_model import BaseModel
 
 # from src.models.anthropic_model import AnthropicModels
 from src.models.openai_model import generate_response_with_turns
 from src.pipelines.alternative_completions import get_data_with_alternatives
-from src.pipelines.sequence_completions import generate_sequence_completion_prompt
-
-from .config import Q22ModelVerbalizationConfig
+from src.pipelines.q2_sequence_completions import (
+    generate_sequence_completion_prompt_with_valid_continuations,
+)
 
 logger = logging.getLogger("Q2-2-Model-Verbalization")
 
@@ -22,33 +22,29 @@ def _eval_sequence_completion(
     model: BaseModel,
     org_func: Dict[str, Any],
     num_shots: int,
-    cot: bool,
+    max_considerations: int,
     few_shot_prompt_type: str,
     amb_seqs: Dict[str, List[Dict[str, Union[str, int]]]],
     sequence: str,
+    valid_fns: List[dict],
     valid_completions: List[int],
 ) -> Tuple[int, int, List[str]]:
 
-    # TODO: consider to adjust in-context demos to also list possible, valid completions instead of just predicting the modal completion
-    completion_prompt = generate_sequence_completion_prompt(
+    completion_prompt = generate_sequence_completion_prompt_with_valid_continuations(
         sequence,
         org_func,
+        valid_fns=valid_fns,
         n_shots=num_shots,
-        use_cot=cot,
+        max_considerations=max_considerations,
         ambiguous_sequences=amb_seqs,
         shot_type=few_shot_prompt_type,
+        model=model,
     )
 
     # 1)
-    # modify the last turn to ask for possible completions
-    turns = completion_prompt["prompt_turns"]
-    priming_prompt = get_model_priming_prompt_possible_options(
-        model, turns[-1], "completion"
-    )
-    turns[-1] = priming_prompt
-
+    # prompt for possible completions
     response = generate_response_with_turns(
-        model, turns=turns
+        model, turns=completion_prompt["turns"]
     )  # completions based on priming the model
 
     # TODO: properly parse response for different models
@@ -99,8 +95,7 @@ def _eval_sequence_explanation(
     valid_fns: List[Dict[str, Any]],
 ) -> Tuple[int, int, List[str]]:
 
-    # TODO: consider to adjust in-context demos to also list possible, valid completions instead of just predicting the modal completion
-    explanation_prompt = generate_sequence_completion_prompt(
+    explanation_prompt = generate_sequence_completion_prompt_with_valid_continuations(
         sequence,
         org_func,
         prompt_type="explanation",
@@ -134,11 +129,19 @@ def _eval_sequence_explanation(
 def run_q2_2_eval(
     config: Q22ModelVerbalizationConfig,
 ):
-    """Main function to run Q1.2 eval."""
-    config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
+    """Main function to run Q2.2 eval."""
+    # TODO
+    # config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
 
     # generate data but keep all valid functions
-    amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=False)
+    amb_seqs, data = get_data_with_alternatives(
+        config.csv_input_path,
+        num_valid=-1,
+        num_invalid=0,
+        invalid_fn_type="n/a",
+        skip_non_text_models=False,
+    )
+
     results = []
     for entry in tqdm(data):
         # parse data entry
@@ -157,38 +160,42 @@ def run_q2_2_eval(
             model,
             org_func,
             config.num_shots,
-            config.use_cot,
-            config.few_shot_prompt_type,
-            amb_seqs,
-            sequence,
-            valid_completions,
-        )
-
-        # eval explanations
-        (
-            n_valid_expl_listed,
-            n_invalid_expl_listed,
-            possible_explanations,
-        ) = _eval_sequence_explanation(
-            model,
-            org_func,
-            config.num_shots,
-            config.use_cot,
+            config.max_considerations,
             config.few_shot_prompt_type,
             amb_seqs,
             sequence,
             valid_fns,
+            valid_completions,
         )
+
+        # eval explanations
+        if False:
+            (
+                n_valid_expl_listed,
+                n_invalid_expl_listed,
+                possible_explanations,
+            ) = _eval_sequence_explanation(
+                model,
+                org_func,
+                config.num_shots,
+                config.use_cot,
+                config.few_shot_prompt_type,
+                amb_seqs,
+                sequence,
+                valid_fns,
+            )
+        else:
+            n_valid_expl_listed = 0
+            n_invalid_expl_listed = 5
+            possible_explanations = ["n/a"]
 
         # construct results entry
         results_entry = {
             "model": model.value,
             "sequence": sequence,
             "org_func": org_func,
-            "num_valid": config.num_valid,
-            "num_invalid": config.num_invalid,
             "num_shots": config.num_shots,
-            "invalid_fn_type": config.invalid_fn_type,
+            "max_considerations": config.max_considerations,
             "n_valid_compl_listed": int(n_valid_compl_listed),
             "n_invalid_compl_listed": int(n_invalid_compl_listed),
             "n_valid_expl_listed": int(n_valid_expl_listed),
@@ -212,9 +219,9 @@ def run_q2_2_eval(
 
 if __name__ == "__main__":
     config = Q22ModelVerbalizationConfig(
-        task="q2_2_model_verbalization",
-        csv_input_path="data/q1_2_functions/consistent_functions_by_model.csv",
-        model="gpt3.5-turbo",
+        task="q2_2_alternative_verbalization",
+        csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
+        model="gpt-3.5-turbo",
     )
 
     run_q2_2_eval(config)

@@ -70,7 +70,7 @@ def _get_logprob_from_response(
     return logprob
 
 
-def run_q1_2_eval(
+def run_q2_1_eval(
     config: Q21LogprobInequalityConfig,
 ):
     """Main function to run Q2.1 eval."""
@@ -79,7 +79,13 @@ def run_q1_2_eval(
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q2.1 eval.")
     logger.info("Skipping non-text models as logprobs are not available.")
-    amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=True)
+    amb_seqs, data = get_data_with_alternatives(
+        config.csv_input_path,
+        config.num_valid,
+        config.num_invalid,
+        config.invalid_fn_type,
+        skip_non_text_models=True,
+    )
     results = []
     logprob_results = []
     for entry in tqdm(data, desc="Evaluating Q2.1"):
@@ -555,4 +561,4 @@ if __name__ == "__main__":
         csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
     )
 
-    run_q1_2_eval(config)
+    run_q2_1_eval(config)

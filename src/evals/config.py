@@ -90,8 +90,5 @@ class Q21LogprobInequalityConfig(BaseEvalConfig):
 class Q22ModelVerbalizationConfig(BaseEvalConfig):
     csv_input_path: str
     num_shots: int = field(default=4)
-    num_valid: int = field(default=2)
-    num_invalid: int = field(default=3)
-    cot: bool = field(default=False)
+    max_considerations: int = field(default=5)
     few_shot_prompt_type: str = field(default="random")
-    invalid_fn_type: str = field(default="random")

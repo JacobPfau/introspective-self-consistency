@@ -18,7 +18,7 @@ from src.evals.eval_ambibench_category_prediction import (
     evaluate_ambibench_category_prediction,
 )
 from src.evals.eval_ambibench_completion import evaluate_ambibench_completion
-from src.evals.q2_1_logprob_inequality import run_q1_2_eval
+from src.evals.q2_1_logprob_inequality import run_q2_1_eval
 from src.evals.sequence_completion import evaluate_sequence_completion_equality
 from src.evals.sequence_completion_with_base_change import (
     evaluate_compute_dependence_with_base_changes,
@@ -50,7 +50,7 @@ TASK_FUNS = {
         "config": AmbibenchCompletionConfig,
     },
     "q2_1_logprob_inequality": {
-        "fn": run_q1_2_eval,
+        "fn": run_q2_1_eval,
         "config": Q21LogprobInequalityConfig,
     },
 }
