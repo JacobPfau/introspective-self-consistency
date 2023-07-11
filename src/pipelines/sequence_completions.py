@@ -38,9 +38,11 @@ Consistency evaluator - two outputs consistent
 """
 
 import random
-from typing import Any, Dict, List, Literal, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
+
+from src.models.base_model import BaseModel
 
 PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
 
@@ -69,6 +71,12 @@ Complete the next number and only the next number.
 
 BASE_PROMPT_EXPLANATION = """
 Give the code that generates the above sequence.
+"""
+
+BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE = """
+Select the code that generates the above sequence from the following options.
+Only respond with the number of the valid option.
+Options:
 """
 
 COT_PROMPT = """
@@ -340,8 +348,7 @@ def _cot(fn_item: dict, steps: int) -> str:
 
 
 def resolve_fn(fn_item: dict, step: int) -> int:
-    # resolve function to a given completion
-    # TODO: maybe move offset outside of here to make it clearer
+    # resolve function to a given step
     step = step + fn_item["offset"]
     return eval(fn_item["fn"])(step)
 
@@ -351,6 +358,7 @@ def _create_sequence_prompt(
     fn_item: dict,
     prompt_type: Literal["completion", "explanation"],
     use_cot=False,
+    use_multiple_choice=False,
 ) -> Tuple[str, str, str]:
     """Creates a prompt for completion type or explanation type prompts
 
@@ -376,7 +384,11 @@ def _create_sequence_prompt(
         last_step = len(sequence.split(","))
         completion = resolve_fn(fn_item, last_step)
     elif prompt_type == "explanation":
-        prompt += BASE_PROMPT_EXPLANATION
+
+        if use_multiple_choice:
+            prompt += BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE
+        else:
+            prompt += BASE_PROMPT_EXPLANATION
         completion = fn_item["fn"]
 
     cot = ""
@@ -391,13 +403,14 @@ def _sample_shots(
     n_shots: int,
     prompt_type: Literal["completion", "explanation"] = "completion",
     use_cot: bool = False,
+    n_mc_options: Optional[int] = None,
     shot_type: Literal[
         "random", "same_fn", "same_class", "ambigious", "exclude_class"
     ] = "few_shot",
     ambiguous_sequences: dict = None,
-):
+) -> List[Dict[str, Any]]:
     """
-    Sample `:n_shots` number of shots.
+    Sample `:n_shots` number of shots and construct a prompt.
     Initially we randomly generate `:_generate_shot_pool` the shots.
     """
     shots = generate_shot_pool(
@@ -409,15 +422,48 @@ def _sample_shots(
     # for all the shots create sequence prompts
     prompts = []
     for shot in shots:
-        # TODO: make this magic string more obvious
         steps = random.randint(2, 4)
-        sequence = ",".join([str(resolve_fn(shot, step)) for step in range(steps)])
-        prompt, completion, cot = _create_sequence_prompt(
-            sequence, shot, prompt_type, use_cot=use_cot
+        sequence = get_sequence_string(shot, steps)
+        prompt, answer, cot = _create_sequence_prompt(
+            sequence,
+            shot,
+            prompt_type,
+            use_cot=use_cot,
+            use_multiple_choice=False if n_mc_options is None else True,
         )
-        prompts.append({"prompt": prompt, "completion": completion, "cot": cot})
+
+        if n_mc_options is not None:
+            # sample random incorrect explanations
+            multi_choice_options = [fn_item]
+            while len(multi_choice_options) < n_mc_options:
+                shots = generate_shot_pool(
+                    n_shots=n_mc_options,
+                    base_fn=fn_item,
+                    shot_type=shot_type,
+                    ambiguous_sequences=ambiguous_sequences,
+                )
+                for shot in shots:
+                    if shot["fn"] != fn_item["fn"] and shot not in multi_choice_options:
+                        multi_choice_options.append(shot)
+                    if len(multi_choice_options) == n_mc_options:
+                        break
+
+            random.shuffle(multi_choice_options)  # shuffle options to avoid bias
+            answer = (
+                multi_choice_options.index(fn_item) + 1
+            )  # when not using multiple choice, store the correct answer
+            for i, expl in enumerate(multi_choice_options):
+                prompt += f"{i+1}. {expl['fn']}\n"
+
+        prompts.append({"prompt": prompt, "answer": answer, "cot": cot})
 
     return prompts
+
+
+def get_sequence_string(shot, steps) -> str:
+    """Given a function and number of steps, generate a sequence string separated by commas"""
+    sequence = ",".join([str(resolve_fn(shot, step)) for step in range(steps)])
+    return sequence
 
 
 def generate_sequence_completion_prompt(
@@ -456,16 +502,64 @@ def generate_sequence_completion_prompt(
     )
 
     for shot in shots:
-        completion = str(shot["completion"])
+        answer = str(shot["answer"])
         if use_cot:
-            completion += shot["cot"]
+            answer += shot["cot"]
         turns = [
             {"role": "user", "content": shot["prompt"]},
-            {"role": "assistant", "content": completion},
+            {"role": "assistant", "content": answer},
         ]
         prompt_turns.extend(turns)
 
-    prompt, completion, _ = _create_sequence_prompt(sequence, fn_item, prompt_type)
+    prompt, answer, _ = _create_sequence_prompt(sequence, fn_item, prompt_type)
 
     prompt_turns.append({"role": "user", "content": prompt})
-    return {"prompt_turns": prompt_turns, "completion": completion}
+    return {"prompt_turns": prompt_turns, "answer": answer}
+
+
+def generate_sequence_explanation_prompt_with_multiple_choices(
+    sequence: str,
+    fn_item: dict,
+    model: BaseModel,
+    n_mc_options: int = 4,
+    n_shots: int = 0,
+    shot_type: PromptType = "random",
+    ambiguous_sequences: dict = None,
+) -> dict:
+
+    prompt_type = "explanation"
+
+    # prompt_turns = get_prompt_turns_for_model(model)
+    prompt_turns = [
+        {
+            "role": "system",
+            "content": SYSTEM_PROMPT,
+        },
+    ]
+
+    shots = _sample_shots(
+        sequence,
+        fn_item,
+        prompt_type=prompt_type,
+        n_shots=n_shots,
+        use_cot=False,
+        n_mc_options=n_mc_options,
+        shot_type=shot_type,
+        ambiguous_sequences=ambiguous_sequences,
+    )
+
+    for shot in shots:
+        answer = str(shot["answer"])
+
+        turns = [
+            {"role": "user", "content": shot["prompt"]},
+            {"role": "assistant", "content": answer},
+        ]
+        prompt_turns.extend(turns)
+
+    prompt, answer, _ = _create_sequence_prompt(
+        sequence, fn_item, prompt_type, use_multiple_choice=True
+    )
+
+    prompt_turns.append({"role": "user", "content": prompt})
+    return {"prompt_turns": prompt_turns, "answer": answer}
