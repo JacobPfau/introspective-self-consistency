@@ -108,7 +108,6 @@ def run_q1_2_eval(
             test_passing_completion = evaluate_logprob_inequality(completion_responses)
 
             # run eval for sequence explanation
-            logger.info("Start eval for sequence explanation.")
             explanation_responses = _eval_sequence_explanation(
                 model,
                 org_func,
