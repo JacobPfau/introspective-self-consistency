@@ -263,10 +263,14 @@ def _add_logprob_entries(
         logprob_results.append(logprob_entry)
 
     # Explanations
+    # get pred val and valid options
+    valid_options = []
+    pred_val = None
     for entry in explanation_responses:
-        if entry["valid"] == "pred":
-            pred_val = _get_completion_value_from_row(entry, "explanation")
-            break
+        if entry["valid"] == "valid":
+            valid_options.append(entry["answer"])
+        elif entry["valid"] == "pred":
+            pred_val = str(entry["answer"])
 
     for entry in explanation_responses:
         expl, logprob, valid = entry.values()
@@ -285,8 +289,9 @@ def _add_logprob_entries(
             "logprob": logprob,
             "valid": valid,
         }
+        # check whether predicted value was valid or not
         logprob_entry = _get_valid_and_pred_entries(
-            logprob_entry, pred_val, valid_fns, invalid_fns
+            logprob_entry, pred_val, valid_options, invalid_vals=[]
         )
         logprob_results.append(logprob_entry)
 
