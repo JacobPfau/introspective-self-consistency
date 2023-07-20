@@ -294,6 +294,12 @@ def generate_shot_pool(
     ] = "random",
     ambiguous_sequences: dict = None,
 ) -> List[Dict[str, Any]]:
+    """Generate a pool of `n_shots` of candidate functions.
+    Depending on `shot_type` and the `base_fn`, candidates are sampled
+    from a certain type of function.
+    Note: the returned candidates may not necessarily lead to ambiguous sequences.
+    """
+
     fn_pool = []
     if shot_type == "random":
         fn_pool = list(sequence_functions.values())

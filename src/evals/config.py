@@ -91,4 +91,3 @@ class Q22ModelVerbalizationConfig(BaseEvalConfig):
     csv_input_path: str
     num_shots: int = field(default=4)
     max_considerations: int = field(default=5)
-    few_shot_prompt_type: str = field(default="random")

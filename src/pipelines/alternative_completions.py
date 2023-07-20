@@ -6,8 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from tqdm import tqdm
 
-from src.models.openai_model import OpenAITextModels
-from src.models.utils import get_model_from_string
+from src.models import BaseModel, OpenAITextModels, get_model_from_string
 from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     generate_shot_pool,
@@ -52,6 +51,7 @@ def generate_invalid_alternatives(
     invalid_fns = []
     invalid_completions = []
     tries_left = len(amb_seqs) * 100 // num_invalid + 1
+
     while len(invalid_fns) < num_invalid and tries_left > 0:
         invalid_candidates = generate_shot_pool(
             n_shots=num_invalid,
@@ -145,9 +145,6 @@ def get_data_with_alternatives(
 
     data = []
 
-    # TODO: remove
-    base_data = random.sample(base_data, 20)
-
     for entry in tqdm(base_data, desc="Generating data for eval with alternatives"):
         model = get_model_from_string(entry["model"])
         consistent_func = entry["fn_item"]
@@ -201,5 +198,51 @@ def get_data_with_alternatives(
         entry["model"] = model
 
         data.append(entry)
+
+    return amb_seqs, data
+
+
+def get_data_with_valid_alternatives_only(csv_input_path: str, model: BaseModel):
+    # for Q2.2 we only need valid alternatives
+    base_data = parse_function_and_model_from_csv(csv_input_path)
+
+    # filter by model
+    base_data = [entry for entry in base_data if entry["model"] == model.value]
+    logger.info(f"For '{model.value}' found {len(base_data)} consistent base functions")
+
+    amb_seqs = find_ambiguous_integer_sequences()
+    data = {}
+
+    for entry in tqdm(base_data, desc="Generating data for Q2.2 eval"):
+
+        consistent_func = entry["fn_item"]
+        # {'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}
+
+        # generate dataset for this eval:
+        # 1) generate ambiguous sequence given a valid explanation and find alternative, valid explanation
+        # 2) generate valid completions
+
+        # get ALL alternative, valid functions for this sequence
+        sequence, valid_fns = get_valid_alternative_funcs(
+            consistent_func, amb_seqs, num_valid=-1
+        )
+
+        if sequence not in data:
+            # roll out valid fns to obtain valid completions
+            last_step = len(sequence.split(","))
+            valid_completions = [
+                resolve_fn(fn_item, last_step) for fn_item in valid_fns
+            ]
+
+            entry = {}
+            valids = list(zip(valid_fns, valid_completions))
+            random.shuffle(valids)
+            valid_fns, valid_completions = zip(*valids)
+
+            entry["valid_fns"] = list(valid_fns)
+            entry["valid_completions"] = valid_completions
+            entry["model"] = model
+
+            data[sequence] = entry
 
     return amb_seqs, data
