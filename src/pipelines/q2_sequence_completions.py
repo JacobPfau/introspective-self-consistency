@@ -1,7 +1,7 @@
 import random
 from typing import Any, Dict, List, Literal, Optional, Tuple
 
-from src.models.base_model import BaseModel
+from src.models import BaseModel
 
 from .sequence_completions import (
     BASE_PROMPT,
@@ -102,27 +102,17 @@ def sample_shot_pool_from_amb_seqs(
     """Generate a pool of `n_shots` of candidate ambiguous sequences and functions.
     Candidates are sampled randomly from the set of ambiguous sequences
     """
-    fn_pool = ambiguous_sequences
-    # select full candidate pool based on shot_type
-    # if shot_type == "random":
-    #     fn_pool = ambiguous_sequences
-    # elif shot_type == "same_class":
-    #     fn_pool = {
-    #         seq_key: seq_fns
-    #         for seq_key, seq_fns in ambiguous_sequences.items()
-    #         if any([fn_item["metadata"] == base_fn["metadata"][0] for fn_item in seq_fns])
-    #     }
-    # elif shot_type == "exclude_class":
-    #     fn_pool = {
-    #         seq_key: seq_fns
-    #         for seq_key, seq_fns in ambiguous_sequences.items()
-    #         if not any([fn_item["metadata"] == base_fn["metadata"][0] for fn_item in seq_fns])
-    #     }
 
-    shot_pool = {k: fn_pool[k] for k in random.sample(fn_pool.keys(), n_shots)}
+    shot_pool = {
+        k: ambiguous_sequences[k]
+        for k in random.sample(ambiguous_sequences.keys(), n_shots)
+    }
     # continue to draw if base sequence in shot pool
     while sequence in shot_pool:
-        shot_pool = {k: fn_pool[k] for k in random.sample(fn_pool.keys(), n_shots)}
+        shot_pool = {
+            k: ambiguous_sequences[k]
+            for k in random.sample(ambiguous_sequences.keys(), n_shots)
+        }
 
     return shot_pool
 

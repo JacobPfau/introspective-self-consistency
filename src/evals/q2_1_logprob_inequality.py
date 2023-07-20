@@ -16,9 +16,8 @@ from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q21LogprobInequalityConfig
-from src.models.base_model import BaseModel
+from src.models import BaseModel, OpenAITextModels
 from src.models.openai_model import (
-    OpenAITextModels,
     generate_logprob_response_with_turns,
     generate_response_with_turns,
 )

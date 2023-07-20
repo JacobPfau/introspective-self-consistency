@@ -42,7 +42,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
-from src.models.base_model import BaseModel
+from src.models import BaseModel
 
 PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
 
