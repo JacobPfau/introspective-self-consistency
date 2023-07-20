@@ -1,10 +1,6 @@
 # @package _global_
 task: q2_2_alternative_verbalization
-model: text-davinci-003  # Note: model is determined by input data
+model: text-davinci-003
 csv_input_path: data/q2_functions/consistent_functions_by_model.csv
 num_shots: 4
-num_valid: 2
-num_invalid: 3
-num_multiple_choices: 5
-few_shot_prompt_type: "random"
-invalid_fn_type: "random"  # "random", "same_class", "exclude_class", "ambigious", "same_fn",
+max_considerations: 5
