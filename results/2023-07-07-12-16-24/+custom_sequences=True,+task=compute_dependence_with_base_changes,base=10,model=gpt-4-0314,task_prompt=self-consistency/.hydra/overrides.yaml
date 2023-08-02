@@ -1,0 +1,5 @@
+- +task=compute_dependence_with_base_changes
+- +custom_sequences=True
+- task_prompt=self-consistency
+- model=gpt-4-0314
+- base=10
