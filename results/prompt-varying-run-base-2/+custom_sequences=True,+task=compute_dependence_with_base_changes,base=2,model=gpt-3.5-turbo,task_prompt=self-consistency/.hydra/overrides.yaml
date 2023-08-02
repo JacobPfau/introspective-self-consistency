@@ -1,0 +1,5 @@
+- +task=compute_dependence_with_base_changes
+- task_prompt=self-consistency
+- model=gpt-3.5-turbo
+- +custom_sequences=True
+- base=2

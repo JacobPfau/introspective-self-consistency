@@ -1,0 +1,2 @@
+,task,model,num_samples,on_ambiguous_sequences,num_shots,shot_method,task_prompt,role_prompt,base,seed,custom_sequences,max_constant_term_one,max_constant_term_two,num_steps_to_check,step_offsets,total sequences,invalid sequences,valid sequences,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent
+0,compute_dependence_with_base_changes,OpenAIChatModels.CHAT_GPT_35,1,True,4,random,random-ambiguity,,10,21,False,5,5,2,5,56,2,54,55.00000000000001,5.0,0.0,36.0
