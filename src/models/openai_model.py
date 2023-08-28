@@ -4,6 +4,7 @@ import time
 from typing import Callable, List, Tuple, TypeVar, Union
 
 import openai
+from openai.error import RateLimitError, ServiceUnavailableError
 
 from src.models.base_model import BaseModel
 
@@ -55,12 +56,12 @@ def _with_retries(api_call: Callable[[], T], invalid_response: str) -> T:
         except openai.APIError:
             logger.warning("API Error. Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)
-        except openai.error.RateLimitError:
-            logger.error(
-                "Rate limiting, Sleep and try again."
-            )  # TBD: how long to wait?
+        except RateLimitError:
+            logger.error("Rate limiting, Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)
-        # TODO: may want to also handle ServiceUnavailableError, RateLimitError
+        except ServiceUnavailableError:
+            logger.error("Service Unvailable, Sleep and try again.")
+            time.sleep(_RETRY_TIMEOUT * 3)
         except KeyError:
             logger.warning("Unexpected response format. Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)

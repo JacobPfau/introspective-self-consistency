@@ -42,7 +42,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 
-from src.models.base_model import BaseModel
+from src.models import BaseModel
 
 PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
 
@@ -78,6 +78,13 @@ Select the code that generates the above sequence from the following options.
 Only respond with the number of the valid option.
 Options:
 """
+
+# BASE_PROMPT_COMPLETION_LIST_VALID = """
+# Complete the next number and only the next number"""
+
+# BASE_PROMPT_EXPLANATION_LIST_VALID = """
+# Give the code that generates the above sequence
+# """
 
 COT_PROMPT = """
 Let's solve this step by step:
@@ -287,6 +294,12 @@ def generate_shot_pool(
     ] = "random",
     ambiguous_sequences: dict = None,
 ) -> List[Dict[str, Any]]:
+    """Generate a pool of `n_shots` of candidate functions.
+    Depending on `shot_type` and the `base_fn`, candidates are sampled
+    from a certain type of function.
+    Note: the returned candidates may not necessarily lead to ambiguous sequences.
+    """
+
     fn_pool = []
     if shot_type == "random":
         fn_pool = list(sequence_functions.values())
@@ -529,7 +542,6 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
 
     prompt_type = "explanation"
 
-    # prompt_turns = get_prompt_turns_for_model(model)
     prompt_turns = [
         {
             "role": "system",

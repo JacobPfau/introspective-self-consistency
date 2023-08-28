@@ -16,9 +16,8 @@ from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q21LogprobInequalityConfig
-from src.models.base_model import BaseModel
+from src.models import BaseModel, OpenAITextModels
 from src.models.openai_model import (
-    OpenAITextModels,
     generate_logprob_response_with_turns,
     generate_response_with_turns,
 )
@@ -70,7 +69,7 @@ def _get_logprob_from_response(
     return logprob
 
 
-def run_q1_2_eval(
+def run_q2_1_eval(
     config: Q21LogprobInequalityConfig,
 ):
     """Main function to run Q2.1 eval."""
@@ -79,7 +78,13 @@ def run_q1_2_eval(
     # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q2.1 eval.")
     logger.info("Skipping non-text models as logprobs are not available.")
-    amb_seqs, data = get_data_with_alternatives(config, skip_non_text_models=True)
+    amb_seqs, data = get_data_with_alternatives(
+        config.csv_input_path,
+        config.num_valid,
+        config.num_invalid,
+        config.invalid_fn_type,
+        skip_non_text_models=True,
+    )
     results = []
     logprob_results = []
     for entry in tqdm(data, desc="Evaluating Q2.1"):
@@ -263,10 +268,14 @@ def _add_logprob_entries(
         logprob_results.append(logprob_entry)
 
     # Explanations
+    # get pred val and valid options
+    valid_options = []
+    pred_val = None
     for entry in explanation_responses:
-        if entry["valid"] == "pred":
-            pred_val = _get_completion_value_from_row(entry, "explanation")
-            break
+        if entry["valid"] == "valid":
+            valid_options.append(entry["answer"])
+        elif entry["valid"] == "pred":
+            pred_val = str(entry["answer"])
 
     for entry in explanation_responses:
         expl, logprob, valid = entry.values()
@@ -285,8 +294,9 @@ def _add_logprob_entries(
             "logprob": logprob,
             "valid": valid,
         }
+        # check whether predicted value was valid or not
         logprob_entry = _get_valid_and_pred_entries(
-            logprob_entry, pred_val, valid_fns, invalid_fns
+            logprob_entry, pred_val, valid_options, invalid_vals=[]
         )
         logprob_results.append(logprob_entry)
 
@@ -555,4 +565,4 @@ if __name__ == "__main__":
         csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
     )
 
-    run_q1_2_eval(config)
+    run_q2_1_eval(config)
