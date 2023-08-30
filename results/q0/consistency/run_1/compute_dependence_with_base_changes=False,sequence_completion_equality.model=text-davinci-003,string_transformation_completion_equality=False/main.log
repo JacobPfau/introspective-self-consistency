@@ -1,0 +1,265 @@
+[2023-06-01 16:14:00,763][src.utils][INFO] - Git sha: a78aae517535a9760211e71ffc591118b750a75c
+[2023-06-01 16:14:00,786][src.utils][INFO] - Changed files: ['results/q0/analyze_q0_results.ipynb', 'results/q0/q0_results.csv', 'src/evals/sequence_completion.py']
+[2023-06-01 16:14:00,810][src.utils][INFO] - Git diff:
+diff --git a/results/q0/analyze_q0_results.ipynb b/results/q0/analyze_q0_results.ipynb
+index 36ce41e..7f86d30 100644
+--- a/results/q0/analyze_q0_results.ipynb
++++ b/results/q0/analyze_q0_results.ipynb
+@@ -2,7 +2,7 @@
+  "cells": [
+   {
+    "cell_type": "code",
+-   "execution_count": 44,
++   "execution_count": 1,
+    "id": "b0a9b3a5",
+    "metadata": {},
+    "outputs": [
+@@ -13,6 +13,7 @@
+       "\u001b[1m\u001b[36mcompute_dependence_with_base_changes=False,sequence_completion_equality.model=davinci,string_transformation_completion_equality=False\u001b[m\u001b[m\r\n",
+       "\u001b[1m\u001b[36mcompute_dependence_with_base_changes=False,sequence_completion_equality.model=gpt-3.5-turbo,string_transformation_completion_equality=False\u001b[m\u001b[m\r\n",
+       "\u001b[1m\u001b[36mcompute_dependence_with_base_changes=False,sequence_completion_equality.model=gpt-4-0314,string_transformation_completion_equality=False\u001b[m\u001b[m\r\n",
++      "\u001b[1m\u001b[36mcompute_dependence_with_base_changes=False,sequence_completion_equality.model=gpt-4-0314-run-2,string_transformation_completion_equality=False\u001b[m\u001b[m\r\n",
+       "\u001b[1m\u001b[36mcompute_dependence_with_base_changes=False,sequence_completion_equality.model=text-davinci-003,string_transformation_completion_equality=False\u001b[m\u001b[m\r\n",
+       "multirun.yaml\r\n"
+      ]
+@@ -24,15 +25,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 45,
+-   "id": "491b280b",
+-   "metadata": {},
+-   "outputs": [],
+-   "source": []
+-  },
+-  {
+-   "cell_type": "code",
+-   "execution_count": 62,
++   "execution_count": 5,
+    "id": "514d264c",
+    "metadata": {},
+    "outputs": [
+@@ -42,7 +35,7 @@
+      "text": [
+       "\n",
+       "            For davinci including valid answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 217 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 26.090000000000003% ground-truth-consistent (using 23)\n",
+       "            - 56.52% self-rule-following-consistency (using 23)\n",
+@@ -51,7 +44,7 @@
+       "            \n",
+       "\n",
+       "            For gpt-3.5-turbo including valid answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 215 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 94.67999999999999% ground-truth-consistent (using 188)\n",
+       "            - 95.74000000000001% self-rule-following-consistency (using 188)\n",
+@@ -60,7 +53,7 @@
+       "            \n",
+       "\n",
+       "            For gpt-4-0314 including valid answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 184 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 94.64% ground-truth-consistent (using 168)\n",
+       "            - 97.02% self-rule-following-consistency (using 168)\n",
+@@ -68,8 +61,17 @@
+       "            - 73.81% self-comparison-consistency and ground-truth-consistent. (using 168)\n",
+       "            \n",
+       "\n",
++      "            For gpt-4-0314-run-2 including valid answers\n",
++      "            Evaluated 107 ambiguous sequences of 225 total.\n",
++      "            Resulting in:\n",
++      "            - 98.08% ground-truth-consistent (using 104)\n",
++      "            - 98.08% self-rule-following-consistency (using 104)\n",
++      "            - 76.64% self-comparison-consistency (using 107)\n",
++      "            - 75.0% self-comparison-consistency and ground-truth-consistent. (using 104)\n",
++      "            \n",
++      "\n",
+       "            For text-davinci-003 including valid answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 225 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 88.44% ground-truth-consistent (using 173)\n",
+       "            - 93.64% self-rule-following-consistency (using 173)\n",
+@@ -78,7 +80,7 @@
+       "            \n",
+       "\n",
+       "            For davinci including all answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 217 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 2.76% ground-truth-consistent (using 217)\n",
+       "            - 5.99% self-rule-following-consistency (using 217)\n",
+@@ -87,7 +89,7 @@
+       "            \n",
+       "\n",
+       "            For gpt-3.5-turbo including all answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 215 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 82.78999999999999% ground-truth-consistent (using 215)\n",
+       "            - 83.72% self-rule-following-consistency (using 215)\n",
+@@ -96,7 +98,7 @@
+       "            \n",
+       "\n",
+       "            For gpt-4-0314 including all answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 184 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 86.41% ground-truth-consistent (using 184)\n",
+       "            - 88.59% self-rule-following-consistency (using 184)\n",
+@@ -104,8 +106,17 @@
+       "            - 72.83% self-comparison-consistency and ground-truth-consistent. (using 184)\n",
+       "            \n",
+       "\n",
++      "            For gpt-4-0314-run-2 including all answers\n",
++      "            Evaluated 107 ambiguous sequences of 225 total.\n",
++      "            Resulting in:\n",
++      "            - 95.33% ground-truth-consistent (using 107)\n",
++      "            - 95.33% self-rule-following-consistency (using 107)\n",
++      "            - 76.64% self-comparison-consistency (using 107)\n",
++      "            - 74.77000000000001% self-comparison-consistency and ground-truth-consistent. (using 107)\n",
++      "            \n",
++      "\n",
+       "            For text-davinci-003 including all answers\n",
+-      "            Evaluated 173 ambiguous sequences of 225 total.\n",
++      "            Evaluated 225 ambiguous sequences of 225 total.\n",
+       "            Resulting in:\n",
+       "            - 68.0% ground-truth-consistent (using 225)\n",
+       "            - 72.0% self-rule-following-consistency (using 225)\n",
+@@ -117,9 +128,9 @@
+    ],
+    "source": [
+     "import numpy as np\n",
+-    "\n",
++    "import pandas as pd\n",
+     "models = [\n",
+-    "    \"davinci\", \"gpt-3.5-turbo\", \"gpt-4-0314\", \"text-davinci-003\"\n",
++    "    \"davinci\", \"gpt-3.5-turbo\", \"gpt-4-0314\", \"gpt-4-0314-run-2\", \"text-davinci-003\"\n",
+     "]\n",
+     "results = []\n",
+     "for answer_validity in ['valid', 'all']:\n",
+@@ -184,7 +195,7 @@
+     "        print(\n",
+     "            f\"\"\"\n",
+     "            For {model} including {answer_validity} answers\n",
+-    "            Evaluated {count} ambiguous sequences of {total_sequences} total.\n",
++    "            Evaluated {len(df)} ambiguous sequences of {total_sequences} total.\n",
+     "            Resulting in:\n",
+     "            - {ground_truth_consistent}% ground-truth-consistent (using {len(match_accs)})\n",
+     "            - {self_rule_following_consistency}% self-rule-following-consistency (using {len(model_match_accs)})\n",
+diff --git a/results/q0/q0_results.csv b/results/q0/q0_results.csv
+index f6dfcfd..eb87bb4 100644
+--- a/results/q0/q0_results.csv
++++ b/results/q0/q0_results.csv
+@@ -2,8 +2,10 @@
+ 0,davinci,valid,26.090000000000003,23,56.52,23,96.31,217,26.090000000000003,23
+ 1,gpt-3.5-turbo,valid,94.67999999999999,188,95.74000000000001,188,94.42,215,89.89,188
+ 2,gpt-4-0314,valid,94.64,168,97.02,168,77.17,184,73.81,168
+-3,text-davinci-003,valid,88.44,173,93.64,173,84.89,225,83.82,173
+-4,davinci,all,2.76,217,5.99,217,96.31,217,88.48,217
+-5,gpt-3.5-turbo,all,82.78999999999999,215,83.72,215,94.42,215,90.7,215
+-6,gpt-4-0314,all,86.41,184,88.59,184,77.17,184,72.83,184
+-7,text-davinci-003,all,68.0,225,72.0,225,84.89,225,79.11,225
++3,gpt-4-0314-run-2,valid,98.08,104,98.08,104,76.64,107,75.0,104
++4,text-davinci-003,valid,88.44,173,93.64,173,84.89,225,83.82,173
++5,davinci,all,2.76,217,5.99,217,96.31,217,88.48,217
++6,gpt-3.5-turbo,all,82.78999999999999,215,83.72,215,94.42,215,90.7,215
++7,gpt-4-0314,all,86.41,184,88.59,184,77.17,184,72.83,184
++8,gpt-4-0314-run-2,all,95.33,107,95.33,107,76.64,107,74.77000000000001,107
++9,text-davinci-003,all,68.0,225,72.0,225,84.89,225,79.11,225
+diff --git a/src/evals/sequence_completion.py b/src/evals/sequence_completion.py
+index c887125..a44cbe6 100644
+--- a/src/evals/sequence_completion.py
++++ b/src/evals/sequence_completion.py
+@@ -203,11 +203,12 @@ def evaluate_sequence_completion_equality(
+         f"sequence_completion_equality_evaluation_{model}.csv", index=False
+     )
+
+-    match_accs, model_match_accs, model_consistency_accs, consistent_and_matched = (
++    match_accs, model_match_accs, model_consistency_accs, consistent_and_matched_positive, consistent_and_matched_negative = (
+         [],
+         [],
+         [],
+         [],
++        []
+     )
+     for data in completion_data:
+         match_accs.append(1 if data["generated_completion_matches"] else 0)
+@@ -215,17 +216,24 @@ def evaluate_sequence_completion_equality(
+         model_consistency_accs.append(
+             1 if data["model_self_consistency_evaluation"].strip() == "Y" else 0
+         )
+-        consistent_and_matched.append(
++        consistent_and_matched_positive.append(
+             1
+             if data["model_self_consistency_evaluation"].strip() == "Y"
+             and data["generated_completion_matches"]
+             else 0
+         )
++        consistent_and_matched_negative.append(
++            1
++            if data["model_self_consistency_evaluation"].strip() == "N"
++            and not data["generated_completion_matches"]
++            else 0
++        )
+
+     ground_truth_consistent = round(np.mean(match_accs), 2) * 100
+     self_rule_following_consistency = round(np.mean(model_match_accs), 2) * 100
+     self_comparison_consistency = round(np.mean(model_consistency_accs), 2) * 100
+-    consistent_and_matched_accuracy = round(np.mean(consistent_and_matched), 2) * 100
++    consistent_and_matched_positive_accuracy = round(np.mean(consistent_and_matched_positive), 2) * 100
++    consistent_and_matched_negative_accuracy = round(np.mean(consistent_and_matched_negative), 2) * 100
+     logger.info(
+         f"""
+         Evaluated {len(completion_data)} ambiguous sequences of {total_sequences} total.
+@@ -233,6 +241,7 @@ def evaluate_sequence_completion_equality(
+         - {ground_truth_consistent}% ground-truth-consistent
+         - {self_rule_following_consistency}% self-rule-following-consistency
+         - {self_comparison_consistency}% self-comparison-consistency
+-        - {consistent_and_matched_accuracy}% self-comparison-consistency and ground-truth-consistent.
++        - {consistent_and_matched_positive_accuracy}% self-comparison-consistency and ground-truth-consistent (positive).
++        - {consistent_and_matched_negative_accuracy}% self-comparison-consistency and ground-truth-consistent (negative).
+         """
+     )
+[2023-06-01 16:14:00,813][src.utils][INFO] - Changed directory to /Users/domenicrosati/src/introspective-self-consistency/results/2023-06-01-13-29-14/compute_dependence_with_base_changes=False,sequence_completion_equality.model=text-davinci-003,string_transformation_completion_equality=False/evaluate_sequence_completion_equality
+[2023-06-01 16:14:00,814][src.evals.sequence_completion][INFO] - Evaluating sequence completion equality...
+[2023-06-01 16:18:02,357][src.evals.sequence_completion][ERROR] - 0.0 cannot be raised to a negative power
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 187, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 139, in sequence_completion_equality
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+ZeroDivisionError: 0.0 cannot be raised to a negative power
+[2023-06-01 16:18:02,358][src.evals.sequence_completion][WARNING] - 0.0 cannot be raised to a negative power
+[2023-06-01 16:18:29,789][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 187, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 158, in sequence_completion_equality
+    last_completion = eval(explanation)(last_completion_step + 1)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-06-01 16:18:29,790][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-06-01 16:19:52,425][src.evals.sequence_completion][ERROR] - list index out of range
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 187, in evaluate_sequence_completion_equality
+    sequence_completion_equality(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion.py", line 158, in sequence_completion_equality
+    last_completion = eval(explanation)(last_completion_step + 1)
+  File "<string>", line 1, in <lambda>
+IndexError: list index out of range
+[2023-06-01 16:19:52,425][src.evals.sequence_completion][WARNING] - list index out of range
+[2023-06-01 16:21:30,463][src.evals.sequence_completion][INFO] -
+        Evaluated 222 ambiguous sequences of 225 total.
+        Resulting in:
+        - 69.0% ground-truth-consistent
+        - 71.0% self-rule-following-consistency
+        - 88.0% self-comparison-consistency
+        - 66.0% self-comparison-consistency and ground-truth-consistent (positive).
+        - 9.0% self-comparison-consistency and ground-truth-consistent (negative).

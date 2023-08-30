@@ -6,6 +6,7 @@ from typing import Dict, List, Union
 from anthropic import AI_PROMPT, HUMAN_PROMPT, ApiException, Client
 
 from src.models.base_model import BaseModel
+from src.models.utils import INVALID_RESPONSE, ExtendedEnum
 
 CHAT_PROMPT_TEMPLATE = {"role": "Human", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string
@@ -75,12 +76,29 @@ def generate_completion(
         except ApiException:
             logger.warning("API Error. Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)
-        except KeyError:
+        except KeyError as e:
+            logger.exception(e)
             logger.warning("Unexpected response format. Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)
 
     logger.error("Reached retry limit and did not obtain proper response")
     return model.invalid_response
+
+
+def _convert_gpt_roles(
+    prompt_turns: List[Dict[str, str]],
+) -> List[Dict[str, str]]:
+    """
+    Convert "role": user to "role": Human and "role": assistant to "role": Assistant
+    """
+    new_turns = []
+    for turn in prompt_turns:
+        if turn["role"] in ["user", "system"]:
+            new_turns.append({"role": "Human", "content": turn["content"]})
+        elif turn["role"] == "assistant":
+            new_turns.append({"role": "Assistant", "content": turn["content"]})
+
+    return new_turns
 
 
 def format_chat_prompt(
@@ -105,6 +123,8 @@ def format_chat_prompt(
     :raises ValueError: if the prompt_turns are not in the expected format
     :return: the formatted prompt
     """
+
+    prompt_turns = _convert_gpt_roles(prompt_turns)
     if any(
         (role := turn["role"]) not in ["Human", "Assistant"] for turn in prompt_turns
     ):

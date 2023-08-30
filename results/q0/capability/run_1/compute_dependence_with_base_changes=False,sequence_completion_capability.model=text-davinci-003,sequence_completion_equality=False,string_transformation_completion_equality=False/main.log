@@ -1,0 +1,54 @@
+[2023-06-07 08:49:54,284][src.utils][INFO] - Git sha: a78aae517535a9760211e71ffc591118b750a75c
+[2023-06-07 08:49:54,297][src.utils][INFO] - Changed files: ['src/evals/sequence_completion.py']
+[2023-06-07 08:49:54,309][src.utils][INFO] - Git diff:
+diff --git a/src/evals/sequence_completion.py b/src/evals/sequence_completion.py
+index a44cbe6..27c3ac5 100644
+--- a/src/evals/sequence_completion.py
++++ b/src/evals/sequence_completion.py
+@@ -149,10 +149,10 @@ def sequence_completion_equality(
+             "sequence": sequence,
+             "generated_completion_rule": explanation,
+             "generated_completion": actual_completion,
+-            "generated_completion_matches": None,
++            "generated_completion_matches": False,
+             "model_self_consistency_evaluation": consistency_resp,
+             "model_completion": model_completion_resp,
+-            "model_completion_matches": None,
++            "model_completion_matches": False,
+         }
+
+     last_completion = eval(explanation)(last_completion_step + 1)
+[2023-06-07 08:49:54,310][src.utils][INFO] - Changed directory to /Users/domenicrosati/src/introspective-self-consistency/results/2023-06-07-08-49-53/compute_dependence_with_base_changes=False,sequence_completion_capability.model=text-davinci-003,sequence_completion_equality=False,string_transformation_completion_equality=False/evaluate_sequence_completion_capability
+[2023-06-07 08:49:54,310][src.evals.sequence_completion_capability][INFO] - Evaluating sequence completion capability...
+[2023-06-07 08:50:48,340][src.evals.sequence_completion_capability][ERROR] - 0.0 cannot be raised to a negative power
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+ZeroDivisionError: 0.0 cannot be raised to a negative power
+[2023-06-07 08:50:48,340][src.evals.sequence_completion_capability][WARNING] - 0.0 cannot be raised to a negative power
+[2023-06-07 08:51:50,071][src.evals.sequence_completion_capability][ERROR] - 0.0 cannot be raised to a negative power
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+ZeroDivisionError: 0.0 cannot be raised to a negative power
+[2023-06-07 08:51:50,071][src.evals.sequence_completion_capability][WARNING] - 0.0 cannot be raised to a negative power
+[2023-06-07 08:52:40,535][src.evals.sequence_completion_capability][ERROR] - 0.0 cannot be raised to a negative power
+Traceback (most recent call last):
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 110, in evaluate_sequence_completion_capability
+    sequence_completion_eval(
+  File "/Users/domenicrosati/src/introspective-self-consistency/src/evals/sequence_completion_capability.py", line 69, in sequence_completion_eval
+    completion = eval(explanation)(i)
+  File "<string>", line 1, in <lambda>
+ZeroDivisionError: 0.0 cannot be raised to a negative power
+[2023-06-07 08:52:40,535][src.evals.sequence_completion_capability][WARNING] - 0.0 cannot be raised to a negative power
+[2023-06-07 08:52:50,093][src.evals.sequence_completion_capability][INFO] -
+        Evaluated 136 ambiguous sequences of 139 total.
+        Resulting in:
+        - 47.0% rules_matches_sequence
+        - 68.0% completion_is_correct

@@ -98,6 +98,7 @@ def generate_text_completion(
     max_tokens: int = 512,
     model: Union[str, OpenAITextModels] = OpenAITextModels.TEXT_DAVINCI_003,
 ) -> str:
+    # docs: https://platform.openai.com/docs/api-reference/completions/create
     if isinstance(model, str):
         model = OpenAITextModels(model)
 

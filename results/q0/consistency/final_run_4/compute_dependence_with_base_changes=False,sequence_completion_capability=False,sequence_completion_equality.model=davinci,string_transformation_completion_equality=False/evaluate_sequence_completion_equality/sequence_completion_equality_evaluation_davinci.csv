@@ -1,0 +1,225 @@
+original_function,sequence,generated_completion_rule,generated_completion,generated_completion_matches,model_self_consistency_evaluation,model_completion,model_completion_matches
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 1)}","[1, 2, 3, 4]",lambda x: (x * 2) | (x * 3),5,False,Y,5,False
+"{'fn': 'lambda x: (1 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 0, 0)}","[1, 2, 3, 4]",lambda x: (x * 2) | (x * 3),5,False,Y,5,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 3)}","[1, 2, 3, 4]",lambda x: (1 * x) * (1 + x),5,False,Y,6,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 2)}","[1, 2, 3, 4]",lambda x: (1 * x) | (2 * x) | (3 * x) | (4 * x),5,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 0)}","[1, 2, 3, 4]",lambda x: (2 * x) | (1 + x),5,False,Y,5,False
+"{'fn': 'lambda x: (1 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 0)}","[1, 2, 3, 4]",lambda x: (x * 2) % (1+1),7,False,Y,3,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 2)}","[1, 2, 3, 4]",lambda x: (x * 2) % (1+1),6,False,Y,3,False
+"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 0, 1)}","[1, 2, 3, 4]",lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x],6,False,Y,5,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 2)}","[1, 2, 3, 4]",lambda x: (2 * x) * (2 * x),6,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 3)}","[1, 2, 3, 4]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (4 + 1)][x],7,False,Y,5,True
+"{'fn': 'lambda x: (1 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 1)}","[1, 2, 3, 4]",lambda x: (2 * x) + 0,5,False,Y,5,False
+"{'fn': 'lambda x: (1 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 0, 1)}","[1, 2, 3, 4]",lambda x: (1 * x) + (2 * x),5,False,Y,5,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 3, 1)}","[1, 2, 3, 4]",lambda x: (1 * x) * (1 + x),5,False,Y,6,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 1)}","[2, 3, 4, 5]",lambda x: (2 * x) | 0,7,False,Y,3,False
+"{'fn': 'lambda x: (1 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 0, 0)}","[2, 3, 4, 5]",lambda x: (2 * x) | (3 * x),7,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 3)}","[2, 3, 4, 5]",lambda x: (2 * x) | (3 * x),8,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 2)}","[2, 3, 4, 5]",lambda x: (x * 2) + 1,15,False,Y,7,False
+"{'fn': 'lambda x: (1 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 0)}","[2, 3, 4, 5]",lambda x: (1 * x) | (2 * x),10,False,Y,3,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 2)}","[2, 3, 4, 5]",lambda x: (1 * x) + (2 * x),10,False,Y,6,False
+"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 0, 1)}","[2, 3, 4, 5]",lambda x: (x * 2) + (x * 3),6,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 2)}","[2, 3, 4, 5]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (3 + 1)][x],6,False,Y,6,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 3)}","[2, 3, 4, 5]",lambda x: (2 * x) * (x+1),8,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 1)}","[2, 3, 4, 5]",lambda x: (x * 2) % (5+1),7,False,Y,3,False
+"{'fn': 'lambda x: (1 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 2)}","[2, 3, 4, 5]",lambda x: (x * 2) | (x * 3),8,False,Y,6,False
+"{'fn': 'lambda x: (1 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 0, 1)}","[2, 3, 4, 5]",lambda x: [i for i in range(100) if i % (5 + 1) or i % (2 + 1)][x],6,False,Y,3,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 3, 1)}","[2, 3, 4, 5]",lambda x: [i for i in range(100) if i % (5 + 1) or i % (2 + 1)][x],6,False,Y,3,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 1)}","[4, 5, 7, 8]",lambda x: (2 * x) | (3 * x),10,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 2)}","[4, 5, 7, 8]",lambda x: (1 * x) + 3,10,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 0)}","[4, 5, 7, 8]",lambda x: (x * 2) % (3+1),9,False,Y,5,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 2)}","[4, 5, 7, 8]",lambda x: (4 * x) + (5 * x),9,False,Y,13,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 1)}","[3, 4, 5, 7]",lambda x: (2 * x) ** 3,11,False,Y,27,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 2)}","[3, 4, 5, 7]",lambda x: (2 * x) | (1 * x),11,False,Y,10,False
+"{'fn': 'lambda x: (1 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 0, 0)}","[3, 4, 5, 6]",lambda x: (1 * x) | (2 * x),7,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 3)}","[3, 4, 5, 6]",lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x],10,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 2)}","[3, 4, 5, 6]",lambda x: (2 * x) + 1,8,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 0)}","[3, 4, 5, 6]",lambda x: (1 * x) + (2 * x),10,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 0, 1)}","[3, 4, 5, 6]",lambda x: (1 * x) | (2 * x),10,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 2)}","[3, 4, 5, 6]",lambda x: (1 * x) * (1 + x),7,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 1, 3)}","[3, 4, 5, 6]",lambda x: (1 * x) | 2,7,False,Y,7,False
+"{'fn': 'lambda x: (1 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 3)}","[3, 4, 5, 6]",lambda x: (2 * x) * (2 * x),9,False,Y,24,False
+"{'fn': 'lambda x: (1 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 1)}","[3, 4, 5, 6]",lambda x: (1 * x) | 2,9,False,Y,7,False
+"{'fn': 'lambda x: (1 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 2)}","[3, 4, 5, 6]",lambda x: (x * 2) % (1+1),10,False,Y,4,False
+"{'fn': 'lambda x: (1 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 0, 1)}","[3, 4, 5, 6]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 3)",7,False,Y,15,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 3, 1)}","[3, 4, 5, 6]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (2 + 1)][x],7,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 0, 0)}","[0, 1, 2, 3]",lambda x: (x * 3) % (0+1),4,False,Y,0,False
+"{'fn': 'lambda x: (x * 1) % (3+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 3)}","[0, 1, 2, 3]",lambda x: (x * 3) % (2+1),4,False,Y,0,False
+"{'fn': 'lambda x: (1 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 0, 0)}","[0, 1, 2, 3]",lambda x: (2 * x) | 1,4,False,Y,4,False
+"{'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}","[0, 1, 2, 3]",lambda x: (x * 2) + 1,0,False,Y,4,False
+"{'fn': 'lambda x: (1 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 0, 1)}","[0, 1, 2, 3]",lambda x: (x * 2) % (1+1),4,False,Y,0,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 3)}","[4, 5, 6, 7]",lambda x: (x * 2) + 1,8,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 2)}","[4, 5, 6, 7]",lambda x: (2 * x) + 1,10,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 2)}","[4, 5, 6, 7]",lambda x: (x * 2) % (1+1),8,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 3)}","[4, 5, 6, 7]",lambda x: (3 * x) + 1,8,False,Y,10,False
+"{'fn': 'lambda x: (1 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 0, 3)}","[4, 5, 6, 7]",lambda x: (x * 2) % (7+1),8,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 1)}","[4, 5, 6, 7]",lambda x: (3 * x) | (1 * x),10,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 2)}","[4, 5, 6, 7]",lambda x: (1 * x) ** 2,10,False,Y,16,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 3, 1)}","[4, 5, 6, 7]",lambda x: (1 * x) ** 3,8,False,Y,14,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 1)}","[3, 5, 7, 9]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (5 + 1)][x],13,False,Y,100,False
+"{'fn': 'lambda x: (2 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 3)}","[3, 5, 7, 9]",lambda x: (2 * x) + 3,15,False,Y,12,False
+"{'fn': 'lambda x: (2 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 1, 1)}","[3, 5, 7, 9]",lambda x: (1 * x) * (1 + x),12,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 1)}","[3, 5, 7, 9]",lambda x: (x * 2) % (2+1),12,False,Y,7,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 0)}","[3, 5, 7, 9]",lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x],12,False,Y,100,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 1)}","[5, 7, 9, 11]",lambda x: (4 * x) + (2 * x),14,False,Y,15,False
+"{'fn': 'lambda x: (2 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 3)}","[5, 7, 9, 11]",lambda x: (2 * x) | 1,14,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 1, 1)}","[5, 7, 9, 11]",lambda x: (1 * x) + (1 * x),14,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 1)}","[5, 7, 9, 11]",lambda x: (x * 2) | (x * 3),18,False,Y,14,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 0)}","[5, 7, 9, 11]",lambda x: (2 * x) | (1 * x),16,False,Y,14,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 1)}","[7, 9, 11, 13]",lambda x: (7 * x) | (9 * x) | (11 * x) | (13 * x),21,False,Y,21,False
+"{'fn': 'lambda x: (2 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 3)}","[7, 9, 11, 13]",lambda x: (2 * x) + (1 * x),18,False,Y,17,False
+"{'fn': 'lambda x: (2 * x) | 1', 'offset': 3, 'metadata': ('bit_or_progression', 1, 1)}","[7, 9, 11, 13]",lambda x: (1 * x) + 3,18,False,Y,15,False
+"{'fn': 'lambda x: (2 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 1)}","[7, 9, 11, 13]",lambda x: (2 * x) | 0,20,False,Y,14,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 0)}","[7, 9, 11, 13]",lambda x: (x * 3) % (2+1),16,False,Y,15,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 1)}","[1, 3, 5, 7]",lambda x: (x * 2) % (3+1),10,False,Y,3,False
+"{'fn': 'lambda x: (2 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 1, 1)}","[1, 3, 5, 7]",lambda x: (1 + x) * (1 + x),8,False,Y,10,False
+"{'fn': 'lambda x: (2 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 1)}","[1, 3, 5, 7]",lambda x: (5 * x) ** 3,11,False,Y,27,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 0)}","[1, 3, 5, 7]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 3 * x * fn(fn,x-1) + 1)",21,False,Y,1,False
+"{'fn': 'lambda x: (3 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 2, 0)}","[0, 3, 6, 9]",lambda x: (3 * x) * 2,12,False,Y,18,False
+"{'fn': 'lambda x: (3 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 2, 1)}","[0, 3, 6, 9]",lambda x: (1 * x) * (1 + x),12,False,Y,3,False
+"{'fn': 'lambda x: (3 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 2, 0)}","[0, 3, 6, 9]",lambda x: (x * 2) % (0+1),12,False,Y,3,False
+"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 2, 1)}","[0, 3, 6, 9]",lambda x: (3 * x) | 0,12,True,Y,6,False
+"{'fn': 'lambda x: (1 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 0, 3)}","[0, 3, 6, 9]",lambda x: (3 * x) + 4,12,False,Y,15,False
+"{'fn': 'lambda x: (3 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 2, 0)}","[3, 6, 9, 12]",lambda x: (1 * x) + (1 * x),18,False,Y,15,False
+"{'fn': 'lambda x: (3 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 2, 1)}","[3, 6, 9, 12]",lambda x: (1 * x) * (1 + (1 * x)),18,False,Y,24,False
+"{'fn': 'lambda x: (3 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 0)}","[3, 6, 9, 12]",lambda x: (3 * x) + 0,18,False,Y,15,True
+"{'fn': 'lambda x: (3 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 2, 3)}","[3, 6, 9, 12]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x],15,False,Y,15,False
+"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 2, 1)}","[3, 6, 9, 12]",lambda x: (3 * x) + 3,18,False,Y,15,True
+"{'fn': 'lambda x: (1 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 0, 3)}","[3, 6, 9, 12]",lambda x: (2 * x) * (2 * x),18,False,Y,36,False
+"{'fn': 'lambda x: (3 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 2, 0)}","[6, 9, 12, 15]",lambda x: (3 * x) ** 1,18,True,Y,36,False
+"{'fn': 'lambda x: (3 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 2, 1)}","[6, 9, 12, 15]",lambda x: (2 * x) ** (1/3),21,False,Y,27,False
+"{'fn': 'lambda x: (3 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 2, 0)}","[6, 9, 12, 15]",lambda x: [i for i in range(100) if i % (6 + 1) or i % (3 + 1)][x],27,False,Y,27,False
+"{'fn': 'lambda x: (3 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 2, 3)}","[6, 9, 12, 15]",lambda x: (2 * x) | 3,18,False,Y,18,False
+"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 2, 1)}","[6, 9, 12, 15]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 2)",21,False,Y,36,False
+"{'fn': 'lambda x: (1 * x) * 3', 'offset': 2, 'metadata': ('geometric_progression', 0, 3)}","[6, 9, 12, 15]",lambda x: (3 * x) * 3,18,False,Y,30,False
+"{'fn': 'lambda x: (3 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 2, 0)}","[9, 12, 15, 18]",lambda x: (3 * x) + (2 * x),24,False,Y,27,False
+"{'fn': 'lambda x: (3 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 2, 1)}","[9, 12, 15, 18]",lambda x: (x * 2) % (2+1),27,False,Y,18,False
+"{'fn': 'lambda x: (3 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 2, 0)}","[9, 12, 15, 18]",lambda x: (3 * x) + 9,27,False,Y,27,False
+"{'fn': 'lambda x: (3 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 2, 3)}","[9, 12, 15, 18]",lambda x: (4 * x) | 1,27,False,Y,24,False
+"{'fn': 'lambda x: (3 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 2, 1)}","[9, 12, 15, 18]",lambda x: [i for i in range(100) if i % (1 + 1) or i % (3 + 1)][x],21,False,Y,27,False
+"{'fn': 'lambda x: (1 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 0, 3)}","[9, 12, 15, 18]",lambda x: (3 * x) * (3 * x),27,False,Y,54,False
+"{'fn': 'lambda x: (2 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 0)}","[2, 4, 6, 8]",lambda x: (2 * x) ** (1+1),12,False,Y,16,False
+"{'fn': 'lambda x: (2 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 2)}","[2, 4, 6, 8]",lambda x: (4 * x) | 1,12,False,Y,10,False
+"{'fn': 'lambda x: (1 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 0, 2)}","[2, 4, 6, 8]",lambda x: (2 * x) + (x * 2),12,False,Y,10,False
+"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 1, 1)}","[2, 4, 6, 8]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (4 + 1)][x],10,False,Y,10,False
+"{'fn': 'lambda x: (2 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 1, 1)}","[2, 4, 6, 8]",lambda x: (2 * x) + 1,12,False,Y,10,False
+"{'fn': 'lambda x: (2 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 1, 0)}","[2, 4, 6, 8]",lambda x: (2 * x) | 0,12,False,Y,10,True
+"{'fn': 'lambda x: (2 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 0)}","[4, 6, 8, 10]",lambda x: (2 * x) | (3 * x),14,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 1, 2)}","[4, 6, 8, 10]",lambda x: (2 * x) * (1 + x),14,False,Y,14,False
+"{'fn': 'lambda x: (1 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 0, 2)}","[4, 6, 8, 10]",lambda x: (2 * x) + 0,12,True,Y,14,False
+"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 1, 1)}","[4, 6, 8, 10]",lambda x: (x * 2) % (2+1),14,False,Y,8,False
+"{'fn': 'lambda x: (2 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 1, 1)}","[4, 6, 8, 10]",lambda x: (2 * x) * (1 + x),14,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 1, 0)}","[4, 6, 8, 10]",lambda x: (1 * x) ** 3,14,False,Y,24,False
+"{'fn': 'lambda x: (2 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 1, 0)}","[6, 8, 10, 12]",lambda x: (1 * x) + (2 * x),18,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 1, 2)}","[6, 8, 10, 12]",lambda x: (x * 2) % (1+1),16,False,Y,14,False
+"{'fn': 'lambda x: (1 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 0, 2)}","[6, 8, 10, 12]",lambda x: (2 * x) * (2 * x),18,False,Y,24,False
+"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 1, 1)}","[6, 8, 10, 12]",lambda x: (2 * x) | (x + 1),18,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 1, 1)}","[6, 8, 10, 12]",lambda x: (2 * x) ** (1 + x),16,False,Y,24,False
+"{'fn': 'lambda x: (2 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 1, 0)}","[6, 8, 10, 12]",lambda x: (1 * x) + (2 * x),18,False,Y,14,False
+"{'fn': 'lambda x: (2 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 1, 0)}","[0, 2, 4, 6]",lambda x: (x * 2) + 1,8,False,Y,8,False
+"{'fn': 'lambda x: (1 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 0, 2)}","[0, 2, 4, 6]",lambda x: (x * 2) % (2+1),8,False,Y,4,False
+"{'fn': 'lambda x: (2 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 1, 1)}","[0, 2, 4, 6]",lambda x: (2 * x) ** 2,8,False,Y,16,False
+"{'fn': 'lambda x: (2 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 1, 1)}","[0, 2, 4, 6]",lambda x: (2 * x) | 0,10,False,Y,8,True
+"{'fn': 'lambda x: (2 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 1, 0)}","[0, 2, 4, 6]",lambda x: (x * 2) % (3+1),8,False,Y,4,False
+"{'fn': 'lambda x: (4 * x) + 0', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 0)}","[0, 4, 8, 12]",lambda x: (x * 4) % (4+1),16,False,Y,16,False
+"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 3, 1)}","[0, 4, 8, 12]",lambda x: (x * 2) % (4+1),16,False,Y,16,False
+"{'fn': 'lambda x: (4 * x) | 0', 'offset': 0, 'metadata': ('bit_or_progression', 3, 0)}","[0, 4, 8, 12]",lambda x: (2 * x) * 4,16,False,Y,20,False
+"{'fn': 'lambda x: (4 * x) * 1', 'offset': 0, 'metadata': ('geometric_progression', 3, 1)}","[0, 4, 8, 12]",lambda x: (2 * x) ** 2,16,False,Y,16,False
+"{'fn': 'lambda x: (2 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 1, 2)}","[0, 4, 8, 12]",lambda x: (4 * x) * 0,20,False,N,16,False
+"{'fn': 'lambda x: (4 * x) + 0', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 0)}","[4, 8, 12, 16]",lambda x: (1 * x) + 3,20,False,Y,20,False
+"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 1, 'metadata': ('exponential_progression', 3, 1)}","[4, 8, 12, 16]",lambda x: (2 * x) | (1 * x),20,False,Y,24,False
+"{'fn': 'lambda x: (4 * x) | 0', 'offset': 1, 'metadata': ('bit_or_progression', 3, 0)}","[4, 8, 12, 16]",lambda x: (4 * x) + (4 * x),20,False,Y,32,False
+"{'fn': 'lambda x: (4 * x) * 1', 'offset': 1, 'metadata': ('geometric_progression', 3, 1)}","[4, 8, 12, 16]",lambda x: (2 * x) + (4 * x),20,False,Y,24,False
+"{'fn': 'lambda x: (2 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 1, 2)}","[4, 8, 12, 16]",lambda x: (4 * x) * 1,20,True,Y,32,False
+"{'fn': 'lambda x: (4 * x) + 0', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 0)}","[8, 12, 16, 20]",lambda x: (3 * x) + (2 * x),28,False,Y,28,False
+"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 2, 'metadata': ('exponential_progression', 3, 1)}","[8, 12, 16, 20]",lambda x: (3 * x) ** 2,24,False,Y,64,False
+"{'fn': 'lambda x: (4 * x) | 0', 'offset': 2, 'metadata': ('bit_or_progression', 3, 0)}","[8, 12, 16, 20]",lambda x: (2 * x) * (2 + 1),24,False,Y,32,False
+"{'fn': 'lambda x: (4 * x) * 1', 'offset': 2, 'metadata': ('geometric_progression', 3, 1)}","[8, 12, 16, 20]",lambda x: (4 * x) | 0,32,False,Y,32,False
+"{'fn': 'lambda x: (2 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 1, 2)}","[8, 12, 16, 20]",lambda x: (x * 2) % (3+1),32,False,Y,24,False
+"{'fn': 'lambda x: (4 * x) + 0', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 0)}","[12, 16, 20, 24]",lambda x: (2 * x) | (x * 2),30,False,Y,28,False
+"{'fn': 'lambda x: (4 * x) ** 1', 'offset': 3, 'metadata': ('exponential_progression', 3, 1)}","[12, 16, 20, 24]",lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x],32,False,Y,28,False
+"{'fn': 'lambda x: (4 * x) | 0', 'offset': 3, 'metadata': ('bit_or_progression', 3, 0)}","[12, 16, 20, 24]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (2 + 1)][x],36,False,Y,28,False
+"{'fn': 'lambda x: (4 * x) * 1', 'offset': 3, 'metadata': ('geometric_progression', 3, 1)}","[12, 16, 20, 24]",lambda x: (x * 2) % (3+1),28,False,Y,28,False
+"{'fn': 'lambda x: (2 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 1, 2)}","[12, 16, 20, 24]",lambda x: (1 * x) + (2 * x) + (3 * x) + (4 * x),36,False,Y,32,False
+"{'fn': 'lambda x: (3 * x) * 2', 'offset': 0, 'metadata': ('geometric_progression', 2, 2)}","[0, 6, 12, 18]",lambda x: (4 * x) | 2,24,False,Y,24,False
+"{'fn': 'lambda x: (2 * x) * 3', 'offset': 0, 'metadata': ('geometric_progression', 1, 3)}","[0, 6, 12, 18]",lambda x: (2 * x) + (2 * x),24,False,Y,30,False
+"{'fn': 'lambda x: (3 * x) * 2', 'offset': 1, 'metadata': ('geometric_progression', 2, 2)}","[6, 12, 18, 24]",lambda x: (3 * x) + 6,36,False,Y,36,False
+"{'fn': 'lambda x: (2 * x) * 3', 'offset': 1, 'metadata': ('geometric_progression', 1, 3)}","[6, 12, 18, 24]",lambda x: (2 * x) * (2 * x),36,False,Y,36,False
+"{'fn': 'lambda x: (3 * x) * 2', 'offset': 2, 'metadata': ('geometric_progression', 2, 2)}","[12, 18, 24, 30]",lambda x: (4 * x) | (2 * x),36,False,Y,36,False
+"{'fn': 'lambda x: (2 * x) * 3', 'offset': 2, 'metadata': ('geometric_progression', 1, 3)}","[12, 18, 24, 30]",lambda x: (3 * x) + (1 * x),42,False,Y,36,False
+"{'fn': 'lambda x: (3 * x) * 2', 'offset': 3, 'metadata': ('geometric_progression', 2, 2)}","[18, 24, 30, 36]",lambda x: (2 * x) * (2 * x),42,False,Y,72,False
+"{'fn': 'lambda x: (2 * x) * 3', 'offset': 3, 'metadata': ('geometric_progression', 1, 3)}","[18, 24, 30, 36]",lambda x: (2 * x) ** 2,42,False,Y,72,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (2 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 2)}","[1, 2, 4, 5]",lambda x: (1 + x) * (1 + x),3,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 1, 0)}","[1, 2, 4, 5]",lambda x: (1 * x) ** 2,8,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (2 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 2)}","[2, 4, 5, 7]",lambda x: (2 * x) * (1 + x),8,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 1, 0)}","[2, 4, 5, 7]",lambda x: (1 * x) ** 2,10,False,Y,16,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (2 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 2)}","[5, 7, 8, 10]",lambda x: (x * 2) % (5+1),15,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (0 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 1, 0)}","[5, 7, 8, 10]",lambda x: (x * 2) | (x * 3),13,False,Y,13,False
+"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 0, 'metadata': ('power_progression', 1, 2)}","[1, 4, 16, 64]",lambda x: (4 * x) | 4,256,False,Y,256,False
+"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 0, 'metadata': ('power_progression', 3, 1)}","[1, 4, 16, 64]",lambda x: (2 * x) ** (1 + x),256,False,Y,256,False
+"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 1, 'metadata': ('power_progression', 1, 2)}","[4, 16, 64, 256]",lambda x: [i for i in range(100) if i % (4 + 1) or i % (5 + 1)][x],1024,False,Y,512,False
+"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 1, 'metadata': ('power_progression', 3, 1)}","[4, 16, 64, 256]",lambda x: (2 * x) ** 3,1024,False,Y,65536,False
+"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 2, 'metadata': ('power_progression', 1, 2)}","[16, 64, 256, 1024]",lambda x: (2 * x) | (3 * x),4096,False,Y,2048,False
+"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 2, 'metadata': ('power_progression', 3, 1)}","[16, 64, 256, 1024]",lambda x: (x * 16) % (16+1),2048,False,Y,2048,False
+"{'fn': 'lambda x: 2 ** (2 * x)', 'offset': 3, 'metadata': ('power_progression', 1, 2)}","[64, 256, 1024, 4096]",lambda x: (2 ** (x * 2)) * (2 ** (x * 2)),32768,False,Y,"16,777,216",False
+"{'fn': 'lambda x: 4 ** (1 * x)', 'offset': 3, 'metadata': ('power_progression', 3, 1)}","[64, 256, 1024, 4096]",lambda x: (x * 2) | (x * 4),16384,False,Y,8192,False
+"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 0, 'metadata': ('modular_progression', 2, 1)}","[0, 1, 0, 1]",lambda x: (x * 1) % (2+1),2,True,Y,0,False
+"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 1)}","[0, 1, 0, 1]",lambda x: (x * 4) % (2+1) | 0,0,False,Y,0,False
+"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 2, 'metadata': ('modular_progression', 0, 1)}","[0, 1, 0, 1]",lambda x: (x * 4) % (2+1),2,True,Y,0,False
+"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 2, 'metadata': ('modular_progression', 2, 1)}","[0, 1, 0, 1]",lambda x: (x * 3) % (2+1),2,False,Y,0,False
+"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 1, 'metadata': ('modular_progression', 2, 1)}","[1, 0, 1, 0]",lambda x: (x * 2) % (0 + 1),2,False,Y,1,False
+"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 1, 'metadata': ('modular_progression', 0, 1)}","[1, 0, 1, 0]",lambda x: (x * 1) % (0+1),0,False,N,0,False
+"{'fn': 'lambda x: (x * 1) % (1+1)', 'offset': 3, 'metadata': ('modular_progression', 0, 1)}","[1, 0, 1, 0]",lambda x: (x * 1) % (1+1),0,False,N,0,False
+"{'fn': 'lambda x: (x * 3) % (1+1)', 'offset': 3, 'metadata': ('modular_progression', 2, 1)}","[1, 0, 1, 0]",lambda x: (x * 1) % (1+1),0,False,N,0,False
+"{'fn': 'lambda x: (1 * x) | 3', 'offset': 2, 'metadata': ('bit_or_progression', 0, 3)}","[3, 3, 7, 7]",lambda x: (3 * x) * (2 * x),21,False,Y,21,False
+"{'fn': 'lambda x: (2 * x) | 3', 'offset': 0, 'metadata': ('bit_or_progression', 1, 3)}","[3, 3, 7, 7]",lambda x: (x * 2) % (0+1),21,False,Y,3,False
+"{'fn': 'lambda x: (4 * x) | 2', 'offset': 0, 'metadata': ('bit_or_progression', 3, 2)}","[2, 6, 10, 14]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 2)",18,False,Y,42,False
+"{'fn': 'lambda x: (4 * x) + 2', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 2)}","[2, 6, 10, 14]",lambda x: (2 * x) | (3 * x),26,False,Y,18,False
+"{'fn': 'lambda x: (4 * x) | 2', 'offset': 1, 'metadata': ('bit_or_progression', 3, 2)}","[6, 10, 14, 18]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 6 * x * fn(fn,x-1) + 2)",22,False,Y,42,False
+"{'fn': 'lambda x: (4 * x) + 2', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 2)}","[6, 10, 14, 18]",lambda x: (2 * x) * (1 + x),22,False,Y,30,False
+"{'fn': 'lambda x: (4 * x) | 2', 'offset': 2, 'metadata': ('bit_or_progression', 3, 2)}","[10, 14, 18, 22]",lambda x: (x * 2) % (0+1),32,False,Y,26,False
+"{'fn': 'lambda x: (4 * x) + 2', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 2)}","[10, 14, 18, 22]",lambda x: (3 * x) * 3,26,False,Y,42,False
+"{'fn': 'lambda x: (4 * x) | 2', 'offset': 3, 'metadata': ('bit_or_progression', 3, 2)}","[14, 18, 22, 26]",lambda x: (2 * x) + (1 if x % 2 else 0),30,False,Y,30,False
+"{'fn': 'lambda x: (4 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 2)}","[14, 18, 22, 26]",lambda x: (2 * x) + (2 * x),30,False,Y,30,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 0, 3)}","[1, 2, 3, 5]",lambda x: [i for i in range(100) if i % (1 + 1) or i % (2 + 1)][x],7,True,Y,6,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (1 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 1)}","[1, 2, 3, 5]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (5 + 1)][x],8,False,Y,6,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (0 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 0)}","[1, 2, 3, 5]",lambda x: (1 * x) | 1,7,False,Y,6,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (3 + 1)][x]', 'offset': 0, 'metadata': ('indexing_criteria_progression', 2, 3)}","[1, 2, 3, 5]",lambda x: (x * 2) % (1+1),8,False,Y,3,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 0, 3)}","[2, 3, 5, 6]",lambda x: (3 * x) | (x * 2),9,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (1 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 1)}","[2, 3, 5, 6]",lambda x: (2 * x) * (3 * x),8,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (0 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 0)}","[2, 3, 5, 6]",lambda x: (1 * x) | (2 * x),8,False,Y,3,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (3 + 1)][x]', 'offset': 1, 'metadata': ('indexing_criteria_progression', 2, 3)}","[2, 3, 5, 6]",lambda x: (x * 2) | 3,10,False,Y,8,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 0, 3)}","[3, 5, 6, 7]",lambda x: (2 * x) | 1,10,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (1 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 1)}","[3, 5, 6, 7]",lambda x: (2 * x) * 1,5,False,N,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (0 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 0)}","[3, 5, 6, 7]",lambda x: (1 * x) | (1 * x),8,True,Y,8,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (3 + 1)][x]', 'offset': 2, 'metadata': ('indexing_criteria_progression', 2, 3)}","[3, 5, 6, 7]",lambda x: (2 * x) | 3,10,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 0, 3)}","[5, 6, 7, 9]",lambda x: (x * 2) | 5,12,False,Y,11,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (1 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 1)}","[5, 6, 7, 9]",lambda x: (x * 2) ** (1/2),11,False,Y,16,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (0 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 0)}","[5, 6, 7, 9]",lambda x: (2 * x) + (1 * x),10,False,Y,10,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (3 + 1)][x]', 'offset': 3, 'metadata': ('indexing_criteria_progression', 2, 3)}","[5, 6, 7, 9]",lambda x: (x * x) % (1+1),10,False,Y,11,False
+"{'fn': 'lambda x: (4 * x) | 1', 'offset': 0, 'metadata': ('bit_or_progression', 3, 1)}","[1, 5, 9, 13]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1)][x],21,False,Y,27,False
+"{'fn': 'lambda x: (4 * x) + 1', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 1)}","[1, 5, 9, 13]",lambda x: (3 * x) ** (1+1),21,False,Y,27,False
+"{'fn': 'lambda x: (4 * x) | 1', 'offset': 1, 'metadata': ('bit_or_progression', 3, 1)}","[5, 9, 13, 17]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 1)",21,False,Y,42,False
+"{'fn': 'lambda x: (4 * x) + 1', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 1)}","[5, 9, 13, 17]",lambda x: (1 * x) + 3,26,False,Y,22,False
+"{'fn': 'lambda x: (4 * x) | 1', 'offset': 2, 'metadata': ('bit_or_progression', 3, 1)}","[9, 13, 17, 21]",lambda x: (1 * x) + (2 * x) + (3 * x),33,False,Y,30,False
+"{'fn': 'lambda x: (4 * x) + 1', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 1)}","[9, 13, 17, 21]",lambda x: (3 * x) * (2 ** (0 * x)),33,False,Y,36,False
+"{'fn': 'lambda x: (4 * x) | 1', 'offset': 3, 'metadata': ('bit_or_progression', 3, 1)}","[13, 17, 21, 25]",lambda x: (5 * x) + 13,30,False,Y,36,False
+"{'fn': 'lambda x: (4 * x) + 1', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 1)}","[13, 17, 21, 25]",lambda x: (2 * x) + 1,30,False,Y,36,False
+"{'fn': 'lambda x: (x * 1) % (2+1)', 'offset': 0, 'metadata': ('modular_progression', 0, 2)}","[0, 1, 2, 0]",lambda x: (x * 2) % (3+1),0,False,Y,0,False
+"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 0, 'metadata': ('modular_progression', 3, 2)}","[0, 1, 2, 0]",lambda x: (x * 2) % (2+1),0,False,N,0,False
+"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 3, 'metadata': ('modular_progression', 3, 2)}","[0, 1, 2, 0]",lambda x: (x * 1) % (2+1),0,False,N,0,False
+"{'fn': 'lambda x: (x * 1) % (2+1)', 'offset': 1, 'metadata': ('modular_progression', 0, 2)}","[1, 2, 0, 1]",lambda x: (1 * x) | (2 * x),0,False,Y,1,False
+"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 1, 'metadata': ('modular_progression', 3, 2)}","[1, 2, 0, 1]",lambda x: (x * 2) % (1+1),0,False,Y,0,False
+"{'fn': 'lambda x: (x * 1) % (2+1)', 'offset': 2, 'metadata': ('modular_progression', 0, 2)}","[2, 0, 1, 2]",lambda x: (x * 5) % (2+1),3,False,N,0,False
+"{'fn': 'lambda x: (x * 4) % (2+1)', 'offset': 2, 'metadata': ('modular_progression', 3, 2)}","[2, 0, 1, 2]",lambda x: (2 * x) * (2 + 1),0,False,Y,4,False
+"{'fn': 'lambda x: (4 * x) | 3', 'offset': 0, 'metadata': ('bit_or_progression', 3, 3)}","[3, 7, 11, 15]",lambda x: (3 * x) * 2,22,False,Y,30,False
+"{'fn': 'lambda x: (4 * x) + 3', 'offset': 0, 'metadata': ('arithmetic_progression', 3, 3)}","[3, 7, 11, 15]",lambda x: (x * x) % (1+1),22,False,Y,24,False
+"{'fn': 'lambda x: (3 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 2, 3)}","[3, 7, 11, 15]",lambda x: (2 * x) * (1 + x),21,False,Y,26,False
+"{'fn': 'lambda x: (4 * x) | 3', 'offset': 1, 'metadata': ('bit_or_progression', 3, 3)}","[7, 11, 15, 19]",lambda x: (3 * x) | 3,24,False,Y,24,False
+"{'fn': 'lambda x: (4 * x) + 3', 'offset': 1, 'metadata': ('arithmetic_progression', 3, 3)}","[7, 11, 15, 19]",lambda x: (2 * x) | (3 * x),22,False,Y,26,False
+"{'fn': 'lambda x: (4 * x) | 3', 'offset': 2, 'metadata': ('bit_or_progression', 3, 3)}","[11, 15, 19, 23]",lambda x: (4 * x) ** 2,30,False,Y,44,False
+"{'fn': 'lambda x: (4 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 3, 3)}","[11, 15, 19, 23]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 1)",33,False,Y,42,False
+"{'fn': 'lambda x: (4 * x) | 3', 'offset': 3, 'metadata': ('bit_or_progression', 3, 3)}","[15, 19, 23, 27]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (1 + 1)][x],31,False,Y,31,False
+"{'fn': 'lambda x: (4 * x) + 3', 'offset': 3, 'metadata': ('arithmetic_progression', 3, 3)}","[15, 19, 23, 27]",lambda x: (3 * x) | (2 * x),36,False,Y,30,False
+"{'fn': 'lambda x: (1 * x) + 3', 'offset': 2, 'metadata': ('arithmetic_progression', 0, 3)}","[5, 6, 7, 8]",lambda x: (x * 2) | (x * 3),10,False,Y,10,False
+"{'fn': 'lambda x: (1 * x) + 2', 'offset': 3, 'metadata': ('arithmetic_progression', 0, 2)}","[5, 6, 7, 8]",lambda x: (8 * x) ** 2,10,False,Y,64,False

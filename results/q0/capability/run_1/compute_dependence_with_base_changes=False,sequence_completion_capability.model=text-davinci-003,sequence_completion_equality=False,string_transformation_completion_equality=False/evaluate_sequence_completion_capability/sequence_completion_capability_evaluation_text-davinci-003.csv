@@ -1,0 +1,137 @@
+original_function,sequence,generated_completion_rule,generated_completion,generated_rule_matches,generated_completion_matches
+"{'fn': 'lambda x: (5 * x) ** 1', 'offset': 0}","[0, 5, 10, 15]",lambda x: (5 * x) + 0,20,True,True
+"{'fn': 'lambda x: 3 ** (3 * x)', 'offset': 0}","[1, 27, 729, 19683, 531441, 14348907, 387420489, 10460353203]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 3 * x * fn(fn,x-1) + 1)",282429536481,False,True
+"{'fn': 'lambda x: (5 * x) * 3', 'offset': 0}","[0, 15, 30, 45, 60, 75, 90]",lambda x: (15 * x) ** 1,105,True,True
+"{'fn': 'lambda x: (5 * x) | 4', 'offset': 0}","[4, 5, 14, 15, 20, 29, 30, 39]",lambda x: (x % 5) * (x // 5) + 4,48,False,False
+"{'fn': 'lambda x: 2 ** (1 * x)', 'offset': 0}","[1, 2, 4, 8, 16, 32, 64]",lambda x: 2 ** x,128,True,True
+"{'fn': 'lambda x: (3 * x) * 4', 'offset': 0}","[0, 12, 24, 36, 48, 60, 72, 84]",lambda x: (12 * x) + 0,96,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 4)', 'offset': 0}","[1, 6, 28]",lambda x: (4 * x) ** 3,168,False,False
+"{'fn': 'lambda x: (5 * x) ** 0', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1 ** (1 * x),1,False,True
+"{'fn': 'lambda x: (5 * x) | 2', 'offset': 0}","[2, 7, 10]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (4 + 1)][x],13,False,False
+"{'fn': 'lambda x: 1 ** (2 * x)', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1,1,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 3 * x * fn(fn,x-1) + 4)', 'offset': 0}","[1, 7, 46, 418, 5020, 75304, 1355476]",lambda x: (6 * x) ** 5 - (5 * x) ** 4 + (4 * x) ** 3 - (3 * x) ** 2 + (2 * x) ** 1 - (1 * x) ** 0,22883520,False,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (5 + 1) or i % (2 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5]",lambda x: x + 1,6,True,False
+"{'fn': 'lambda x: 2 ** (0 * x)', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1,1,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 4)', 'offset': 0}","[1, 8, 68, 820, 13124]",lambda x: (7 * x) ** (x + 1),221408,False,False
+"{'fn': 'lambda x: (3 * x) + 4', 'offset': 0}","[4, 7, 10]",lambda x: (3 * x) + 1,13,True,True
+"{'fn': 'lambda x: (3 * x) ** 2', 'offset': 0}","[0, 9, 36, 81, 144, 225, 324]",lambda x: (3 * x) ** 2,441,True,True
+"{'fn': 'lambda x: (x * 1) % (0+1)', 'offset': 0}","[0, 0, 0, 0]",lambda x: 0 ** (1 * x),0,True,True
+"{'fn': 'lambda x: 1 ** (4 * x)', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1,1,True,True
+"{'fn': 'lambda x: (5 * x) | 0', 'offset': 0}","[0, 5, 10, 15, 20, 25, 30, 35]",lambda x: (5 * x) + 0,40,True,True
+"{'fn': 'lambda x: (4 * x) + 4', 'offset': 0}","[4, 8, 12, 16, 20, 24, 28, 32, 36]",lambda x: (4 * x) + 4,40,False,True
+"{'fn': 'lambda x: (5 * x) + 0', 'offset': 0}","[0, 5, 10, 15, 20, 25, 30, 35, 40]",lambda x: [i for i in range(100) if i % (5 + 1)][x],45,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 1 * x * fn(fn,x-1) + 3)', 'offset': 0}","[1, 4, 11, 36, 147, 738, 4431]",lambda x: 3 ** (x * 2) - (2 * x) - 1,27444,False,False
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 0)', 'offset': 0}","[1, 2, 8, 48, 384, 3840, 46080]",lambda x: (2 ** (x + 1)) * (3 ** (x - 1)) * 5,645120,False,True
+"{'fn': 'lambda x: 5 ** (1 * x)', 'offset': 0}","[1, 5, 25, 125, 625, 3125, 15625, 78125]",lambda x: 5 ** (x + 1),390625,False,True
+"{'fn': 'lambda x: (5 * x) ** 3', 'offset': 0}","[0, 125, 1000, 3375]",lambda x: (5 * x) ** 3,8000,True,True
+"{'fn': 'lambda x: (2 * x) ** 4', 'offset': 0}","[0, 16, 256, 1296]",lambda x: (2 * x) ** 4,4096,True,True
+"{'fn': 'lambda x: 4 ** (3 * x)', 'offset': 0}","[1, 64, 4096, 262144, 16777216, 1073741824, 68719476736, 4398046511104]",lambda x: (2 ** (x+1)) * (2 ** (x-1)),281474976710656,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 1)', 'offset': 0}","[1, 5, 41, 493, 7889, 157781, 3786745]",lambda x: (6 * x) ** (x + 1),9144585,False,False
+"{'fn': 'lambda x: (x * 5) % (2+1)', 'offset': 0}","[0, 2, 1, 0]","lambda x: [0,2,1,0][x]",-1,True,False
+"{'fn': 'lambda x: (5 * x) * 2', 'offset': 0}","[0, 10, 20]",lambda x: (x * 10) % (3+1),30,False,True
+"{'fn': 'lambda x: 4 ** (4 * x)', 'offset': 0}","[1, 256, 65536]",lambda x: (4 * x) ** 8,4194304,False,False
+"{'fn': 'lambda x: (4 * x) | 4', 'offset': 0}","[4, 4, 12, 12]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1)][x],20,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 3 * x * fn(fn,x-1) + 2)', 'offset': 0}","[1, 5, 32, 290, 3482, 52232, 940178]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 6 * x * fn(fn,x-1) + 5)",8174514,False,False
+"{'fn': 'lambda x: (1 * x) ** 3', 'offset': 0}","[0, 1, 8, 27, 64]",lambda x: 3 ** (x * 2),125,False,True
+"{'fn': 'lambda x: (x * 2) % (0+1)', 'offset': 0}","[0, 0, 0, 0, 0]",lambda x: (x * 0) % (1+1),0,True,True
+"{'fn': 'lambda x: 5 ** (0 * x)', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1]",lambda x: (x * 0) + 1,1,True,True
+"{'fn': 'lambda x: (2 * x) * 0', 'offset': 0}","[0, 0, 0, 0, 0]",lambda x: (x * 0) + 0,0,True,True
+"{'fn': 'lambda x: (x * 5) % (0+1)', 'offset': 0}","[0, 0, 0, 0, 0, 0, 0, 0, 0]",lambda x: (x * 0) % (9+1),0,False,True
+"{'fn': 'lambda x: (x * 2) % (3+1)', 'offset': 0}","[0, 2, 0, 2, 0, 2, 0, 2]",lambda x: (x % 2) * 2,0,True,True
+"{'fn': 'lambda x: 5 ** (3 * x)', 'offset': 0}","[1, 125, 15625, 1953125, 244140625, 30517578125, 3814697265625, 476837158203125]",lambda x: 5 ** (x + 1) * 1,59604644775390625,False,True
+"{'fn': 'lambda x: (1 * x) ** 4', 'offset': 0}","[0, 1, 16, 81, 256]",lambda x: 4 ** (x + 1),625,False,True
+"{'fn': 'lambda x: (3 * x) | 4', 'offset': 0}","[4, 7, 6]",lambda x: (3 * x) % (2+1),9,False,False
+"{'fn': 'lambda x: (1 * x) ** 0', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1,1,False,True
+"{'fn': 'lambda x: (5 * x) | 3', 'offset': 0}","[3, 7, 11, 15, 23, 27, 31]",lambda x: [i for i in range(100) if i % (4 + 1) or i % (0 + 1)][x],35,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 1 * x * fn(fn,x-1) + 4)', 'offset': 0}","[1, 5, 14, 46, 188, 944, 5668, 39680]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 4)",27720,False,False
+"{'fn': 'lambda x: (2 * x) ** 3', 'offset': 0}","[0, 8, 64, 216]",lambda x: 3 ** (2 * x),512,False,True
+"{'fn': 'lambda x: 3 ** (2 * x)', 'offset': 0}","[1, 9, 81, 729, 6561]",lambda x: 3 ** (2 * x),59049,True,True
+"{'fn': 'lambda x: (3 * x) * 0', 'offset': 0}","[0, 0, 0, 0, 0, 0, 0, 0, 0]",lambda x: (x * 9) % (0+1),0,False,True
+"{'fn': 'lambda x: (x * 3) % (3+1)', 'offset': 0}","[0, 3, 2, 1, 0, 3, 2, 1, 0]",lambda x: [i for i in range(100) if i % (3 + 1) or i % (2 + 1) or i % (1 + 1)][x],3,False,True
+"{'fn': 'lambda x: (x * 3) % (0+1)', 'offset': 0}","[0, 0, 0, 0, 0, 0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: (4 * x) * 3', 'offset': 0}","[0, 12, 24, 36, 48]",lambda x: (x * 12) | 0,60,True,True
+"{'fn': 'lambda x: (5 * x) + 3', 'offset': 0}","[3, 8, 13, 18, 23]",lambda x: (5 * x) + 3,28,True,True
+"{'fn': 'lambda x: 1 ** (3 * x)', 'offset': 0}","[1, 1, 1, 1, 1, 1]",lambda x: 1 ** (0 * x),1,True,True
+"{'fn': 'lambda x: (1 * x) | 2', 'offset': 0}","[2, 3, 2]",lambda x: (x * 1) % (3+1),3,True,True
+"{'fn': 'lambda x: (x * 4) % (4+1)', 'offset': 0}","[0, 4, 3, 2, 1]",lambda x: (x * 4) % (3+1),0,False,True
+"{'fn': 'lambda x: (1 * x) | 1', 'offset': 0}","[1, 1, 3, 3, 5, 5, 7]",lambda x: (2 * x) | (x // 2),7,False,True
+"{'fn': 'lambda x: (2 * x) | 4', 'offset': 0}","[4, 6, 4, 6, 12]",lambda x: [i for i in range(100) if i % (4 + 1) or i % (6 + 1)][x],4,False,False
+"{'fn': 'lambda x: 2 ** (4 * x)', 'offset': 0}","[1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456]",lambda x: 4 ** (4 * x + 1),4294967296,False,True
+"{'fn': 'lambda x: (3 * x) ** 0', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1,1,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 3)', 'offset': 0}","[1, 5, 23, 141, 1131, 11313, 135759, 1900629, 30410067]",lambda x: (2 * x + 1) ** (2 * x + 1),474583123,False,False
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 1 * x * fn(fn,x-1) + 2)', 'offset': 0}","[1, 3, 8, 26, 106]",lambda x: (x * (x + 1) * (2 * x + 1)) // 6,430,False,False
+"{'fn': 'lambda x: (5 * x) * 4', 'offset': 0}","[0, 20, 40, 60]",lambda x: (20 * x) | 0,80,True,True
+"{'fn': 'lambda x: (2 * x) * 4', 'offset': 0}","[0, 8, 16, 24, 32, 40]",lambda x: 8 * x,48,True,True
+"{'fn': 'lambda x: 4 ** (0 * x)', 'offset': 0}","[1, 1, 1, 1, 1, 1, 1, 1, 1]",lambda x: 1,1,False,True
+"{'fn': 'lambda x: (x * 4) % (0+1)', 'offset': 0}","[0, 0, 0, 0, 0]",lambda x: 0 ** (2 * x),0,True,True
+"{'fn': 'lambda x: (5 * x) ** 2', 'offset': 0}","[0, 25, 100]",lambda x: (5 * x) ** 2,225,True,True
+"{'fn': 'lambda x: (3 * x) + 2', 'offset': 0}","[2, 5, 8, 11, 14, 17, 20]",lambda x: (3 * x) + 2,23,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * x * fn(fn,x-1) + 2)', 'offset': 0}","[1, 4, 18, 110, 882, 8822, 105866, 1482126, 23714018]",lambda x: (2 * x) ** (2 * x),372030234,False,False
+"{'fn': 'lambda x: (x * 1) % (4+1)', 'offset': 0}","[0, 1, 2, 3, 4, 0, 1]",lambda x: x % (5+1),2,True,True
+"{'fn': 'lambda x: 2 ** (3 * x)', 'offset': 0}","[1, 8, 64, 512, 4096, 32768, 262144]",lambda x: (2 ** x) * 1,2097152,False,True
+"{'fn': 'lambda x: (5 * x) + 4', 'offset': 0}","[4, 9, 14, 19, 24, 29]",lambda x: (5 * x) + 4,34,True,True
+"{'fn': 'lambda x: 3 ** (1 * x)', 'offset': 0}","[1, 3, 9, 27, 81, 243, 729, 2187, 6561]",lambda x: 3 ** x,19683,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 2)', 'offset': 0}","[1, 6, 50, 602, 9634, 192682, 4624370]",lambda x: (2 * x + 4) ** (x + 3),11881376,False,False
+"{'fn': 'lambda x: (x * 5) % (1+1)', 'offset': 0}","[0, 1, 0, 1, 0, 1, 0, 1, 0]",lambda x: (x * 5) % (2+1),1,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 0)', 'offset': 0}","[1, 4, 32, 384, 6144]",lambda x: 4 ** (2 * x + 1),49152,False,False
+"{'fn': 'lambda x: (1 * x) | 4', 'offset': 0}","[4, 5, 6, 7]",lambda x: (1 * x) + 4,8,True,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (5 + 1) or i % (0 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5, 7]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1) or i % (5 + 1)][x],11,True,False
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 2)', 'offset': 0}","[1, 7, 72]",lambda x: (6 * x) ** (x + 1),513,False,False
+"{'fn': 'lambda x: (3 * x) | 1', 'offset': 0}","[1, 3, 7, 9]",lambda x: (2 * x) + 1,11,True,False
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 1)', 'offset': 0}","[1, 6, 61, 916, 18321, 458026, 13740781]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 6 * x * fn(fn,x-1) + 1)",41006276,False,False
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 3 * x * fn(fn,x-1) + 3)', 'offset': 0}","[1, 6, 39, 354]",lambda x: (3 * x) ** (x + 1),3139,False,False
+"{'fn': 'lambda x: (x * 4) % (1+1)', 'offset': 0}","[0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (5 + 1) or i % (4 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5]",lambda x: (1 * x) + 1,6,True,True
+"{'fn': 'lambda x: (2 * x) | 2', 'offset': 0}","[2, 2, 6, 6, 10, 10, 14, 14]",lambda x: (2 * x) + (x // 2),18,False,True
+"{'fn': 'lambda x: (3 * x) ** 3', 'offset': 0}","[0, 27, 216, 729, 1728, 3375, 5832]",lambda x: 3 ** (3 * x),8000,False,False
+"{'fn': 'lambda x: (5 * x) | 1', 'offset': 0}","[1, 5, 11, 15, 21, 25, 31, 35]",lambda x: (4 * x) + (x - 1),39,False,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (2 + 1) or i % (4 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5]",lambda x: x + 1,6,True,True
+"{'fn': 'lambda x: (3 * x) + 1', 'offset': 0}","[1, 4, 7, 10, 13, 16, 19, 22]",lambda x: (3 * x) + 1,25,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 0)', 'offset': 0}","[1, 5, 50, 750, 15000, 375000, 11250000]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 6 * x * fn(fn,x-1) + 5)",337500000,False,False
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 3 * x * fn(fn,x-1) + 1)', 'offset': 0}","[1, 4, 25, 226, 2713, 40696, 732529, 15383110, 369194641]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 2 * fn(fn,x-1) + 3)",945203520,False,False
+"{'fn': 'lambda x: 1 ** (1 * x)', 'offset': 0}","[1, 1, 1]",lambda x: 1 ** (2 * x),1,True,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (4 + 1) or i % (4 + 1)][x]', 'offset': 0}","[1, 2, 3, 4]",lambda x: x + 1,5,True,False
+"{'fn': 'lambda x: (4 * x) ** 3', 'offset': 0}","[0, 64, 512, 1728, 4096]",lambda x: (4 * x) ** 4,8192,False,False
+"{'fn': 'lambda x: 1 ** (0 * x)', 'offset': 0}","[1, 1, 1, 1, 1]",lambda x: 1 ** (1 * x),1,True,True
+"{'fn': 'lambda x: (3 * x) * 3', 'offset': 0}","[0, 9, 18, 27, 36, 45, 54, 63, 72]",lambda x: (x * 9) % (9+1),81,False,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (3 + 1) or i % (4 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5, 6, 7]",lambda x: x + 1,8,True,True
+"{'fn': 'lambda x: (4 * x) * 4', 'offset': 0}","[0, 16, 32]",lambda x: (16 * x) | 0,48,True,True
+"{'fn': 'lambda x: (5 * x) + 2', 'offset': 0}","[2, 7, 12, 17]",lambda x: (5 * x) + 2,22,True,True
+"{'fn': 'lambda x: 4 ** (2 * x)', 'offset': 0}","[1, 16, 256, 4096, 65536, 1048576, 16777216, 268435456, 4294967296]",lambda x: 2 ** (4 * x),68719476736,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 1 * x * fn(fn,x-1) + 1)', 'offset': 0}","[1, 2, 5, 16, 65, 326, 1957]",lambda x: (2 ** x) * (3 ** (x - 1)) + 1,13700,False,True
+"{'fn': 'lambda x: (x * 4) % (3+1)', 'offset': 0}","[0, 0, 0, 0, 0, 0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: (2 * x) ** 2', 'offset': 0}","[0, 4, 16, 36, 64, 100, 144]",lambda x: (2 * x) ** 2,196,True,True
+"{'fn': 'lambda x: (4 * x) ** 4', 'offset': 0}","[0, 256, 4096, 20736, 65536, 160000, 331776, 614656, 1048576]",lambda x: (2 ** (x + 1)) * 256,1769472,False,False
+"{'fn': 'lambda x: (4 * x) ** 2', 'offset': 0}","[0, 16, 64, 144]",lambda x: (2 * x) ** 2 + (4 * x),256,False,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 3)', 'offset': 0}","[1, 8, 83, 1248]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 7 * x * fn(fn,x-1) + 1)",9841,False,False
+"{'fn': 'lambda x: (x * 2) % (2+1)', 'offset': 0}","[0, 2, 1, 0, 2]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (1 + 1) or i % (0 + 1)][x],1,False,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (5 + 1) or i % (1 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5, 7, 8, 9]",lambda x: [i for i in range(100) if i % (2 + 1) or i % (3 + 1)][x],11,False,False
+"{'fn': 'lambda x: (4 * x) * 0', 'offset': 0}","[0, 0, 0, 0, 0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: (5 * x) * 0', 'offset': 0}","[0, 0, 0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: (1 * x) ** 2', 'offset': 0}","[0, 1, 4, 9, 16, 25, 36, 49, 64]",lambda x: (x * x) | 0,81,False,True
+"{'fn': 'lambda x: (4 * x) * 2', 'offset': 0}","[0, 8, 16, 24, 32, 40, 48, 56]",lambda x: 8 * x,64,True,True
+"{'fn': 'lambda x: (x * 3) % (2+1)', 'offset': 0}","[0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: (2 * x) ** 0', 'offset': 0}","[1, 1, 1, 1]",lambda x: 1,1,True,True
+"{'fn': 'lambda x: (x * 3) % (4+1)', 'offset': 0}","[0, 3, 1, 4, 2, 0]",lambda x: x % 5,5,False,False
+"{'fn': 'lambda x: 3 ** (0 * x)', 'offset': 0}","[1, 1, 1, 1]",lambda x: 1,1,True,True
+"{'fn': 'lambda x: 5 ** (2 * x)', 'offset': 0}","[1, 25, 625]",lambda x: 5 ** (2 * x),15625,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 5 * x * fn(fn,x-1) + 4)', 'offset': 0}","[1, 9, 94, 1414]",lambda x: (3 * x) ** 4,20202,False,False
+"{'fn': 'lambda x: 3 ** (4 * x)', 'offset': 0}","[1, 81, 6561, 531441, 43046721, 3486784401, 282429536481, 22876792454961, 1853020188851841]",lambda x: (x * 7) ** (x + 1),1475789056,False,False
+"{'fn': 'lambda x: (1 * x) + 4', 'offset': 0}","[4, 5, 6, 7, 8]",lambda x: (1 * x) + 4,9,True,True
+"{'fn': 'lambda x: (x * 5) % (3+1)', 'offset': 0}","[0, 1, 2, 3]",lambda x: x,4,True,False
+"{'fn': 'lambda x: [i for i in range(100) if i % (5 + 1) or i % (3 + 1)][x]', 'offset': 0}","[1, 2, 3, 4, 5]",lambda x: (1 * x) + 1,6,True,True
+"{'fn': 'lambda x: (1 * x) * 0', 'offset': 0}","[0, 0, 0, 0, 0]",lambda x: (x * 5) % (0+1),0,True,True
+"{'fn': 'lambda x: (3 * x) | 2', 'offset': 0}","[2, 3, 6, 11, 14, 15, 18, 23]",lambda x: (5 * x) + (2 * (x // 3)) + (x % 3),28,False,False
+"{'fn': 'lambda x: (x * 5) % (4+1)', 'offset': 0}","[0, 0, 0, 0]",lambda x: 0,0,True,True
+"{'fn': 'lambda x: (2 * x) + 4', 'offset': 0}","[4, 6, 8, 10, 12, 14, 16, 18, 20]",lambda x: (2 * x) + 2,22,False,True
+"{'fn': 'lambda x: (4 * x) ** 0', 'offset': 0}","[1, 1, 1]",lambda x: 1,1,True,True
+"{'fn': '(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 3)', 'offset': 0}","[1, 7, 59, 711, 11379, 227583, 5461995]",lambda x: (3 * x) * (2 * x - 1) + 1,12451891,False,False
+"{'fn': 'lambda x: (x * 2) % (4+1)', 'offset': 0}","[0, 2, 4, 1, 3]",lambda x: (x * 5) % (4+1),5,False,False
+"{'fn': 'lambda x: (5 * x) ** 4', 'offset': 0}","[0, 625, 10000, 50625, 160000, 390625]",lambda x: 5 ** (2 * x),812500,False,False
+"{'fn': 'lambda x: (x * 2) % (1+1)', 'offset': 0}","[0, 0, 0, 0]",lambda x: (x * 0) % (2+1),0,True,True
+"{'fn': 'lambda x: (1 * x) * 4', 'offset': 0}","[0, 4, 8, 12, 16, 20, 24]",lambda x: (4 * x) ** 0,28,False,True
+"{'fn': 'lambda x: (5 * x) * 1', 'offset': 0}","[0, 5, 10, 15, 20, 25]",lambda x: (5 * x) * 1,30,True,True
+"{'fn': 'lambda x: [i for i in range(100) if i % (1 + 1) or i % (4 + 1)][x]', 'offset': 0}","[1, 2, 3, 4]",lambda x: x + 1,5,True,True
+"{'fn': 'lambda x: 5 ** (4 * x)', 'offset': 0}","[1, 625, 390625, 244140625, 152587890625, 95367431640625, 59604644775390625, 37252902984619140625]",lambda x: (5 * x) ** (x + 1),2384185791015625,False,False
+"{'fn': 'lambda x: (5 * x) + 1', 'offset': 0}","[1, 6, 11]",lambda x: (5 * x) - 4,16,True,True
+"{'fn': 'lambda x: (3 * x) ** 4', 'offset': 0}","[0, 81, 1296, 6561, 20736]","(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else 4 * x * fn(fn,x-1) + 3)",531441,False,False

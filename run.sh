@@ -1,0 +1,3 @@
+python main.py --multirun sequence_completion_capability.model=text-davinci-003,davinci,gpt-3.5-turbo,gpt-4-0314 string_transformation_completion_equality=false compute_dependence_with_base_changes=false  sequence_completion_equality=false
+python main.py --multirun sequence_completion_capability.model=text-davinci-003,davinci,gpt-3.5-turbo,gpt-4-0314 string_transformation_completion_equality=false compute_dependence_with_base_changes=false sequence_completion_equality=false
+python main.py --multirun sequence_completion_capability.model=text-davinci-003,davinci,gpt-3.5-turbo,gpt-4-0314 string_transformation_completion_equality=false compute_dependence_with_base_changes=false sequence_completion_equality=false
