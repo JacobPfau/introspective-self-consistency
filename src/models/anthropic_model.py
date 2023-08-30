@@ -93,7 +93,7 @@ def _convert_gpt_roles(
     """
     new_turns = []
     for turn in prompt_turns:
-        if turn["role"] == "user":
+        if turn["role"] in ["user", "system"]:
             new_turns.append({"role": "Human", "content": turn["content"]})
         elif turn["role"] == "assistant":
             new_turns.append({"role": "Assistant", "content": turn["content"]})

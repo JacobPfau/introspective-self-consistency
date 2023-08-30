@@ -115,7 +115,7 @@ def sequence_completion_equality(
     # use the model to check if the completion is consistent with the explanation
     consistency_resp = None
     if evaluate_model_consistency:
-        consistency_prompt = _generate_consistency_check_prompt(sequence, explanation)
+        consistency_prompt = _generate_consistency_check_prompt(sequence + f',{actual_completion}', explanation)
         consistency_resp_raw = generate_response_with_turns(
             model, [{"role": "user", "content": consistency_prompt}]
         )

@@ -1,0 +1,9 @@
+string_transformation_completion_equality: false
+sequence_completion_equality:
+  model: text-davinci-003
+  max_offset: 8
+  num_shots: 4
+  use_cot: false
+  few_shot_prompt_type: random
+sequence_completion_capability: false
+compute_dependence_with_base_changes: false

@@ -160,7 +160,7 @@ def find_ambiguous_integer_sequences(
     ambiguous_sequences = {}
     for ind, pair in enumerate(progressions_to_check):
         metadata_a, fn_a = pair
-        for metadata_b, fn_b in list(progressions_to_check)[ind + 1 :]:
+        for metadata_b, fn_b in list(progressions_to_check)[ind + 1:]:
             if fn_a == fn_b:
                 continue
 
@@ -212,7 +212,7 @@ def check_ambiguity(
     for step_a_offset in range(step_offsets):
         for step_b_offset in range(step_offsets):
             completions = []
-            seq_acceptable = 1  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
+            seq_acceptable = 0  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
             # 0 if not ambiguous/not disambiguate-able. Otherwise stores index of disambiguating value
             for step in range(num_steps_to_check):
                 fn_a_step = eval(fn_a)(step + step_a_offset)
@@ -227,9 +227,11 @@ def check_ambiguity(
                 # they are not ambiguous: continue.
                 fn_a_step = eval(fn_a)(step + 1 + step_a_offset)
                 fn_b_step = eval(fn_b)(step + 1 + step_b_offset)
+
                 if fn_a_step == fn_b_step:
                     continue
-
+                elif fn_a_step != fn_b_step and step == num_steps_to_check - 1:
+                    seq_acceptable = 1
             # if we have a sequence that isn't all the same
             # and is more than one we found an ambiguous sequence
             if (
