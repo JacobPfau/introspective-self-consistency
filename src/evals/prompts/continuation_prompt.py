@@ -25,9 +25,10 @@ The sequences will be taken from the list of ambiguous sequences.
 """
 
 import logging
+import random
 from typing import List, Optional, Union
 
-from src.evals.prompts.distribution_prompt import TASK_PROMPTS
+from src.evals.prompts.distribution_prompt import ROLE_PROMPTS, TASK_PROMPTS
 from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
@@ -50,10 +51,12 @@ def create_continuation_prompt(
     shots: int = 0,
     shot_method: str = "random",
     role_prompt: Optional[str] = None,
+    seed: int = 0,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
     """
+    random.seed(seed)
     sequence_length = len(sequence)
     prompt_text = "" if model_name in OpenAITextModels.list() else []
     if shots > 0:
@@ -65,9 +68,12 @@ def create_continuation_prompt(
             )
             prompt_text += shot_prompt
 
-    # todo: include role_rompt
     text = TASK_PROMPTS[task_prompt]["continuation"]
     text += "\n"
+    # TODO: Decide if we want role prompt to go here
+    if role_prompt is not None:
+        text += ROLE_PROMPTS[role_prompt]
+        text += "\n"
     text += f"The sequence is in base {base}."
     text += "\nQ: "
     if base == 10:
@@ -91,7 +97,13 @@ def create_continuation_prompt(
                 "content": "Here are some examples of sequence continuations.",
             }
         ]
-        whole_prompt = pretext + prompt_text + [{"role": "user", "content": text}]
+
+        whole_prompt = (
+            pretext
+            + prompt_text
+            + [{"role": "user", "content": text}]
+            + [{"role": "assistant", "content": "A: "}]
+        )
         return whole_prompt
     else:
         raise ValueError(f"Invalid model name: {model_name}")

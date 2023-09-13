@@ -1,0 +1,3 @@
+- +task=compute_dependence_with_base_changes
+- task_prompt=max-probability
+- role_prompt=gpt-3

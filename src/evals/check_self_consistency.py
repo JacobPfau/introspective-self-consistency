@@ -27,6 +27,7 @@ def self_consistency_evaluation(
     temperature: float,
     samples: int,
     role_prompt: Optional[str] = None,
+    seed: int = 0,
 ):
     """
     Given a sequence, prompt the model to both continue the sequence and
