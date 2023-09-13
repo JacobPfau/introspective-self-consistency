@@ -1,4 +1,0 @@
-- +task=compute_dependence_with_base_changes
-- task_prompt=max-probability
-- role_prompt=unpredictable-human
-- model=gpt-3.5-turbo

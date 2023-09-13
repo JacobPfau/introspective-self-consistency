@@ -1,9 +1,0 @@
-task: compute_dependence_with_base_changes
-model: gpt-3.5-turbo
-base: 10
-num_samples: 1
-on_ambiguous_sequences: true
-num_shots: 4
-shot_method: random
-task_prompt: self-consistency
-role_prompt: gpt-og

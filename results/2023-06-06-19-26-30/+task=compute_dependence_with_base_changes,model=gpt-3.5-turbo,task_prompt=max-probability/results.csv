@@ -1,2 +1,0 @@
-,task,model,base,num_samples,on_ambiguous_sequences,num_shots,shot_method,task_prompt,role_prompt,total sequences,invalid sequences,valid sequences,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent
-0,compute_dependence_with_base_changes,OpenAIChatModels.CHAT_GPT_35,10,1,True,4,random,max-probability,,57,4,53,67.0,2.0,0.0,25.0

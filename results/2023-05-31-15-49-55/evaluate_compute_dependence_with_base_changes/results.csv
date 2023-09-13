@@ -1,2 +1,0 @@
-,model,sequence_type,total sequences,invalid sequences,valid sequences,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent
-0,gpt-3.5-turbo,binary,48,300,-252,7.000000000000001,0.0,7.000000000000001,87.0
