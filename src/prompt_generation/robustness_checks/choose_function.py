@@ -11,18 +11,14 @@ SYSTEM_PROMPT + (BASE_PROMPT + BASE_PROMPT_COMPLETION (including answer)
 
 """
 import random
-
-# import re
 from typing import Dict, List, Union
 
-from evals.prompts.tokenisers import number_format_dict
 from evals.utils import _generate_random_function, generate_wrong_functions
 from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 from pipelines.baseb_sequence_completions import numberToBase
-from pipelines.sequence_completions import (  # BASE_PROMPT,; COT_PROMPT,; COT_STEP,
-    SYSTEM_PROMPT,
-    sequence_functions,
-)
+from pipelines.sequence_completions import sequence_functions
+from src.prompt_generation.base_prompts import SYSTEM_PROMPT
+from src.prompt_generation.robustness_checks.tokenisers import number_format_dict
 
 
 def function_selection_prompt(
@@ -147,3 +143,4 @@ def create_cot_text(function: str, sequence: list[int]) -> str:
     Create the COT text for a single shot.
     """
     # TODO: Implement COT (wait on Dom response)
+    raise NotImplementedError()

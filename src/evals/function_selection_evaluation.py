@@ -10,13 +10,16 @@ model is able to choose the function which generated a sequence, where we hold t
 correct function and sequence constant, and vary the incorrect options. This allows
 us to evaluate whether the model is capable of recoginising a single correct function.
 """
+
 import random
 from copy import deepcopy
 from typing import List, Tuple, Union
 
-from evals.prompts.choose_function import function_selection_prompt
 from evals.utils import choose_function, generate_wrong_functions
 from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
+from src.prompt_generation.robustness_checks.choose_function import (
+    function_selection_prompt,
+)
 
 
 def function_class_selection_evaluation(
@@ -109,8 +112,7 @@ def function_selection_evaluation(
     correct_choices = 0
     incorrect_choices = 0
     invalid_outputs = 0
-    # print("Ole troubleshooting: ")
-    print(model_name)
+
     if model_name == "CHAT":
         # Generate a prompt
         print("huzzah")
@@ -134,8 +136,7 @@ def function_selection_evaluation(
         )
     else:
         raise ValueError("Model name not recognised")
-    # print("Ole troubleshooting: ")
-    # print(prompt)
+
     for i in range(num_samples):
         # Randomly choose one of the correct functions
         correct_function = random.choice(correct_functions)
@@ -156,15 +157,11 @@ def function_selection_evaluation(
                 incorrect_functions[i] for i in incorrect_function_indices
             ]
         sampled_functions.insert(correct_function_index, correct_function)
-        # Convert target sequence and functions to base b
-        # if base != 10:
-        #     print("target sequence: ", target_sequence)
-        #     target_sequence = convert_numbers_to_base_b(target_sequence, base)
 
         # Choose the function
         try:
             new_prompt = deepcopy(prompt)
-            # print("trying to get a response")
+
             model_response = choose_function(
                 possible_functions=sampled_functions,
                 correct_function_indices=[correct_function_index + 1],
@@ -174,7 +171,7 @@ def function_selection_evaluation(
                 temperature=temperature,
                 base=base,
             )
-            # print("got a response")
+
         except ValueError:
             invalid_outputs += 1
             continue

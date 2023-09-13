@@ -2,26 +2,19 @@ import random
 from typing import Any, Dict, List, Literal, Optional, Tuple
 
 from src.models import BaseModel
+from src.prompt_generation.alternative_considerations import (
+    BASE_CONSIDER_PROMPT,
+    BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE,
+    MODEL_PRIMING_PROMPT,
+)
 
-from .sequence_completions import (
+from ..prompt_generation.base_prompts import (
     BASE_PROMPT,
     BASE_PROMPT_COMPLETION,
     BASE_PROMPT_EXPLANATION,
     SYSTEM_PROMPT,
-    resolve_fn,
 )
-
-BASE_CONSIDER_PROMPT = """
-Consider up to {} possible and valid answers separated by escape character '\\n' "
-"""
-
-MODEL_PRIMING_PROMPT = ", as determined by you, {}."
-
-BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE = """
-Select the code that generates the above sequence from the following options.
-Only respond with the number of the valid option.
-Options:
-"""
+from .sequence_completions import resolve_fn
 
 
 def _create_sequence_prompt(

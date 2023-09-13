@@ -28,7 +28,6 @@ import logging
 import random
 from typing import List, Optional, Union
 
-from src.evals.prompts.distribution_prompt import ROLE_PROMPTS, TASK_PROMPTS
 from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
@@ -36,6 +35,10 @@ from src.models.openai_model import (
     OpenAITextModels,
 )
 from src.pipelines.sequence_completions import sequence_functions
+from src.prompt_generation.robustness_checks.distribution_prompt import (
+    ROLE_PROMPTS,
+    TASK_PROMPTS,
+)
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 del sequence_functions["recursive_progression"]
