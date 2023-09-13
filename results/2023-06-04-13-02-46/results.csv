@@ -1,2 +1,0 @@
-,model,sequence_type,total sequences,invalid sequences,valid sequences,correct_consistent,correct_inconsistent,incorrect_consistent,incorrect_inconsistent
-0,OpenAIChatModels.CHAT_GPT_35,binary,57,57,0,0.0,0.0,0.0,0.0
