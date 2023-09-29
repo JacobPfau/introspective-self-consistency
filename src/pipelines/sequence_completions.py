@@ -332,17 +332,19 @@ def _create_sequence_prompt(
 
     completion = ""
     if task_type == TaskType.COMPLETION:
-        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, sequence)
+        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
         last_step = len(sequence.split(","))
         completion = resolve_fn(fn_item, last_step)
     elif task_type == TaskType.EXPLANATION:
 
         if use_multiple_choice:
             prompt = get_formatted_prompt(
-                PromptBase.EXPLANATION_MULTIPLE_CHOICE, sequence
+                PromptBase.EXPLANATION_MULTIPLE_CHOICE, {"seq": sequence}
             )
         else:
-            prompt = get_formatted_prompt(PromptBase.BASE_EXPLANATION, sequence)
+            prompt = get_formatted_prompt(
+                PromptBase.BASE_EXPLANATION, {"seq": sequence}
+            )
         completion = fn_item["fn"]
     else:
         raise ValueError(f"Invalid task type: {task_type}")

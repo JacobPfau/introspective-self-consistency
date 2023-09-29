@@ -1,2 +1,2 @@
-For the sequence: {}
+For the sequence: {seq}
 Complete the next number and only the next number.

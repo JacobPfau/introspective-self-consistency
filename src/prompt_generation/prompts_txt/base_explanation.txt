@@ -1,2 +1,2 @@
-For the sequence: {}
+For the sequence: {seq}
 Give the code that generates the above sequence.

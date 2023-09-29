@@ -20,14 +20,15 @@ def _create_sequence_prompt(
 
     answer = ""
     if task_type == TaskType.COMPLETION:
-        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, [sequence])
+        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
         if use_multiple_choice:
             # TODO: do we ever use this?
             pass
         elif max_considerations is not None and model is not None:
             prompt = prompt[:-2]  # leave out the last period
             prompt += get_formatted_prompt(
-                PromptBase.CONSIDERATIONS, [model.value, max_considerations]
+                PromptBase.CONSIDERATIONS,
+                {"n_consider": max_considerations, "model_name": model.value},
             )
 
             # roll out valid fns to obtain valid completions
@@ -50,11 +51,14 @@ def _create_sequence_prompt(
         if use_multiple_choice:
             raise NotImplementedError()
         elif max_considerations is not None and model is not None:
-            prompt = get_formatted_prompt(PromptBase.BASE_EXPLANATION, [sequence])[
+            prompt = get_formatted_prompt(
+                PromptBase.BASE_EXPLANATION, {"seq": sequence}
+            )[
                 :-2
             ]  # leave out the last period
             prompt += get_formatted_prompt(
-                PromptBase.CONSIDERATIONS, [model.value, max_considerations]
+                PromptBase.CONSIDERATIONS,
+                {"n_consider": max_considerations, "model_name": model.value},
             )
 
             # separate valid answers properly

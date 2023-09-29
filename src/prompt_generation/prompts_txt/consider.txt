@@ -1,1 +1,1 @@
-Consider up to {} possible and valid answers separated by escape character '\\n' , as determined by you, {}.
+Consider up to {n_consider} possible and valid answers separated by escape character '\\n' , as determined by you, {model_name}.

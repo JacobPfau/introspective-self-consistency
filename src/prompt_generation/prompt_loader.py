@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Any, List
 
 
 class PromptBase(Enum):
@@ -15,7 +14,7 @@ def _load_base_prompt_from_txt(txt_file: str) -> str:
         return f.read()
 
 
-def get_formatted_prompt(prompt_base: PromptBase, args: List[Any] = []) -> str:
+def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
 
     if prompt_base == PromptBase.BASE_COMPLETION:
         path = "src/prompt_generation/base_completion.txt"
@@ -33,6 +32,6 @@ def get_formatted_prompt(prompt_base: PromptBase, args: List[Any] = []) -> str:
     base_prompt = _load_base_prompt_from_txt(path)
 
     try:
-        return base_prompt.format(args)
+        return base_prompt.format(**kw_args)
     except Exception as e:
         raise ValueError(f"Invalid args for prompt base: {prompt_base}") from e
