@@ -1,0 +1,4 @@
+For the sequence: {}
+Select the code that generates the above sequence from the following options.
+Only respond with the number of the valid option.
+Options:

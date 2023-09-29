@@ -5,14 +5,6 @@ The sequence's are not always 0 indexed, some are offset starting from an arbitr
 You answer accurately and concisely.
 """
 
-SYSTEM_PROMPT_COMPLETION = """
-You only respond with numbers.
-"""
-
-SYSTEM_PROMPT_EXPLANATION = """
-You only respond with code.
-"""
-
 BASE_PROMPT = """
 For the sequence: {}
 """
@@ -29,14 +21,4 @@ BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE = """
 Select the code that generates the above sequence from the following options.
 Only respond with the number of the valid option.
 Options:
-"""
-
-COT_PROMPT = """
-Let's solve this step by step:
-"""
-
-COT_STEP = """
-Step {}:
->>> fn = {}; fn({})
-{}
 """
