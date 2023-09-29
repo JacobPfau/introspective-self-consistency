@@ -7,6 +7,8 @@ class PromptBase(Enum):
     EXPLANATION_MULTIPLE_CHOICE = "base_explanation_multiple_choice"
     CONSIDERATIONS = "consideration"
     SYSTEM_MATH = "system_math"
+    BASE_CONSISTENCY = "base_consistency"
+    CONSISTENCY_COMPLETION = "consistency_completion"
 
 
 def _load_base_prompt_from_txt(txt_file: str) -> str:
@@ -26,6 +28,10 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
         path = "src/prompt_generation/consider.txt"
     elif prompt_base == PromptBase.SYSTEM_MATH:
         path = "src/prompt_generation/system_math.txt"
+    elif prompt_base == PromptBase.BASE_CONSISTENCY:
+        path = "src/prompt_generation/base_consistency.txt"
+    elif prompt_base == PromptBase.CONSISTENCY_COMPLETION:
+        path = "src/prompt_generation/consistency_completion.txt"
     else:
         raise ValueError(f"Invalid prompt base: {prompt_base}")
 
