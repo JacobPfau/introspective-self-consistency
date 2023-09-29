@@ -309,7 +309,7 @@ def _create_sequence_prompt(
     fn_item: dict,
     task_type: TaskType,
     use_multiple_choice=False,
-) -> Tuple[str, str, str]:
+) -> Tuple[str, str]:
     """Creates a prompt for completion type or explanation type prompts
 
     Example:
@@ -330,11 +330,10 @@ def _create_sequence_prompt(
     if isinstance(task_type, str):
         task_type = TaskType(task_type)
 
-    completion = ""
     if task_type == TaskType.COMPLETION:
         prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
         last_step = len(sequence.split(","))
-        completion = resolve_fn(fn_item, last_step)
+        completion = str(resolve_fn(fn_item, last_step))
     elif task_type == TaskType.EXPLANATION:
 
         if use_multiple_choice:
@@ -463,7 +462,7 @@ def generate_sequence_completion_prompt(
         ]
         prompt_turns.extend(turns)
 
-    prompt, answer, _ = _create_sequence_prompt(sequence, fn_item, task_type)
+    prompt, answer = _create_sequence_prompt(sequence, fn_item, task_type)
 
     prompt_turns.append({"role": "user", "content": prompt})
     return {"prompt_turns": prompt_turns, "answer": answer}
