@@ -6,9 +6,8 @@ from tqdm.auto import tqdm
 
 from src.evals.config import SequenceCompletionEqConfig
 from src.models.completions import generate_response_with_turns
-
+from src.pipelines import ShotSamplingType, TaskType
 from src.pipelines.sequence_completions import (
-    PromptType,
     find_ambiguous_integer_sequences,
     generate_sequence_completion_prompt,
 )
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 MAX_OFFSET = 8
 NUM_SHOTS = 8
-COT = True
 
 MODEL_CONSISTENCY_SHOTS = [
     {"sequence": "1, 2, 3", "fn": "lambda x: x + 1", "answer": "Y"},
@@ -74,17 +72,15 @@ def sequence_completion_equality(
     model: str,
     max_offset: int = 8,
     num_shots: int = 8,
-    cot: bool = True,
     evaluate_model_completion: bool = True,
     evaluate_model_consistency: bool = True,
     ambiguous_sequences: dict = None,
-    few_shot_prompt_type: PromptType = "random",
+    few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM,
 ):
     completion_prompt = generate_sequence_completion_prompt(
         sequence=sequence,
         fn_item=fn,
         n_shots=num_shots,
-        use_cot=cot,
         ambiguous_sequences=ambiguous_sequences,
         shot_type=few_shot_prompt_type,
     )
@@ -93,8 +89,7 @@ def sequence_completion_equality(
         sequence=sequence,
         fn_item=fn,
         n_shots=num_shots,
-        use_cot=cot,
-        prompt_type="explanation",
+        task_type=TaskType.EXPLANATION,
         ambiguous_sequences=ambiguous_sequences,
         shot_type=few_shot_prompt_type,
     )
@@ -115,7 +110,9 @@ def sequence_completion_equality(
     # use the model to check if the completion is consistent with the explanation
     consistency_resp = None
     if evaluate_model_consistency:
-        consistency_prompt = _generate_consistency_check_prompt(sequence + f',{actual_completion}', explanation)
+        consistency_prompt = _generate_consistency_check_prompt(
+            sequence + f",{actual_completion}", explanation
+        )
         consistency_resp_raw = generate_response_with_turns(
             model, [{"role": "user", "content": consistency_prompt}]
         )
@@ -172,8 +169,7 @@ def sequence_completion_equality(
 def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) -> None:
     max_offset = config.max_offset
     num_shots = config.num_shots
-    cot = config.cot
-    few_shot_prompt_type: PromptType = config.few_shot_prompt_type
+    few_shot_prompt_type = ShotSamplingType(config.few_shot_prompt_type)
 
     logger.info("Evaluating sequence completion equality...")
     ambiguous_sequences = find_ambiguous_integer_sequences()
@@ -189,7 +185,6 @@ def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) ->
                         model=config.model,
                         max_offset=max_offset,
                         num_shots=num_shots,
-                        cot=cot,
                         ambiguous_sequences=ambiguous_sequences,
                         few_shot_prompt_type=few_shot_prompt_type,
                     )

@@ -321,10 +321,10 @@ def _create_sequence_prompt(
     Args:
         sequence (str): the sequence
         fn_item (dict): the fn_item
-        prompt_type (Literal[&quot;completion&quot;, &quot;explanation&quot;]): type of prompt to use
+        task_type (TaskType): the task type (completion or explanation)
 
     Returns:
-        Tuple[str, str, str]: prompt, compleition, and chain of thought
+        Tuple[str, str]: prompt, completion
     """
 
     if isinstance(task_type, str):
@@ -436,7 +436,6 @@ def generate_sequence_completion_prompt(
     if isinstance(shot_type, str):
         shot_type = ShotSamplingType(shot_type)
 
-    # TODO: this should be generic so it isn't coupled to ChatGPT
     prompt_turns = [
         {
             "role": "system",

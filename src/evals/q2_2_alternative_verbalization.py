@@ -87,7 +87,7 @@ def _eval_sequence_explanation(
         sequence,
         valid_fns,
         ambiguous_sequences=amb_seqs,
-        prompt_type="explanation",
+        task_type="explanation",
         n_shots=num_shots,
         max_considerations=max_considerations,
         model=model,

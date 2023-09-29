@@ -102,7 +102,6 @@ def run_q2_1_eval(
                 model,
                 org_func,
                 config.num_shots,
-                config.cot,
                 config.few_shot_prompt_type,
                 amb_seqs,
                 sequence,
@@ -318,7 +317,6 @@ def _eval_sequence_completion(
     model: BaseModel,
     org_func: Dict[str, Any],
     num_shots: int,
-    cot: bool,
     few_shot_prompt_type: str,
     amb_seqs: Dict[str, List[Dict[str, Union[str, int]]]],
     sequence: str,
@@ -329,7 +327,6 @@ def _eval_sequence_completion(
         sequence,
         org_func,
         n_shots=num_shots,
-        use_cot=cot,
         ambiguous_sequences=amb_seqs,
         shot_type=few_shot_prompt_type,
     )

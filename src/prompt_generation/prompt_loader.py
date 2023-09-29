@@ -6,7 +6,7 @@ class PromptBase(Enum):
     BASE_COMPLETION = "base_completion"
     BASE_EXPLANATION = "base_explanation"
     EXPLANATION_MULTIPLE_CHOICE = "base_explanation_multiple_choice"
-    CONSIDER = "consider"
+    CONSIDERATIONS = "consideration"
     SYSTEM_MATH = "system_math"
 
 
@@ -23,7 +23,7 @@ def get_formatted_prompt(prompt_base: PromptBase, args: List[Any] = []) -> str:
         path = "src/prompt_generation/base_explanation.txt"
     elif prompt_base == PromptBase.EXPLANATION_MULTIPLE_CHOICE:
         path = "src/prompt_generation/explanation_mc.txt"
-    elif prompt_base == PromptBase.CONSIDER:
+    elif prompt_base == PromptBase.CONSIDERATIONS:
         path = "src/prompt_generation/consider.txt"
     elif prompt_base == PromptBase.SYSTEM_MATH:
         path = "src/prompt_generation/system_math.txt"

@@ -42,13 +42,11 @@ class AmbibenchCatPredConfig(BaseEvalConfig):
 @dataclass
 class StringTransformationConfig(BaseEvalConfig):
     num_shots = NUM_SHOTS
-    cot = False
 
 
 @dataclass
 class SequenceCompletionEqConfig(BaseEvalConfig):
     num_shots = NUM_SHOTS
-    cot = True
     max_offset = MAX_OFFSET
     few_shot_prompt_type = "random"
 
@@ -77,7 +75,6 @@ class Q21LogprobInequalityConfig(BaseEvalConfig):
     num_valid: int = field(default=2)
     num_invalid: int = field(default=3)
     num_multiple_choices: int = field(default=5)  # number of multiple choice options
-    cot: bool = field(default=False)
     few_shot_prompt_type: str = field(default="random")
     invalid_fn_type: str = field(default="random")
 

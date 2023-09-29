@@ -6,8 +6,7 @@ Able to generate n_shot examples, and for each shot provide n_functions + 1 func
 Will use some work from pipelines.sequence_completions.py
 
 General format:
-SYSTEM_PROMPT + (BASE_PROMPT + BASE_PROMPT_COMPLETION (including answer)
-+ COT_PROMPT + COT_PROMPT_COMPLETION) * n_shot
+SYSTEM_PROMPT + (BASE_COMPLETION_PROMPT) * n_shot
 
 """
 import random
@@ -17,7 +16,7 @@ from evals.utils import _generate_random_function, generate_wrong_functions
 from models.openai_model import CHAT_MODEL_NAME, DAVINCI_MODEL_NAME
 from pipelines.baseb_sequence_completions import numberToBase
 from pipelines.sequence_completions import sequence_functions
-from src.prompt_generation.base_prompts import SYSTEM_PROMPT
+from src.prompt_generation import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.tokenisers import number_format_dict
 
 
@@ -25,7 +24,6 @@ def function_selection_prompt(
     num_shots: int = 4,
     sequence_length: int = 5,
     num_functions: int = 4,
-    use_cot: bool = False,
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     num_format: str = "None",
@@ -43,12 +41,12 @@ def function_selection_prompt(
         prompt_turns = [
             {
                 "role": "system",
-                "content": SYSTEM_PROMPT,
+                "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
             },
         ]
         for i in range(num_shots):
             question_text, function, sequence, correct_index = create_question_text(
-                num_functions, use_cot, sequence_length, prompt_base, num_format
+                num_functions, sequence_length, prompt_base, num_format
             )
             prompt_turns.append(
                 {
@@ -56,14 +54,6 @@ def function_selection_prompt(
                     "content": question_text,
                 }
             )
-            if use_cot:
-                cot_text = create_cot_text(function, sequence)
-                prompt_turns.append(
-                    {
-                        "role": "user",
-                        "content": cot_text,
-                    }
-                )
             # Add answer
             prompt_turns.append(
                 {
@@ -74,15 +64,12 @@ def function_selection_prompt(
         prompt = prompt_turns
         # print("prompt be: ", prompt)
     elif model_name == DAVINCI_MODEL_NAME:
-        prompt = SYSTEM_PROMPT + "\n"
+        prompt = get_formatted_prompt(PromptBase.SYSTEM_MATH)
         for i in range(num_shots):
             question_text, function, sequence, correct_index = create_question_text(
-                num_functions, use_cot, sequence_length, prompt_base, num_format
+                num_functions, sequence_length, prompt_base, num_format
             )
             prompt += question_text
-            if use_cot:
-                cot_text = create_cot_text(function, sequence)
-                prompt += cot_text
             # Add answer
             prompt += f"A: {correct_index + 1}\n\n"
     # print("prompt returned by function_selection_prompt: ", prompt)
@@ -91,7 +78,6 @@ def function_selection_prompt(
 
 def create_question_text(
     num_functions: int,
-    use_cot: bool,
     sequence_length: int,
     base: int = 10,
     num_format: str = "None",
@@ -136,11 +122,3 @@ def create_question_text(
     for i, fn in enumerate(all_functions):
         output += f"{i + 1}. {fn}\n"
     return output, function, sequence, correct_index
-
-
-def create_cot_text(function: str, sequence: list[int]) -> str:
-    """
-    Create the COT text for a single shot.
-    """
-    # TODO: Implement COT (wait on Dom response)
-    raise NotImplementedError()

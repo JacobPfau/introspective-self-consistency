@@ -29,7 +29,6 @@ def function_class_selection_evaluation(
     sequence_length: int,
     temperature: float = 0.0,
     num_shots: int = 4,
-    use_cot: bool = False,
     num_samples: int = 50,
     num_functions: int = 5,
 ) -> Tuple[int, int, int]:
@@ -45,7 +44,6 @@ def function_class_selection_evaluation(
     prompt = function_selection_prompt(
         num_shots=num_shots,
         num_functions=num_functions,
-        use_cot=use_cot,
         model_name=model_name,
     )
     for i in range(num_samples):
@@ -92,7 +90,6 @@ def function_selection_evaluation(
     target_sequence: str,
     temperature: float = 0.0,
     num_shots: int = 4,
-    use_cot: bool = False,
     num_samples: int = 5,
     num_functions: int = 5,
     generate_functions: bool = False,
@@ -115,11 +112,9 @@ def function_selection_evaluation(
 
     if model_name == "CHAT":
         # Generate a prompt
-        print("huzzah")
         prompt = function_selection_prompt(
             num_shots=num_shots,
             num_functions=num_functions,
-            use_cot=use_cot,
             model_name=CHAT_MODEL_NAME,
             base=base,
             num_format=number_format,
@@ -129,7 +124,6 @@ def function_selection_evaluation(
         prompt = function_selection_prompt(
             num_shots=num_shots,
             num_functions=num_functions,
-            use_cot=use_cot,
             model_name=DAVINCI_MODEL_NAME,
             base=base,
             num_format=number_format,
