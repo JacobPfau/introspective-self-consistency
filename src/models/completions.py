@@ -1,6 +1,9 @@
 from typing import List, Union
 
-from src.models import BaseModel, anthropic_model, get_model_from_string, openai_model
+from src.models import anthropic_model, openai_model
+
+from .base_model import BaseModel
+from .utils import get_model_from_string
 
 
 def generate_response_with_turns(
