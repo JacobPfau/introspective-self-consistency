@@ -39,7 +39,7 @@ def evaluate_compute_dependence_with_base_changes(
                         role_prompt=config.role_prompt,
                         base=config.base,
                         shots=config.num_shots,
-                        shot_method=config.shot_method,
+                        shot_method=config.few_shot_prompt_type,
                         temperature=0.0,
                         samples=config.num_samples,
                         seed=seed,

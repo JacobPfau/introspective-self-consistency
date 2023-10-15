@@ -4,23 +4,21 @@ import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
 
+from src.evals.config import SequenceCompletionCapabilityConfig
+from src.models import BaseModel
 from src.models.completions import generate_response_with_turns
 from src.pipelines import ShotSamplingType, TaskType
 from src.pipelines.sequence_completions import generate_sequence_completion_prompt
-from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
-MAX_OFFSET = 8
-NUM_SHOTS = 8
 
-
-def sequence_completion_eval(
+def _sequence_completion_eval(
     sequence: str,
     fn: str,
-    model: str,
-    max_offset: int = MAX_OFFSET,
-    num_shots: int = NUM_SHOTS,
+    model: BaseModel,
+    max_offset: int = 8,
+    num_shots: int = 8,
     ambiguous_sequences: dict = None,
     few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM,
     last_sequence_item: int = None,
@@ -78,17 +76,9 @@ def sequence_completion_eval(
     }
 
 
-@auto_subdir
-def evaluate_sequence_completion_capability(
-    model: str,
-    max_offset: int = MAX_OFFSET,
-    num_shots: int = NUM_SHOTS,
-    few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM,
-):
+def evaluate_sequence_completion_capability(config: SequenceCompletionCapabilityConfig):
     logger.info("Evaluating sequence completion capability...")
-    df = pd.read_csv(
-        "../../../../data/unambigious_functions.csv",
-    )
+    df = pd.read_csv(config.csv_input_path)
     fns = list(df["fn"])
     total_sequences = len(fns)
     completion_data = []
@@ -99,14 +89,14 @@ def evaluate_sequence_completion_capability(
             sequence = ",".join([str(item) for item in sequence_raw[:-1]])
             last_sequence_item = sequence_raw[-1]
             completion_data.append(
-                sequence_completion_eval(
+                _sequence_completion_eval(
                     sequence=sequence,
                     fn={"fn": fn, "offset": 0},
-                    model=model,
-                    max_offset=max_offset,
-                    num_shots=num_shots,
+                    model=config.model,
+                    max_offset=config.max_offset,
+                    num_shots=config.num_shots,
                     ambiguous_sequences=None,
-                    few_shot_prompt_type=few_shot_prompt_type,
+                    few_shot_prompt_type=config.few_shot_prompt_type,
                     last_sequence_item=last_sequence_item,
                 )
             )
@@ -115,7 +105,8 @@ def evaluate_sequence_completion_capability(
             logger.warning(e)
 
     pd.DataFrame(completion_data).to_csv(
-        f"sequence_completion_capability_evaluation_{model}.csv", index=False
+        f"sequence_completion_capability_evaluation_{config.model.value}.csv",
+        index=False,
     )
 
     rule_accs, completion_accs = [], []
