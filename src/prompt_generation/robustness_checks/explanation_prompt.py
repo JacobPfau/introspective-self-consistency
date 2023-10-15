@@ -26,16 +26,17 @@ import random
 from logging import getLogger
 from typing import List, Optional, Union
 
-from src.evals.prompts.distribution_prompt import ROLE_PROMPTS, TASK_PROMPTS
 from src.evals.utils import _generate_random_function, reformat_function
-
-# from evals.utils import _generate_random_function, generate_wrong_functions
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     OpenAIChatModels,
     OpenAITextModels,
 )
 from src.pipelines.sequence_completions import sequence_functions
+from src.prompt_generation.robustness_checks.distribution_prompt import (
+    ROLE_PROMPTS,
+    TASK_PROMPTS,
+)
 
 logger = getLogger(__name__)
 

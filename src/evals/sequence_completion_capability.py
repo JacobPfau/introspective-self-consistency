@@ -5,17 +5,14 @@ import pandas as pd
 from tqdm.auto import tqdm
 
 from src.models.completions import generate_response_with_turns
-from src.pipelines.sequence_completions import (
-    PromptType,
-    generate_sequence_completion_prompt,
-)
+from src.pipelines import ShotSamplingType, TaskType
+from src.pipelines.sequence_completions import generate_sequence_completion_prompt
 from src.utils import auto_subdir
 
 logger = logging.getLogger(__name__)
 
 MAX_OFFSET = 8
 NUM_SHOTS = 8
-COT = True
 
 
 def sequence_completion_eval(
@@ -24,16 +21,14 @@ def sequence_completion_eval(
     model: str,
     max_offset: int = MAX_OFFSET,
     num_shots: int = NUM_SHOTS,
-    cot: bool = COT,
     ambiguous_sequences: dict = None,
-    few_shot_prompt_type: PromptType = "random",
+    few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM,
     last_sequence_item: int = None,
 ):
     completion_prompt = generate_sequence_completion_prompt(
         sequence=sequence,
         fn_item=fn,
         n_shots=num_shots,
-        use_cot=cot,
         ambiguous_sequences=ambiguous_sequences,
         shot_type=few_shot_prompt_type,
     )
@@ -42,8 +37,7 @@ def sequence_completion_eval(
         sequence=sequence,
         fn_item=fn,
         n_shots=num_shots,
-        use_cot=cot,
-        prompt_type="explanation",
+        task_type=TaskType.EXPLANATION,
         ambiguous_sequences=ambiguous_sequences,
         shot_type=few_shot_prompt_type,
     )
@@ -89,8 +83,7 @@ def evaluate_sequence_completion_capability(
     model: str,
     max_offset: int = MAX_OFFSET,
     num_shots: int = NUM_SHOTS,
-    cot: bool = COT,
-    few_shot_prompt_type: PromptType = "random",
+    few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM,
 ):
     logger.info("Evaluating sequence completion capability...")
     df = pd.read_csv(
@@ -112,7 +105,6 @@ def evaluate_sequence_completion_capability(
                     model=model,
                     max_offset=max_offset,
                     num_shots=num_shots,
-                    cot=cot,
                     ambiguous_sequences=None,
                     few_shot_prompt_type=few_shot_prompt_type,
                     last_sequence_item=last_sequence_item,

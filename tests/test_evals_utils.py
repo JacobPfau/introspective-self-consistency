@@ -48,11 +48,9 @@ def prompt_test():
         num_shots=5,
         sequence_length=5,
         num_functions=4,
-        use_cot=False,
         model_name=DAVINCI_MODEL_NAME,
     )
     print(prompt)
-    print("buggo")
 
 
 def test_function_identification():

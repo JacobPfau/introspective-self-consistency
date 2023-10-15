@@ -44,7 +44,7 @@ class AmbiBenchDataset:
 
     assistance_prompts: Dict[str, str] = field(
         default_factory=dict,
-        metadata={"help": "Additional prompts for COT, clarification, verbalisation"},
+        metadata={"help": "Additional prompts for clarification, verbalisation"},
     )
 
     @classmethod
