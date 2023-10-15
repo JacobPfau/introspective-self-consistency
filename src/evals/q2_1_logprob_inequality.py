@@ -16,10 +16,11 @@ from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q21LogprobInequalityConfig
-from src.models import BaseModel, OpenAITextModels
-from src.models.openai_model import (
-    generate_logprob_response_with_turns,
+from src.models import (
+    BaseModel,
+    OpenAITextModels,
     generate_response_with_turns,
+    openai_model,
 )
 from src.pipelines.alternative_completions import get_data_with_alternatives
 from src.pipelines.sequence_completions import (
@@ -337,7 +338,7 @@ def _eval_sequence_completion(
         (compl, "invalid") for compl in invalid_completions
     ]:
         # add completion to the last prompt turn
-        turns = copy.deepcopy(completion_prompt["prompt_turns"])
+        turns: List[Dict[str, str]] = copy.deepcopy(completion_prompt["prompt_turns"])
         completion_string = " " + str(completion)
 
         turns.append(
@@ -347,7 +348,7 @@ def _eval_sequence_completion(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,
@@ -394,7 +395,7 @@ def _eval_sequence_completion(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,
@@ -461,7 +462,7 @@ def _eval_sequence_explanation(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,
@@ -506,7 +507,7 @@ def _eval_sequence_explanation(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,

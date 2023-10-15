@@ -7,8 +7,7 @@ from tqdm import tqdm
 
 from src.evals.config import Q22ModelVerbalizationConfig
 from src.evals.q2_1_logprob_inequality import _save_results_to_csv
-from src.models.base_model import BaseModel
-from src.models.openai_model import generate_response_with_turns
+from src.models import BaseModel, generate_response_with_turns
 from src.pipelines.alternative_completions import get_data_with_valid_alternatives_only
 from src.pipelines.q2_sequence_completions import (
     generate_sequence_completion_prompt_with_valid_continuations,
