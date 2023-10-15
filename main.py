@@ -6,19 +6,13 @@ import hydra
 from omegaconf import DictConfig
 
 from src.evals.config import (
-    AmbibenchCatPredConfig,
-    AmbibenchCompletionConfig,
     BaseEvalConfig,
     Q21LogprobInequalityConfig,
     Q22ModelVerbalizationConfig,
     SequenceCompletionBaseChangeConfig,
+    SequenceCompletionCapabilityConfig,
     SequenceCompletionEqConfig,
-    StringTransformationConfig,
 )
-from src.evals.eval_ambibench_category_prediction import (
-    evaluate_ambibench_category_prediction,
-)
-from src.evals.eval_ambibench_completion import evaluate_ambibench_completion
 from src.evals.q2_1_logprob_inequality import run_q2_1_eval
 from src.evals.q2_2_alternative_verbalization import run_q2_2_eval
 from src.evals.sequence_completion import evaluate_sequence_completion_equality
@@ -28,15 +22,14 @@ from src.evals.sequence_completion_capability import (
 from src.evals.sequence_completion_with_base_change import (
     evaluate_compute_dependence_with_base_changes,
 )
-from src.evals.string_transformation import evaluate_string_transformation_equality
 from src.utils import log_exceptions
 
 logger = logging.getLogger(__name__)
 
 TASK_FUNS = {
-    "string_transformation_completion_equality": {
-        "fn": evaluate_string_transformation_equality,
-        "config": StringTransformationConfig,
+    "sequence_completion_capability": {
+        "fn": evaluate_sequence_completion_capability,
+        "config": SequenceCompletionCapabilityConfig,
     },
     "sequence_completion_equality": {
         "fn": evaluate_sequence_completion_equality,
@@ -45,14 +38,6 @@ TASK_FUNS = {
     "compute_dependence_with_base_changes": {
         "fn": evaluate_compute_dependence_with_base_changes,
         "config": SequenceCompletionBaseChangeConfig,
-    },
-    "ambibench_category_prediction": {
-        "fn": evaluate_ambibench_category_prediction,
-        "config": AmbibenchCatPredConfig,
-    },
-    "ambibench_completion": {
-        "fn": evaluate_ambibench_completion,
-        "config": AmbibenchCompletionConfig,
     },
     "q2_1_logprob_inequality": {
         "fn": run_q2_1_eval,

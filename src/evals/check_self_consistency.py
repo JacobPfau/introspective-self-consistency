@@ -8,8 +8,10 @@ from src.evals.evaluate_explanation import (
     generate_implied_sequence,
     valid_explanation,
 )
-from src.evals.prompts.continuation_prompt import create_continuation_prompt
-from src.evals.prompts.explanation_prompt import (
+from src.prompt_generation.robustness_checks.continuation_prompt import (
+    create_continuation_prompt,
+)
+from src.prompt_generation.robustness_checks.explanation_prompt import (
     create_explanation_prompt,
     parse_explanation,
 )

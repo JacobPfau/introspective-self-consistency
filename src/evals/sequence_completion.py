@@ -18,11 +18,8 @@ from src.pipelines.sequence_completions import (
 
 logger = logging.getLogger(__name__)
 
-MAX_OFFSET = 8
-NUM_SHOTS = 8
 
-
-def sequence_completion_equality(
+def _sequence_completion_equality(
     sequence: str,
     fn: str,
     model: str,
@@ -135,7 +132,7 @@ def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) ->
         for fn in fns:
             try:
                 completion_data.append(
-                    sequence_completion_equality(
+                    _sequence_completion_equality(
                         sequence=sequence,
                         fn=fn,
                         model=config.model,

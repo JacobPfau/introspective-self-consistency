@@ -7,8 +7,7 @@ from tqdm import tqdm
 
 from src.evals.config import Q22ModelVerbalizationConfig
 from src.evals.q2_1_logprob_inequality import _save_results_to_csv
-from src.models.base_model import BaseModel
-from src.models.openai_model import generate_response_with_turns
+from src.models import BaseModel, generate_response_with_turns
 from src.pipelines.alternative_completions import get_data_with_valid_alternatives_only
 from src.pipelines.q2_sequence_completions import (
     generate_sequence_completion_prompt_with_valid_continuations,
@@ -208,7 +207,7 @@ if __name__ == "__main__":
     config = Q22ModelVerbalizationConfig(
         task="q2_2_alternative_verbalization",
         csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-0301",
     )
 
     run_q2_2_eval(config)
