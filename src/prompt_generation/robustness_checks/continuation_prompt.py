@@ -28,7 +28,6 @@ import logging
 import random
 from typing import List, Optional, Union
 
-from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     OpenAIChatModels,
@@ -36,11 +35,13 @@ from src.models.openai_model import (
 )
 from src.pipelines import ShotSamplingType
 from src.pipelines.sequence_completions import sequence_functions
-from src.prompt_generation.robustness_checks.distribution_prompt import (
-    ROLE_PROMPTS,
-    TASK_PROMPTS,
+from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
+from src.prompt_generation.robustness_checks.utils import (
+    extend_prompt,
+    generate_random_fn_sequence,
+    initialise_prompt,
+    start_question,
 )
-from src.prompt_generation.robustness_checks.utils import extend_prompt
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 del sequence_functions["recursive_progression"]
@@ -63,7 +64,7 @@ def create_continuation_prompt(
     """
     random.seed(seed)
     sequence_length = len(sequence)
-    prompt_text = "" if model_name in OpenAITextModels.list() else []
+    prompt_text = initialise_prompt(model_name)
     if shots > 0:
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
@@ -74,19 +75,7 @@ def create_continuation_prompt(
             prompt_text = extend_prompt(prompt_text, shot_prompt)
 
     text = TASK_PROMPTS[task_prompt]["continuation"]
-    text += "\n"
-    # TODO: Decide if we want role prompt to go here
-    if role_prompt is not None:
-        text += ROLE_PROMPTS[role_prompt]
-        text += "\n"
-    text += f"The sequence is in base {base}."
-    text += "\nQ: "
-    if base == 10:
-        text += ",".join([str(x) for x in sequence])
-    elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
-    else:
-        raise ValueError(f"Invalid base: {base}")
+    text = start_question(text, sequence, base, role_prompt)
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
         assert isinstance(prompt_text, str)
@@ -117,16 +106,21 @@ def create_continuation_prompt(
 
 
 def generate_cont_shot_prompt(
-    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10, shot=1
+    shot_method,
+    sequence_length,
+    model_name=DAVINCI_MODEL_NAME,
+    base=10,
+    shot=1,
+    num_range=(0, 7),
+    offset_range=(0, 7),
 ):
     """
     Generate a single shot prompt for a continuation.
     """
-    if shot_method == "random":
-        fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        # replace
-        fn = reformat_function(fn, offset)
-        sequence = [eval(fn)(x) for x in range(sequence_length)]
+    if shot_method == ShotSamplingType.RANDOM:
+        fn, sequence = generate_random_fn_sequence(
+            sequence_functions, num_range, offset_range, base, sequence_length
+        )
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
     if model_name in OpenAITextModels.list():

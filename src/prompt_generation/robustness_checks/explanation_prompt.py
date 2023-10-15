@@ -26,7 +26,6 @@ import random
 from logging import getLogger
 from typing import List, Optional, Union
 
-from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     OpenAIChatModels,
@@ -34,11 +33,13 @@ from src.models.openai_model import (
 )
 from src.pipelines import ShotSamplingType
 from src.pipelines.sequence_completions import sequence_functions
-from src.prompt_generation.robustness_checks.distribution_prompt import (
-    ROLE_PROMPTS,
-    TASK_PROMPTS,
+from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
+from src.prompt_generation.robustness_checks.utils import (
+    extend_prompt,
+    generate_random_fn_sequence,
+    initialise_prompt,
+    start_question,
 )
-from src.prompt_generation.robustness_checks.utils import extend_prompt
 
 logger = getLogger(__name__)
 
@@ -67,12 +68,7 @@ def create_explanation_prompt(
     """
     random.seed(seed)
     sequence_length = len(sequence)
-    if model_name in OpenAITextModels.list():
-        prompt_text = ""
-    elif model_name in OpenAIChatModels.list():
-        prompt_text = []
-    else:
-        raise ValueError(f"Invalid model name: {model_name}")
+    prompt_text = initialise_prompt(model_name)
     if shots > 0:
         for _ in range(shots):
             # Note: we are using the sequence length implicitly specified by
@@ -83,19 +79,7 @@ def create_explanation_prompt(
             prompt_text = extend_prompt(prompt_text, shot_prompt)
 
     text = TASK_PROMPTS[task_prompt]["explanation"]
-    text += "\n"
-    # TODO: Decide if we want role prompt to go here
-    if role_prompt is not None:
-        text += ROLE_PROMPTS[role_prompt]
-        text += "\n"
-    text += f"The sequence is in base {base}."
-    text += "\nQ: "
-    if base == 10:
-        text += ",".join([str(x) for x in sequence])
-    elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
-    else:
-        raise ValueError(f"Invalid base: {base}")
+    text = start_question(text, sequence, base, role_prompt)
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
     # logger.info(pre_prompt)
@@ -133,15 +117,17 @@ def generate_exp_shot_prompt(
     sequence_length: int,
     model_name=DAVINCI_MODEL_NAME,
     base=10,
+    shot=1,
+    num_range=(0, 7),
+    offset_range=(0, 7),
 ):
     """
     Generate a single shot prompt for a explanation.
     """
-    if shot_method == "random":
-        fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        # Reformat fn to replace every x after the first with x+offset
-        fn = reformat_function(fn, offset, base)
-        sequence = [eval(fn)(x) for x in range(sequence_length)]
+    if shot_method == ShotSamplingType.RANDOM:
+        fn, sequence = generate_random_fn_sequence(
+            sequence_functions, num_range, offset_range, base, sequence_length
+        )
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
 
