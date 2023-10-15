@@ -49,7 +49,7 @@ python main.py -m +experiment=demo_1,demo_2
 
 ## Sequence Completion Capability
 ```sh
-python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314
+python main.py --multirun +task=sequence_completion_capability model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314
 
 ```
 

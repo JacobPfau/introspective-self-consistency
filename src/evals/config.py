@@ -15,7 +15,7 @@ NUM_SHOTS = 8
 class BaseEvalConfig:
     task: str
     model: BaseModel
-    few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM
+    few_shot_prompt_type: ShotSamplingType
 
     def __post_init__(self):
         if isinstance(self.model, str):
