@@ -65,6 +65,7 @@ def create_continuation_prompt(
     random.seed(seed)
     sequence_length = len(sequence)
     prompt_text = initialise_prompt(model_name)
+    # Generate the few shot examples
     if shots > 0:
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
@@ -74,8 +75,10 @@ def create_continuation_prompt(
             )
             prompt_text = extend_prompt(prompt_text, shot_prompt)
 
+    # Generate the continuation prompt
     text = TASK_PROMPTS[task_prompt]["continuation"]
     text = start_question(text, sequence, base, role_prompt)
+    # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
         assert isinstance(prompt_text, str)
@@ -123,6 +126,7 @@ def generate_cont_shot_prompt(
         )
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
+
     if model_name in OpenAITextModels.list():
         text = "Q: "
         if base == 10:

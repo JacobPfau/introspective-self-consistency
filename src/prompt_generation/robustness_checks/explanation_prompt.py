@@ -69,6 +69,7 @@ def create_explanation_prompt(
     random.seed(seed)
     sequence_length = len(sequence)
     prompt_text = initialise_prompt(model_name)
+    # Generate the few shot examples
     if shots > 0:
         for _ in range(shots):
             # Note: we are using the sequence length implicitly specified by
@@ -78,11 +79,12 @@ def create_explanation_prompt(
             )
             prompt_text = extend_prompt(prompt_text, shot_prompt)
 
+    # Generate the explanation prompt
     text = TASK_PROMPTS[task_prompt]["explanation"]
     text = start_question(text, sequence, base, role_prompt)
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
-    # logger.info(pre_prompt)
+    # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
         assert isinstance(prompt_text, str)
         # Prepend to the shots
