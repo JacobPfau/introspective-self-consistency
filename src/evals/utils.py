@@ -173,7 +173,7 @@ def choose_function(
             max_tokens=256,
             model=DAVINCI_MODEL_NAME,
         )
-    elif model_name == "gpt-3.5-turbo":
+    elif model_name == "gpt-3.5-turbo-0301":
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=formatted_prompt,

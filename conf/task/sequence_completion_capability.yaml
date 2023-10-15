@@ -1,6 +1,6 @@
 # @package _global_
 task: sequence_completion_capability
-model: gpt-3.5-turbo
+model: gpt-3.5-turbo-0301
 max_offset: 8
 num_shots: 8
 few_shot_prompt_type: random

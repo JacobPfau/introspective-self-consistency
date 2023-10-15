@@ -47,10 +47,16 @@ Once we have written down our experiment configs, we can do
 python main.py -m +experiment=demo_1,demo_2
 ```
 
+## Sequence Completion Capability
+```sh
+python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314
+
+```
+
 ## Q0
 
 ```sh
-python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
+python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314,claude-v1
 ```
 
 ## Q1.2

@@ -208,7 +208,7 @@ if __name__ == "__main__":
     config = Q22ModelVerbalizationConfig(
         task="q2_2_alternative_verbalization",
         csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-0301",
     )
 
     run_q2_2_eval(config)

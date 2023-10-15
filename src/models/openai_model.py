@@ -11,7 +11,6 @@ from src.models.base_model import BaseModel
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
-CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
 _RETRY_TIMEOUT = 10
 # Load your API key from an environment variable or secret management service
@@ -24,7 +23,7 @@ class OpenAITextModels(BaseModel):
 
 
 class OpenAIChatModels(BaseModel):
-    CHAT_GPT_35 = "gpt-3.5-turbo"
+    CHAT_GPT_35 = "gpt-3.5-turbo-0301"
     CHAT_GPT_4 = "gpt-4-0314"
 
 
