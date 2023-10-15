@@ -34,11 +34,13 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
+from src.pipelines import ShotSamplingType
 from src.pipelines.sequence_completions import sequence_functions
 from src.prompt_generation.robustness_checks.distribution_prompt import (
     ROLE_PROMPTS,
     TASK_PROMPTS,
 )
+from src.prompt_generation.robustness_checks.utils import extend_prompt
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
 del sequence_functions["recursive_progression"]
@@ -52,7 +54,7 @@ def create_continuation_prompt(
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
-    shot_method: str = "random",
+    shot_method: ShotSamplingType = ShotSamplingType.RANDOM,
     role_prompt: Optional[str] = None,
     seed: int = 0,
 ) -> Union[str, List[dict]]:
@@ -69,7 +71,7 @@ def create_continuation_prompt(
             shot_prompt = generate_cont_shot_prompt(
                 shot_method, sequence_length, model_name, base, i
             )
-            prompt_text += shot_prompt
+            prompt_text = extend_prompt(prompt_text, shot_prompt)
 
     text = TASK_PROMPTS[task_prompt]["continuation"]
     text += "\n"
@@ -87,6 +89,7 @@ def create_continuation_prompt(
         raise ValueError(f"Invalid base: {base}")
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
+        assert isinstance(prompt_text, str)
         pretext = "Here are some examples of sequence continuations."
         pretext += "\n"
         text = pretext + prompt_text + text
@@ -94,6 +97,7 @@ def create_continuation_prompt(
         text += "A: "
         return text
     elif model_name in OpenAIChatModels.list():
+        assert isinstance(prompt_text, list)
         pretext = [
             {
                 "role": "system",
@@ -133,6 +137,8 @@ def generate_cont_shot_prompt(
         elif base == 2:
             text += ",".join([bin(x) for x in sequence])
             a_text = bin(eval(fn)(sequence_length))
+        else:
+            raise ValueError(f"Invalid base: {base}")
         text += "\n"
         text += "A: "
         text += a_text
@@ -146,6 +152,8 @@ def generate_cont_shot_prompt(
         elif base == 2:
             q_text = ",".join([bin(x) for x in sequence])
             a_text = bin(eval(fn)(sequence_length))
+        else:
+            raise ValueError(f"Invalid base: {base}")
         response = [{"role": "user", "content": q_text}]
         response += [{"role": "assistant", "content": a_text}]
         return response

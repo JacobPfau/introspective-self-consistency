@@ -32,11 +32,13 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
+from src.pipelines import ShotSamplingType
 from src.pipelines.sequence_completions import sequence_functions
 from src.prompt_generation.robustness_checks.distribution_prompt import (
     ROLE_PROMPTS,
     TASK_PROMPTS,
 )
+from src.prompt_generation.robustness_checks.utils import extend_prompt
 
 logger = getLogger(__name__)
 
@@ -56,7 +58,7 @@ def create_explanation_prompt(
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
-    shot_method: str = "random",
+    shot_method: ShotSamplingType = ShotSamplingType.RANDOM,
     role_prompt: Optional[str] = None,
     seed: int = 0,
 ) -> Union[str, List[dict]]:
@@ -65,15 +67,20 @@ def create_explanation_prompt(
     """
     random.seed(seed)
     sequence_length = len(sequence)
-    prompt_text = "" if model_name in OpenAITextModels.list() else []
+    if model_name in OpenAITextModels.list():
+        prompt_text = ""
+    elif model_name in OpenAIChatModels.list():
+        prompt_text = []
+    else:
+        raise ValueError(f"Invalid model name: {model_name}")
     if shots > 0:
-        for i in range(shots):
+        for _ in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
             shot_prompt = generate_exp_shot_prompt(
                 shot_method, sequence_length, model_name, base
             )
-            prompt_text += shot_prompt
+            prompt_text = extend_prompt(prompt_text, shot_prompt)
 
     text = TASK_PROMPTS[task_prompt]["explanation"]
     text += "\n"
@@ -93,6 +100,7 @@ def create_explanation_prompt(
     pre_prompt = pre_prompt.format(base)
     # logger.info(pre_prompt)
     if model_name in OpenAITextModels.list():
+        assert isinstance(prompt_text, str)
         # Prepend to the shots
         pretext = pre_prompt + "\n"
         pretext += "\n"
@@ -101,6 +109,7 @@ def create_explanation_prompt(
         text += "A: "
         return text
     elif model_name in OpenAIChatModels.list():
+        assert isinstance(prompt_text, list)
         pretext = [
             {
                 "role": "system",
@@ -120,7 +129,10 @@ def create_explanation_prompt(
 
 
 def generate_exp_shot_prompt(
-    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10
+    shot_method: ShotSamplingType,
+    sequence_length: int,
+    model_name=DAVINCI_MODEL_NAME,
+    base=10,
 ):
     """
     Generate a single shot prompt for a explanation.
@@ -146,8 +158,8 @@ def generate_exp_shot_prompt(
     elif model_name in OpenAIChatModels.list():
         if base == 10 or base == 2:
             q_text = ",".join([str(x) for x in sequence])
-        # elif base == 2:
-        #     q_text = ",".join([bin(x) for x in sequence])
+        else:
+            raise ValueError(f"Invalid base: {base}")
         response = [{"role": "user", "content": q_text}]
         a_text = "Explanation: " + fn
         response += [{"role": "assistant", "content": a_text}]

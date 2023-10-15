@@ -66,20 +66,20 @@ def generate_explanation(
 def generate_implied_sequence(
     fn_form: str,
     sequence_length: int,
-) -> List[int]:
+) -> List[str]:
     """
     Given a function form and an offset as supplied by the model,
     generate the sequence.
     """
-    return [eval(fn_form)(i) for i in range(sequence_length)]
+    return [str(eval(fn_form)(i)) for i in range(sequence_length)]
 
 
 def generate_implied_continuation(
     fn_form: str,
     sequence_length: int,
-) -> int:
+) -> str:
     """
     Given a function form and an offset as supplied by the model,
     generate the next element of the sequence.
     """
-    return eval(fn_form)(sequence_length)
+    return str(eval(fn_form)(sequence_length))

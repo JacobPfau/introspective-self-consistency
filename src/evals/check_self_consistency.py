@@ -8,6 +8,7 @@ from src.evals.evaluate_explanation import (
     generate_implied_sequence,
     valid_explanation,
 )
+from src.pipelines import ShotSamplingType
 from src.prompt_generation.robustness_checks.continuation_prompt import (
     create_continuation_prompt,
 )
@@ -25,7 +26,7 @@ def self_consistency_evaluation(
     task_prompt: str,
     base: int,
     shots: int,
-    shot_method: str,
+    shot_method: ShotSamplingType,
     temperature: float,
     samples: int,
     role_prompt: Optional[str] = None,

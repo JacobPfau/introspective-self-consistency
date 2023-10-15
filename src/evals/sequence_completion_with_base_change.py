@@ -50,9 +50,9 @@ def evaluate_compute_dependence_with_base_changes(
                 else:
                     total += 1
                     break
-        else:
-            pass
-            # TODO: have support for general base sequences here
+    else:
+        raise NotImplementedError("Not yet implemented for non-ambiguous sequences. ")
+        # TODO: have support for general base sequences here
 
     logger.info(f"Total is: {str(total)}")
 
