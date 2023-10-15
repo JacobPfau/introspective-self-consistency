@@ -29,22 +29,6 @@ class BaseEvalConfig:
 
 
 @dataclass
-class AmbibenchCompletionConfig(BaseEvalConfig):
-    data_glob: str
-
-
-@dataclass
-class AmbibenchCatPredConfig(BaseEvalConfig):
-    data_glob: str
-    multiple_choice: bool
-
-
-@dataclass
-class StringTransformationConfig(BaseEvalConfig):
-    num_shots = NUM_SHOTS
-
-
-@dataclass
 class SequenceCompletionEqConfig(BaseEvalConfig):
     num_shots = NUM_SHOTS
     max_offset = MAX_OFFSET
