@@ -1,7 +1,9 @@
 import logging
+import os
 
 import numpy as np
 import pandas as pd
+from hydra.utils import get_original_cwd
 from tqdm.auto import tqdm
 
 from src.evals.config import SequenceCompletionCapabilityConfig
@@ -78,6 +80,8 @@ def _sequence_completion_eval(
 
 def evaluate_sequence_completion_capability(config: SequenceCompletionCapabilityConfig):
     logger.info("Evaluating sequence completion capability...")
+
+    config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
     df = pd.read_csv(config.csv_input_path)
     fns = list(df["fn"])
     total_sequences = len(fns)

@@ -1,4 +1,7 @@
+import os
 from enum import Enum
+
+from hydra.utils import get_original_cwd
 
 
 class PromptBase(Enum):
@@ -18,20 +21,34 @@ def _load_base_prompt_from_txt(txt_file: str) -> str:
 
 def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
 
+    root_dir = get_original_cwd()  # get the root directory when using hydra
+
     if prompt_base == PromptBase.BASE_COMPLETION:
-        path = "src/prompt_generation/prompts_txt/base_completion.txt"
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/base_completion.txt"
+        )
     elif prompt_base == PromptBase.BASE_EXPLANATION:
-        path = "src/prompt_generation/prompts_txt/base_explanation.txt"
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/base_explanation.txt"
+        )
     elif prompt_base == PromptBase.EXPLANATION_MULTIPLE_CHOICE:
-        path = "src/prompt_generation/prompts_txt/explanation_mc.txt"
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/explanation_mc.txt"
+        )
     elif prompt_base == PromptBase.CONSIDERATIONS:
-        path = "src/prompt_generation/prompts_txt/consider.txt"
+        path = os.path.join(root_dir, "src/prompt_generation/prompts_txt/consider.txt")
     elif prompt_base == PromptBase.SYSTEM_MATH:
-        path = "src/prompt_generation/prompts_txt/system_math.txt"
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/system_math.txt"
+        )
     elif prompt_base == PromptBase.BASE_CONSISTENCY:
-        path = "src/prompt_generation/prompts_txt/base_consistency.txt"
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/base_consistency.txt"
+        )
     elif prompt_base == PromptBase.CONSISTENCY_COMPLETION:
-        path = "src/prompt_generation/prompts_txt/consistency_completion.txt"
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/consistency_completion.txt"
+        )
     else:
         raise ValueError(f"Invalid prompt base: {prompt_base}")
 
