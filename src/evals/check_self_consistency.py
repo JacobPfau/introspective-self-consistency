@@ -62,7 +62,9 @@ def self_consistency_evaluation(
 
     # Make the sequence base 2 if necessary
     if base == 2:
-        sequence = [bin(i) for i in sequence]
+        sequence_str = [bin(i) for i in sequence]
+    else:
+        sequence_str = [str(i) for i in sequence]
 
     for _ in range(samples):
         result = {
@@ -109,7 +111,7 @@ def self_consistency_evaluation(
             total_results.append(result)
             continue
 
-        if not valid_explanation(fn, len(sequence)):
+        if not valid_explanation(fn, len(sequence_str)):
             logger.info(f"invalid explanation: {explanation}")
             total_results.append(result)
             continue
@@ -117,12 +119,12 @@ def self_consistency_evaluation(
             # check if the explanation is valid up to the continuation
             implied_sequence = generate_implied_sequence(
                 fn_form=fn,
-                sequence_length=len(sequence),
+                sequence_length=len(sequence_str),
             )
 
             implied_continuation = generate_implied_continuation(
                 fn_form=fn,
-                sequence_length=len(sequence),
+                sequence_length=len(sequence_str),
             )
 
         result["implied sequence"] = implied_sequence
@@ -130,8 +132,8 @@ def self_consistency_evaluation(
 
         # Check the explanation is accurate
         logger.info(f"implied_sequence: {implied_sequence}")
-        logger.info(f"sequence: {sequence}")
-        if implied_sequence == sequence:
+        logger.info(f"sequence: {sequence_str}")
+        if implied_sequence == sequence_str:
             correct = True
         else:
             correct = False

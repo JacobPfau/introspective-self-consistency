@@ -158,7 +158,7 @@ def generate_exp_shot_prompt(
         raise ValueError(f"Invalid model name: {model_name}")
 
 
-def parse_explanation(model_response: str) -> tuple[str, str]:
+def parse_explanation(model_response: str) -> str:
     """
     Parse an explanation into a function.
     """
