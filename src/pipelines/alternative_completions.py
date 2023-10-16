@@ -37,7 +37,7 @@ def parse_function_and_model_from_csv(
     return data
 
 
-def generate_invalid_alternatives(
+def _generate_invalid_alternatives(
     num_invalid,
     invalid_fn_type,
     org_fn,
@@ -73,7 +73,7 @@ def generate_invalid_alternatives(
     return invalid_fns, invalid_completions
 
 
-def get_valid_alternative_funcs(
+def _get_valid_alternative_funcs(
     org_func: dict,
     ambiguous_sequences: dict,
     num_valid: int,
@@ -157,7 +157,7 @@ def get_data_with_alternatives(
         # 4) generate invalid completions -> cross check that there is no overlap with valid completions
 
         # find alternative, valid function
-        sequence, valid_fns = get_valid_alternative_funcs(
+        sequence, valid_fns = _get_valid_alternative_funcs(
             consistent_func, amb_seqs, num_valid
         )
         # roll out valid fns to obtain valid completions
@@ -168,7 +168,7 @@ def get_data_with_alternatives(
         invalid_completions = []
 
         if 0 < num_invalid:
-            invalid_fns, invalid_completions = generate_invalid_alternatives(
+            invalid_fns, invalid_completions = _generate_invalid_alternatives(
                 num_invalid,
                 invalid_fn_type,
                 consistent_func,
@@ -223,7 +223,7 @@ def get_data_with_valid_alternatives_only(csv_input_path: str, model: BaseModel)
         # 2) generate valid completions
 
         # get ALL alternative, valid functions for this sequence
-        sequence, valid_fns = get_valid_alternative_funcs(
+        sequence, valid_fns = _get_valid_alternative_funcs(
             consistent_func, amb_seqs, num_valid=-1
         )
 

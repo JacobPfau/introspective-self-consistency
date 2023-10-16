@@ -99,7 +99,7 @@ def find_ambiguous_integer_sequences(
             # check the sequence progressions
             # through n steps and add to ambiguous_sequences
             # if ambiguous
-            check_ambiguity(
+            _check_ambiguity(
                 num_steps_to_check,
                 step_offsets,
                 ambiguous_sequences,
@@ -115,7 +115,7 @@ def find_ambiguous_integer_sequences(
     return ambiguous_sequences
 
 
-def check_ambiguity(
+def _check_ambiguity(
     num_steps_to_check: int,
     step_offsets: int,
     ambiguous_sequences: dict,
