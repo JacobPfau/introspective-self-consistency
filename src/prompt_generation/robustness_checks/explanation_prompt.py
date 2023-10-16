@@ -32,7 +32,7 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
-from src.pipelines.sequence_completions import sequence_functions
+from src.pipelines.sequences import get_sequences_as_dict
 from src.prompt_generation.robustness_checks.distribution_prompt import (
     ROLE_PROMPTS,
     TASK_PROMPTS,
@@ -47,7 +47,7 @@ the second by f(1), the third by f(2), and so on.
 """
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
-sequence_functions = sequence_functions.copy()
+sequence_functions = get_sequences_as_dict().copy()
 
 
 def create_explanation_prompt(

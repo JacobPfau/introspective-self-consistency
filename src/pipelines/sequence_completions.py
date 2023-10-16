@@ -42,23 +42,8 @@ import numpy as np
 
 from src.models import BaseModel
 from src.pipelines.classes import ShotSamplingType, TaskType
+from src.pipelines.sequences import get_sequences_as_dict
 from src.prompt_generation import PromptBase, get_formatted_prompt
-
-# Integer sequence functions
-sequence_functions = {
-    "arithmetic_progression": "lambda x: ({} * x) + {}",
-    "geometric_progression": "lambda x: ({} * x) * {}",
-    "exponential_progression": "lambda x: ({} * x) ** {}",
-    "power_progression": "lambda x: {} ** ({} * x)",
-    "bit_or_progression": "lambda x: ({} * x) | {}",
-    "modular_progression": "lambda x: (x * {}) % ({}+1)",
-    "indexing_criteria_progression": (
-        "lambda x: [i for i in range(100) if i % ({} + 1) or i % ({} + 1)][x]"
-    ),
-    "recursive_progression": (
-        "(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
-    ),
-}
 
 
 def find_ambiguous_integer_sequences(
@@ -70,7 +55,6 @@ def find_ambiguous_integer_sequences(
     disambiguate_steps: int = 4,
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
-    valid_sequence_functions: dict = sequence_functions,
 ) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
     Find ambiguous sequence using brute force search
@@ -94,7 +78,7 @@ def find_ambiguous_integer_sequences(
         {'fn': 'lambda x: (2*x) + 1', 'offset': 0}
     ]
     """
-    progression_base_fns = valid_sequence_functions
+    progression_base_fns = get_sequences_as_dict()
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
         for const_term_two in range(max_constant_term_two):
@@ -250,17 +234,17 @@ def generate_shot_pool(
 
     fn_pool = []
     if shot_type == ShotSamplingType.RANDOM:
-        fn_pool = list(sequence_functions.values())
+        fn_pool = list(get_sequences_as_dict().values())
     elif shot_type == ShotSamplingType.SAME_CLASS:
         fn_pool = list(
             seq_fn
-            for seq_key, seq_fn in sequence_functions.items()
+            for seq_key, seq_fn in get_sequences_as_dict().items()
             if seq_key == base_fn["metadata"][0]
         )
     elif shot_type == ShotSamplingType.EXCLUDE_CLASS:
         fn_pool = list(
             seq_fn
-            for seq_key, seq_fn in sequence_functions.items()
+            for seq_key, seq_fn in get_sequences_as_dict().items()
             if seq_key != base_fn["metadata"][0]
         )
 
