@@ -43,9 +43,6 @@ from src.prompt_generation.robustness_checks.utils import (
     start_question,
 )
 
-# TODO: fix generating functions to include recursive progressions, an ok fix for now.
-del sequence_functions["recursive_progression"]
-
 logger = logging.getLogger(__name__)
 
 
