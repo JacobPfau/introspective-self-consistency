@@ -34,14 +34,15 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
-from src.pipelines.sequence_completions import sequence_functions
+from src.pipelines.sequences import get_sequences_as_dict
 from src.prompt_generation.robustness_checks.distribution_prompt import (
     ROLE_PROMPTS,
     TASK_PROMPTS,
 )
 
 # TODO: fix generating functions to include recursive progressions, an ok fix for now.
-del sequence_functions["recursive_progression"]
+_SEQUENCE_FUNCTIONS = get_sequences_as_dict().copy()
+del _SEQUENCE_FUNCTIONS["recursive"]
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +120,7 @@ def generate_cont_shot_prompt(
     Generate a single shot prompt for a continuation.
     """
     if shot_method == "random":
-        fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
+        fn, offset = _generate_random_function(_SEQUENCE_FUNCTIONS, (0, 7), (0, 7))
         # replace
         fn = reformat_function(fn, offset)
         sequence = [eval(fn)(x) for x in range(sequence_length)]

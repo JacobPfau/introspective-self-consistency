@@ -41,7 +41,7 @@ def function_selection_prompt(
         prompt_turns = [
             {
                 "role": "system",
-                "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+                "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
             },
         ]
         for i in range(num_shots):
@@ -64,7 +64,7 @@ def function_selection_prompt(
         prompt = prompt_turns
         # print("prompt be: ", prompt)
     elif model_name == DAVINCI_MODEL_NAME:
-        prompt = get_formatted_prompt(PromptBase.SYSTEM_MATH)
+        prompt = get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE)
         for i in range(num_shots):
             question_text, function, sequence, correct_index = create_question_text(
                 num_functions, sequence_length, prompt_base, num_format
