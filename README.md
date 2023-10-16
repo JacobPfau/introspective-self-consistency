@@ -25,7 +25,7 @@ When you get stuck/annoyed by pre-commit rejecting your commit, you may choose t
 
 To run a specific task, we simply specify it via the "task" parameter in the call to main.py:
 ```sh
-python main.py +task=ambibench_completion # runs exactly that task  ("+" before task needed for hydra weirdness reasons)
+python main.py +task=sequence_completion_equality # runs exactly that task  ("+" before task needed for hydra syntax)
 ```
 
 Note that a single "hydra run" is not the same as a single invocation of `python main.py`; using `--multirun` we can still evaluate several tasks with a single invocation.
@@ -34,7 +34,7 @@ Note that a single "hydra run" is not the same as a single invocation of `python
 ## How to do multiple runs at once
 For this we rely on the standard hydra `--multirun` mechanism, as follows:
 ```sh
-python main.py --multirun +task=ambibench_completion,ambi_bench_category_prediction  # '-m' can be used as shorthand for '--multirun'
+python main.py --multirun +task=sequence_completion_capability,sequence_completion_equality  # '-m' can be used as shorthand for '--multirun'
 ```
 
 ## How to sweep over both tasks _and_ custom configurations per task
@@ -97,7 +97,7 @@ python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10,12
 # Tests
 Tests are run using `pytest`.
 The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
-To work around this invoke pytest as a python module:
+To work around this invoke pytest as a python module or update Python path:
 ```sh
-python -m pytest src/tests
+python -m pytest tests
 ```
