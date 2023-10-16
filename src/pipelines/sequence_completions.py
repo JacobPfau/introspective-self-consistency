@@ -425,7 +425,7 @@ def generate_sequence_completion_prompt(
     prompt_turns = [
         {
             "role": "system",
-            "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 
@@ -466,7 +466,7 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
     prompt_turns = [
         {
             "role": "system",
-            "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 

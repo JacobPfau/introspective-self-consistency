@@ -159,7 +159,7 @@ def generate_sequence_completion_prompt_with_valid_continuations(
     prompt_turns = [
         {
             "role": "system",
-            "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 
