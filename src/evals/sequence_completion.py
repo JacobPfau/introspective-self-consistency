@@ -124,7 +124,7 @@ def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) ->
     num_shots = config.num_shots
     few_shot_prompt_type = ShotSamplingType(config.few_shot_prompt_type)
 
-    logger.info("Evaluating sequence completion equality...")
+    logger.info("Start evaluating sequence completion equality.")
     ambiguous_sequences = find_ambiguous_integer_sequences()
     total_sequences = sum(len(fns) for fns in ambiguous_sequences.values())
     completion_data = []
@@ -187,7 +187,7 @@ def evaluate_sequence_completion_equality(config: SequenceCompletionEqConfig) ->
     )
     logger.info(
         f"""
-        Evaluated {len(completion_data)} ambiguous sequences of {total_sequences} total.
+        Finished evaluating {len(completion_data)} ambiguous sequences of {total_sequences} total.
         Resulting in:
         - {ground_truth_consistent}% ground-truth-consistent
         - {self_rule_following_consistency}% self-rule-following-consistency
