@@ -73,7 +73,7 @@ def find_ambiguous_integer_sequences(
     valid_sequence_functions: dict = sequence_functions,
 ) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
-    Find ambiguous_integer_sequences using brute force search
+    Find ambiguous sequence using brute force search
     over a set of progressions.
 
     A sequence is said to ambiguous if an initial set of two or more completions
@@ -266,7 +266,6 @@ def generate_shot_pool(
 
     shot_pool = []
     # we generate a prompt_pool with random parameters
-    # TODO: move these magic strings to somewhere more visible
     pool_size = 2 * n_shots
     if shot_type in [
         ShotSamplingType.RANDOM,
@@ -281,10 +280,12 @@ def generate_shot_pool(
             shot_pool.append(
                 {"fn": fn.format(first_term, second_term), "offset": offset}
             )
+
     elif shot_type == ShotSamplingType.SAME_FN:
         for _ in range(pool_size):
             offset = random.randint(0, 10)
             shot_pool.append({"fn": base_fn["fn"], "offset": offset})
+
     elif shot_type == ShotSamplingType.AMBIGUOUS:
         while len(shot_pool) < pool_size:
             fn_item = random.choice(list(ambiguous_sequences.items()))
