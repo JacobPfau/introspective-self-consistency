@@ -60,7 +60,7 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
 
         # progressions have two terms A and B
         for fn_name, base_fn in get_sequences_as_dict().items():
-            base_prompt += "- " + fn_name + "-> " + base_fn.format("a", "b") + "\n"
+            base_prompt += "- " + fn_name + " -> " + base_fn.format("a", "b") + "\n"
 
         return base_prompt
 
