@@ -88,9 +88,6 @@ class IntegerSequence:
         return self.sequence_type.base_fn.format(self.term_a, self.term_b)
 
     def roll_out(self, step: int) -> int:
-        # TODO: decide whether to add the offset to step or add it to eval result
-        # A) eval(fn)(step) + offset
-        # B) eval(fn)(step + offset)
         return eval(str(self))(step + self.offset)
 
 
