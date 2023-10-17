@@ -15,21 +15,10 @@ NUM_SHOTS = 8
 class BaseEvalConfig:
     task: str
     model: BaseModel
-    few_shot_prompt_type: ShotSamplingType
 
     def __post_init__(self):
         if isinstance(self.model, str):
             self.model = get_model_from_string(self.model)
-
-        if isinstance(self.few_shot_prompt_type, str):
-            try:
-                self.few_shot_prompt_type = ShotSamplingType(
-                    self.few_shot_prompt_type.lower()
-                )
-            except ValueError:
-                raise InvalidConfigError(
-                    f"Invalid few shot prompt type: '{self.few_shot_prompt_type}'"
-                )
 
     @classmethod
     def from_dict(cls, params: Union[dict, DictConfig]):
@@ -41,21 +30,38 @@ class BaseEvalConfig:
 
 
 @dataclass
-class SequenceCompletionCapabilityConfig(BaseEvalConfig):
+class BasePrompttypeConfig(BaseEvalConfig):
+    few_shot_prompt_type: ShotSamplingType
+
+    def __post_init__(self):
+        super().__post_init__()
+
+        if isinstance(self.few_shot_prompt_type, str):
+            try:
+                self.few_shot_prompt_type = ShotSamplingType(
+                    self.few_shot_prompt_type.lower()
+                )
+            except ValueError:
+                raise InvalidConfigError(
+                    f"Invalid few shot prompt type: '{self.few_shot_prompt_type}'"
+                )
+
+
+@dataclass
+class SequenceCompletionCapabilityConfig(BasePrompttypeConfig):
     num_shots = NUM_SHOTS
     max_offset = MAX_OFFSET
     csv_input_path: str
 
 
 @dataclass
-class SequenceCompletionEqConfig(BaseEvalConfig):
+class SequenceCompletionEqConfig(BasePrompttypeConfig):
     num_shots = NUM_SHOTS
     max_offset = MAX_OFFSET
-    few_shot_prompt_type: ShotSamplingType = ShotSamplingType.RANDOM
 
 
 @dataclass
-class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
+class SequenceCompletionBaseChangeConfig(BasePrompttypeConfig):
     num_samples: int = 1
     on_ambiguous_sequences: bool = True
     num_shots: int = 4
@@ -71,7 +77,7 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
 
 
 @dataclass
-class Q21LogprobInequalityConfig(BaseEvalConfig):
+class Q21LogprobInequalityConfig(BasePrompttypeConfig):
     csv_input_path: str
     num_shots: int = field(default=4)
     num_valid: int = field(default=2)
