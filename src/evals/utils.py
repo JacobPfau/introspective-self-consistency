@@ -66,7 +66,7 @@ def _generate_random_function(
     return (fn, offset)
 
 
-def reformat_function(fn: str, offset: int, base: int = 10) -> str:
+def reformat_function(fn: str, offset: int) -> str:
     """
     Reformat a function to incorporate an offset, so the function is zero indexed.
     """
@@ -79,12 +79,6 @@ def reformat_function(fn: str, offset: int, base: int = 10) -> str:
     fn = fn.replace("x", replacement)
     # restore the first occurrence
     fn = fn.replace("<placeholder>", "x", 1)
-
-    if base == 2:
-        # Wrap the output in a binary conversion
-        prefix, suffix = fn.split(":", 1)
-        # Add bin around the calculation part and join back together
-        fn = prefix + ": bin(" + suffix.strip() + ")"
 
     return fn
 

@@ -119,8 +119,10 @@ def generate_cont_shot_prompt(
     """
     if shot_method == ShotSamplingType.RANDOM:
         fn, sequence = generate_random_fn_sequence(
-            sequence_functions, num_range, offset_range, base, sequence_length
+            sequence_functions, num_range, offset_range, sequence_length
         )
+        for x in sequence:
+            assert isinstance(x, int)
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
 

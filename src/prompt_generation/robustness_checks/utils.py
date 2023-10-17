@@ -26,17 +26,17 @@ def generate_random_fn_sequence(
     sequence_functions: dict[str, str],
     num_range: Tuple[int, int],
     offset_range: Tuple[int, int],
-    base: int,
     sequence_length: int,
 ) -> Tuple[str, List[int]]:
     for _ in range(3):
         fn, offset = _generate_random_function(
             sequence_functions, num_range, offset_range
         )
-        # TODO: we were not using base before. Have added it, check if this changes results!
-        fn = reformat_function(fn, offset, base)
+        fn = reformat_function(fn, offset)
         try:
             sequence = [eval(fn)(x) for x in range(sequence_length)]
+            for x in sequence:
+                assert isinstance(x, int)
             return fn, sequence
         except RecursionError:
             pass

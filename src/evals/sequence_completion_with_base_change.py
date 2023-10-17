@@ -1,4 +1,5 @@
 import logging
+import traceback
 from dataclasses import asdict
 
 import pandas as pd
@@ -48,7 +49,8 @@ def evaluate_compute_dependence_with_base_changes(
                 )
             except Exception as e:
                 logger.warning("Error in self consistency evaluation.")
-                logger.warning(e)
+                tb = traceback.format_exc()
+                logger.warning(f"An error occurred: {e}\n{tb}")
             else:
                 total += 1
                 break
