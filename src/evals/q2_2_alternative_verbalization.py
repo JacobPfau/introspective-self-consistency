@@ -1,8 +1,6 @@
 import logging
-import os
 from typing import Any, Dict, List, Tuple, Union
 
-from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q22ModelVerbalizationConfig
@@ -127,17 +125,13 @@ def run_q2_2_eval(
     config: Q22ModelVerbalizationConfig,
 ):
     """Main function to run Q2.2 eval."""
-    config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
 
     # generate data but keep all valid functions
-    amb_seqs, data = get_data_with_valid_alternatives_only(
-        config.csv_input_path, config.model
-    )
+    amb_seqs, data = get_data_with_valid_alternatives_only()
 
     results = []
     for sequence, entry in tqdm(data.items()):
         # parse data entry
-        model: BaseModel = entry["model"]
         valid_fns = entry["valid_fns"]
         valid_completions = entry["valid_completions"]
 
@@ -156,7 +150,7 @@ def run_q2_2_eval(
             config.num_shots,
             config.max_considerations,
             amb_seqs,
-            model,
+            config.model,
         )
 
         # eval explanations
@@ -173,12 +167,12 @@ def run_q2_2_eval(
             config.num_shots,
             config.max_considerations,
             amb_seqs,
-            model,
+            config.model,
         )
 
         # construct results entry
         results_entry = {
-            "model": model.value,
+            "model": config.model.value,
             "sequence": sequence,
             "num_shots": config.num_shots,
             "max_considerations": config.max_considerations,
@@ -206,7 +200,6 @@ def run_q2_2_eval(
 if __name__ == "__main__":
     config = Q22ModelVerbalizationConfig(
         task="q2_2_alternative_verbalization",
-        csv_input_path="data/q2_functions/consistent_functions_by_model.csv",
         model="gpt-3.5-turbo-0301",
     )
 

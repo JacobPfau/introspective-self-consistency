@@ -78,7 +78,6 @@ class SequenceCompletionBaseChangeConfig(BasePrompttypeConfig):
 
 @dataclass
 class Q21LogprobInequalityConfig(BasePrompttypeConfig):
-    csv_input_path: str
     num_shots: int = field(default=4)
     num_valid: int = field(default=2)
     num_invalid: int = field(default=3)
@@ -99,6 +98,5 @@ class Q21LogprobInequalityConfig(BasePrompttypeConfig):
 
 @dataclass
 class Q22ModelVerbalizationConfig(BaseEvalConfig):
-    csv_input_path: str
     num_shots: int = field(default=4)
     max_considerations: int = field(default=5)

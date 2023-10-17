@@ -12,7 +12,6 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import tiktoken
-from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q21LogprobInequalityConfig
@@ -73,18 +72,15 @@ def _get_logprob_from_response(
 def run_q2_1_eval(
     config: Q21LogprobInequalityConfig,
 ):
-    """Main function to run Q2.1 eval."""
-    config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
+    """Main function to run Q2.1 eval from main.py script"""
 
-    # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q2.1 eval.")
     logger.info("Skipping non-text models as logprobs are not available.")
     amb_seqs, data = get_data_with_alternatives(
-        config.csv_input_path,
         config.num_valid,
         config.num_invalid,
         config.invalid_fn_type,
-        skip_non_text_models=True,
+        config.model,
     )
     results = []
     logprob_results = []
