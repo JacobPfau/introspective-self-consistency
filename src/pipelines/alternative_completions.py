@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from tqdm import tqdm
 
-from src.models import BaseModel
 from src.pipelines.sequence_completions import (
     find_ambiguous_integer_sequences,
     generate_shot_pool,
@@ -132,7 +131,6 @@ def get_data_with_alternatives(
     num_valid: int,
     num_invalid: int,
     invalid_fn_type: str,
-    model: BaseModel,
 ):
     """Generate data samples for Q2 with valid and invalid alternatives.
 
@@ -208,7 +206,6 @@ def get_data_with_alternatives(
         entry["valid_completions"] = valid_completions
         entry["invalid_fns"] = list(invalid_fns)
         entry["invalid_completions"] = invalid_completions
-        entry["model"] = model
 
         data.append(entry)
 

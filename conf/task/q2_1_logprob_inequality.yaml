@@ -2,6 +2,7 @@
 task: q2_1_logprob_inequality
 model: text-davinci-003  # Note: model is determined by input data
 csv_input_path: data/q2_functions/consistent_functions_by_model.csv
+seed: 41
 num_shots: 4
 num_valid: 2
 num_invalid: 3

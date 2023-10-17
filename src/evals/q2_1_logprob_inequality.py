@@ -75,18 +75,18 @@ def run_q2_1_eval(
     """Main function to run Q2.1 eval from main.py script"""
 
     logger.info("Prep data for Q2.1 eval.")
-    logger.info("Skipping non-text models as logprobs are not available.")
     amb_seqs, data = get_data_with_alternatives(
         config.num_valid,
         config.num_invalid,
         config.invalid_fn_type,
-        config.model,
     )
+
+    model = config.model
     results = []
     logprob_results = []
     for entry in tqdm(data, desc="Evaluating Q2.1"):
         try:
-            model: BaseModel = entry["model"]
+
             sequence = entry["sequence"]
             org_func = entry["org_func"]
             valid_fns = entry["valid_fns"]

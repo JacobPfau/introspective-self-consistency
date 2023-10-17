@@ -15,6 +15,7 @@ NUM_SHOTS = 8
 class BaseEvalConfig:
     task: str
     model: BaseModel
+    seed: int
 
     def __post_init__(self):
         if isinstance(self.model, str):
@@ -68,7 +69,6 @@ class SequenceCompletionBaseChangeConfig(BasePrompttypeConfig):
     task_prompt: str = "self-consistency"
     role_prompt: Optional[str] = None
     base: int = 10
-    seed: int = 21
 
     def __post_init__(self):
         super().__post_init__()

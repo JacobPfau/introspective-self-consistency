@@ -1,8 +1,10 @@
 import logging
+import random
 from pathlib import Path
 from typing import Callable, Tuple
 
 import hydra
+import numpy as np
 from omegaconf import DictConfig
 
 from src.evals.config import (
@@ -50,6 +52,14 @@ TASK_FUNS = {
 }
 
 
+_DEFAULT_RANDOM_SEED = 21
+
+
+def _seed_everything(seed=_DEFAULT_RANDOM_SEED):
+    random.seed(seed)
+    np.random.seed(seed)
+
+
 def get_task_and_config(cfg: DictConfig) -> Tuple[Callable, BaseEvalConfig]:
     task: str = cfg.task
     if task not in TASK_FUNS:
@@ -65,6 +75,7 @@ def get_task_and_config(cfg: DictConfig) -> Tuple[Callable, BaseEvalConfig]:
 @log_exceptions(logger)
 def main(cfg: DictConfig) -> None:
     task_fun, task_cfg = get_task_and_config(cfg)
+    _seed_everything(task_cfg.seed)
     task_fun(task_cfg)
     logger.info(f"Output dir: {str(Path.cwd())}")
 
