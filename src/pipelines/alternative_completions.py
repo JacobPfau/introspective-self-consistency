@@ -80,6 +80,22 @@ def _get_valid_alternative_funcs(
     org_seq: Optional[str] = None,
 ) -> Tuple[str, List[dict]]:
 
+    """Given a consistent function, find alternative, valid functions for the same sequence.
+    Only possible for function that are part of an ambiguous sequence.
+
+    Args:
+        org_func (dict): Input function for which to find alternatives
+        ambiguous_sequences (dict): Set of all ambiguous sequences
+        num_valid (int): Number of valid alternatives to sample (if -1, return all valid alternatives)
+        org_seq (Optional[str], optional): Input sequence. Defaults to None.
+
+    Raises:
+        KeyError: If the input function is not part of an ambiguous sequence
+
+    Returns:
+        Tuple[str, List[dict]]: Sequence and valid alternative functions
+    """
+
     valid_fns = []
     if org_seq is not None and org_seq not in ambiguous_sequences:
         logger.info(f"Provided sequence '{org_seq}' is not ambgiuous.")
