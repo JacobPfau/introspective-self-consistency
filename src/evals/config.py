@@ -83,7 +83,7 @@ class Q21LogprobInequalityConfig(BasePrompttypeConfig):
     num_valid: int = field(default=2)
     num_invalid: int = field(default=3)
     num_multiple_choices: int = field(default=5)
-    invalid_fn_type: str = field(default="random")
+    invalid_fn_type: ShotSamplingType = field(default="random")
 
     def __post_init__(self):
         super().__post_init__()
