@@ -85,7 +85,7 @@ def _get_valid_alternative_funcs(
         logger.info(f"Provided sequence '{org_seq}' is not ambgiuous.")
         return org_seq, [org_func]
 
-    for sequence, fns in list(ambiguous_sequences.items()):
+    for sequence, fns in ambiguous_sequences.items():
         if org_func in fns:
             # sample valid ambiguous functions
             if -1 == num_valid:
