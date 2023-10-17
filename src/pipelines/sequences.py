@@ -42,6 +42,7 @@ class BitwiseOrProgression(SequenceType):
 class ModularProgression(SequenceType):
     fn_name: str = "modular"
     base_fn: str = "lambda x: (x * {}) % ({}+1)"
+    # (x * 3) % (1+1)
 
 
 @dataclass

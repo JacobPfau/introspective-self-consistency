@@ -99,7 +99,7 @@ def find_ambiguous_integer_sequences(
             # check the sequence progressions
             # through n steps and add to ambiguous_sequences
             # if ambiguous
-            check_ambiguity(
+            _check_ambiguity(
                 num_steps_to_check,
                 step_offsets,
                 ambiguous_sequences,
@@ -115,7 +115,7 @@ def find_ambiguous_integer_sequences(
     return ambiguous_sequences
 
 
-def check_ambiguity(
+def _check_ambiguity(
     num_steps_to_check: int,
     step_offsets: int,
     ambiguous_sequences: dict,
@@ -462,6 +462,7 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
     shot_type: Union[ShotSamplingType, str] = "random",
     ambiguous_sequences: dict = None,
 ) -> dict:
+
     task_type = TaskType.EXPLANATION
     prompt_turns = [
         {
@@ -492,7 +493,7 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
         ]
         prompt_turns.extend(turns)
 
-    prompt, answer, _ = _create_sequence_prompt(
+    prompt, answer = _create_sequence_prompt(
         sequence, fn_item, task_type, use_multiple_choice=True
     )
 
