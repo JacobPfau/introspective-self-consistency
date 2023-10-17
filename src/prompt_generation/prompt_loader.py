@@ -15,6 +15,7 @@ class PromptBase(Enum):
     SYSTEM_FUNCTION_SPACE = "system_function_space"
     BASE_CONSISTENCY = "base_consistency"
     CONSISTENCY_COMPLETION = "consistency_completion"
+    POSSIBLE_COMPLETION = "possible_completion"
 
 
 def _load_base_prompt_from_txt(txt_file: str) -> str:
@@ -43,6 +44,10 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
     elif prompt_base == PromptBase.SYSTEM_MATH:
         path = os.path.join(
             root_dir, "src/prompt_generation/prompts_txt/system_math.txt"
+        )
+    elif prompt_base == PromptBase.POSSIBLE_COMPLETION:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/possible_completion.txt"
         )
     elif prompt_base == PromptBase.BASE_CONSISTENCY:
         path = os.path.join(

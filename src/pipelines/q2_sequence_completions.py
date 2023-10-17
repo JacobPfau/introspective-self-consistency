@@ -21,12 +21,9 @@ def _create_sequence_prompt(
     prompt = ""
     answer = ""
     if task_type == TaskType.COMPLETION:
-        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
-        if use_multiple_choice:
-            # TODO: do we ever use this?
-            pass
-        elif max_considerations is not None and model is not None:
-            prompt = prompt[:-2]  # leave out the last period
+        prompt = get_formatted_prompt(PromptBase.POSSIBLE_COMPLETION, {"seq": sequence})
+        if max_considerations is not None and model is not None:
+
             prompt += get_formatted_prompt(
                 PromptBase.CONSIDERATIONS,
                 {"n_consider": max_considerations, "model_name": model.value},
@@ -43,7 +40,8 @@ def _create_sequence_prompt(
             answer = "\\n".join(
                 [str(ans) for ans in valid_answers[:max_considerations]]
             )
-
+        elif use_multiple_choice:
+            raise NotImplementedError("No multiple choice for completion prompts")
         else:
             raise NotImplementedError()
 
