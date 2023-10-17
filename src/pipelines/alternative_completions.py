@@ -243,9 +243,15 @@ def get_data_with_valid_alternatives_only(csv_input_path: str, model: BaseModel)
         # 2) generate valid completions
 
         # get ALL alternative, valid functions for this sequence
-        sequence, valid_fns = _get_valid_alternative_funcs(
-            consistent_func, amb_seqs, num_valid=-1
-        )
+        try:
+            sequence, valid_fns = _get_valid_alternative_funcs(
+                consistent_func,
+                amb_seqs,
+                num_valid=-1,
+            )
+        except KeyError as e:
+            logger.error(repr(e))
+            continue
 
         if sequence not in data:
             # roll out valid fns to obtain valid completions
