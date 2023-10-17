@@ -18,6 +18,7 @@ def _create_sequence_prompt(
 ) -> Tuple[str, str, str]:
     """Creates a prompt for completion type or explanation type prompts"""
 
+    prompt = ""
     answer = ""
     if task_type == TaskType.COMPLETION:
         prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
