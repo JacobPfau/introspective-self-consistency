@@ -106,7 +106,7 @@ def _get_valid_alternative_funcs(
 
     if len(valid_fns) == 0:
         raise KeyError(
-            "Could not find function in ambiguous sequences: {}".format(org_func["fn"])
+            f"Could not find function in ambiguous sequences: {str(org_func)}"
         )
 
     return sequence, valid_fns
@@ -157,9 +157,13 @@ def get_data_with_alternatives(
         # 4) generate invalid completions -> cross check that there is no overlap with valid completions
 
         # find alternative, valid function
-        sequence, valid_fns = _get_valid_alternative_funcs(
-            consistent_func, amb_seqs, num_valid
-        )
+        try:
+            sequence, valid_fns = _get_valid_alternative_funcs(
+                consistent_func, amb_seqs, num_valid
+            )
+        except KeyError as e:
+            logger.error(repr(e))
+            continue
         # roll out valid fns to obtain valid completions
         last_step = len(sequence.split(","))
         valid_completions = [resolve_fn(fn_item, last_step) for fn_item in valid_fns]
