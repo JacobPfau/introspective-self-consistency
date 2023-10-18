@@ -22,7 +22,16 @@ def evaluate_compute_dependence_with_base_changes(
     if config.on_ambiguous_sequences:
         # Get the ambiguous sequences
         # Use default parameters for now
-        ambiguous_sequences = find_ambiguous_integer_sequences()
+        if config.custom_sequences:
+            # Use the custom arguments for the ambiguous sequences
+            ambiguous_sequences = find_ambiguous_integer_sequences(
+                max_constant_term_one=config.max_constant_term_one,
+                max_constant_term_two=config.max_constant_term_two,
+                num_steps_to_check=config.num_steps_to_check,
+                step_offsets=config.step_offsets,
+            )
+        else:
+            ambiguous_sequences = find_ambiguous_integer_sequences()
         logger.info(f"Found {len(ambiguous_sequences)} ambiguous sequences.")
     else:
         raise NotImplementedError("Not yet implemented for non-ambiguous sequences. ")
@@ -53,7 +62,7 @@ def evaluate_compute_dependence_with_base_changes(
                 tb = traceback.format_exc()
                 logger.warning(f"An error occurred: {e}\n{tb}")
             else:
-                total += 1
+                total += config.num_samples
                 break
 
     logger.info(f"Total is: {str(total)}")

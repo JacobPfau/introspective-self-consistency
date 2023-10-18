@@ -78,6 +78,7 @@ def create_explanation_prompt(
                 shot_method, sequence_length, model_name, base, seed
             )
             prompt_text = extend_prompt(prompt_text, shot_prompt)
+            seed += 1
 
     # Generate the explanation prompt
     text = TASK_PROMPTS[task_prompt]["explanation"]

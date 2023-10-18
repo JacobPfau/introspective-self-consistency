@@ -63,6 +63,11 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
     role_prompt: Optional[str] = None
     base: int = 10
     seed: int = 21
+    custom_sequences: bool = False
+    max_constant_term_one: int = 5
+    max_constant_term_two: int = 5
+    num_steps_to_check: int = 2
+    step_offsets: int = 5
 
     def __post_init__(self):
         super().__post_init__()
