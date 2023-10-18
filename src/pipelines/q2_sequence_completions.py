@@ -70,14 +70,20 @@ def _create_sequence_prompt(
     return prompt, answer
 
 
-def sample_shot_pool_from_amb_seqs(
+def _sample_shot_pool_from_amb_seqs(
     ambiguous_sequences: dict,
     sequence: str,
     n_shots: int = 8,
 ) -> Dict[str, Any]:
     """Generate a pool of `n_shots` of candidate ambiguous sequences and functions.
-    Candidates are sampled randomly from the set of ambiguous sequences
+    Candidates are sampled randomly from the set of ambiguous sequences.
+    Explicitly excludes the base `sequence` from the pool.
     """
+
+    if n_shots > len(ambiguous_sequences):
+        raise ValueError(
+            f"Number of shots {n_shots} is larger than the number of ambiguous sequences {len(ambiguous_sequences)}"
+        )
 
     shot_pool = {
         k: ambiguous_sequences[k]
@@ -107,7 +113,7 @@ def _sample_shots_with_considerations(
     """
 
     # sample shot pool from ambiguous sequences
-    shots = sample_shot_pool_from_amb_seqs(
+    shots = _sample_shot_pool_from_amb_seqs(
         ambiguous_sequences=ambiguous_sequences,
         sequence=sequence,
         n_shots=n_shots,

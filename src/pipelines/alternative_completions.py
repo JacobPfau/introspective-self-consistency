@@ -144,7 +144,14 @@ def get_data_with_alternatives(
 
     """
 
-    amb_seqs = find_ambiguous_integer_sequences()
+    amb_seqs = find_ambiguous_integer_sequences(
+        max_constant_term_one=4,
+        max_constant_term_two=4,
+        num_steps_to_check=4,
+        step_offsets=4,
+        disambiguate=False,
+        multiple_offsets=True,
+    )
 
     amb_gen_funcs: List[dict] = []
     for seqs in amb_seqs.values():
@@ -215,7 +222,7 @@ def get_data_with_alternatives(
 def get_data_with_valid_alternatives_only():
     # for Q2.2 we only need valid alternatives
 
-    # use ambiguous functions as input data
+    # use ambiguous functions generate with default params as input data
     amb_seqs = find_ambiguous_integer_sequences()
     # {'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}
 
