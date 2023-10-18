@@ -6,6 +6,7 @@ from tqdm import tqdm
 from src.evals.config import Q22ModelVerbalizationConfig
 from src.evals.q2_1_logprob_inequality import _save_results_to_csv
 from src.models import BaseModel, generate_response_with_turns
+from src.pipelines import TaskType
 from src.pipelines.alternative_completions import get_data_with_valid_alternatives_only
 from src.pipelines.q2_sequence_completions import (
     generate_sequence_completion_prompt_with_valid_continuations,
@@ -83,7 +84,7 @@ def _eval_sequence_explanation(
         sequence,
         valid_fns,
         ambiguous_sequences=amb_seqs,
-        task_type="explanation",
+        task_type=TaskType.EXPLANATION,
         n_shots=num_shots,
         max_considerations=max_considerations,
         model=model,
@@ -126,9 +127,10 @@ def run_q2_2_eval(
     """Main function to run Q2.2 eval."""
 
     # generate data but keep all valid functions
-    amb_seqs, data = get_data_with_valid_alternatives_only()
+    amb_seqs, data = get_data_with_valid_alternatives_only(config.shot_pool_term)
 
     results = []
+
     for sequence, entry in tqdm(data.items()):
         # parse data entry
         valid_fns = entry["valid_fns"]

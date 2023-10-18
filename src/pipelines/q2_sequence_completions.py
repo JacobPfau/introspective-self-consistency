@@ -66,6 +66,8 @@ def _create_sequence_prompt(
             answer = "\\n".join(valid_fns[:max_considerations])
         else:
             raise NotImplementedError()
+    else:
+        raise NotImplementedError(f"Task type not implemented: {task_type}")
 
     return prompt, answer
 
