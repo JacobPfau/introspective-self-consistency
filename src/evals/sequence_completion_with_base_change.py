@@ -23,6 +23,7 @@ def evaluate_compute_dependence_with_base_changes(
         # Get the ambiguous sequences
         # Use default parameters for now
         ambiguous_sequences = find_ambiguous_integer_sequences()
+        logger.info(f"Found {len(ambiguous_sequences)} ambiguous sequences.")
     else:
         raise NotImplementedError("Not yet implemented for non-ambiguous sequences. ")
         # TODO: have support for general base sequences here

@@ -27,12 +27,13 @@ def generate_random_fn_sequence(
     num_range: Tuple[int, int],
     offset_range: Tuple[int, int],
     sequence_length: int,
+    base: int = 10,
 ) -> Tuple[str, List[int]]:
     for _ in range(3):
         fn, offset = _generate_random_function(
             sequence_functions, num_range, offset_range
         )
-        fn = reformat_function(fn, offset)
+        fn = reformat_function(fn, offset, base)
         try:
             sequence = [eval(fn)(x) for x in range(sequence_length)]
             for x in sequence:

@@ -26,6 +26,7 @@ import random
 from logging import getLogger
 from typing import List, Optional, Union
 
+from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     OpenAIChatModels,
@@ -36,7 +37,6 @@ from src.pipelines.sequence_completions import sequence_functions
 from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
 from src.prompt_generation.robustness_checks.utils import (
     extend_prompt,
-    generate_random_fn_sequence,
     initialise_prompt,
     start_question,
 )
@@ -75,7 +75,7 @@ def create_explanation_prompt(
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
             shot_prompt = generate_exp_shot_prompt(
-                shot_method, sequence_length, model_name, base
+                shot_method, sequence_length, model_name, base, seed
             )
             prompt_text = extend_prompt(prompt_text, shot_prompt)
 
@@ -119,6 +119,7 @@ def generate_exp_shot_prompt(
     sequence_length: int,
     model_name=DAVINCI_MODEL_NAME,
     base=10,
+    seed=0,
     shot=1,
     num_range=(0, 7),
     offset_range=(0, 7),
@@ -127,9 +128,24 @@ def generate_exp_shot_prompt(
     Generate a single shot prompt for a explanation.
     """
     if shot_method == ShotSamplingType.RANDOM:
-        fn, sequence = generate_random_fn_sequence(
-            sequence_functions, num_range, offset_range, sequence_length
-        )
+        for i in range(6):
+            fn, offset = _generate_random_function(
+                sequence_functions, num_range, offset_range, seed
+            )
+            # Reformat fn to replace every x after the first with x+offset
+            fn = reformat_function(fn, offset, base)
+            try:
+                assert isinstance(fn, str)
+                sequence = [eval(fn)(x) for x in range(sequence_length)]
+                break
+            except RecursionError:
+                logger.info(f"Recursion Error in generate_exp_shot_prompt: {fn}")
+                seed += 1
+                random.seed(seed)
+                if i == 5:
+                    raise ValueError(
+                        "Kept generating improper recursive functions, try again!"
+                    )
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
 
