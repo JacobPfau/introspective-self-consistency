@@ -56,6 +56,7 @@ def evaluate_compute_dependence_with_base_changes(
                     temperature=0.0,
                     samples=config.num_samples,
                     seed=seed,
+                    show_function_space=config.show_function_space,
                 )
             except Exception as e:
                 logger.warning("Error in self consistency evaluation.")

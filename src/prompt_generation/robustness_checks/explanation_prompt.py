@@ -22,6 +22,7 @@ Prompts will take the form:
 """
 
 
+import os
 import random
 from logging import getLogger
 from typing import List, Optional, Union
@@ -62,6 +63,7 @@ def create_explanation_prompt(
     shot_method: ShotSamplingType = ShotSamplingType.RANDOM,
     role_prompt: Optional[str] = None,
     seed: int = 0,
+    show_function_space: bool = False,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
@@ -97,12 +99,37 @@ def create_explanation_prompt(
         return text
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
-        pretext = [
-            {
-                "role": "system",
-                "content": pre_prompt,
-            }
-        ]
+        if show_function_space:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+
+            if base == 10:
+                file_path = os.path.join(
+                    current_dir, "..", "prompts_txt/robustness_system_prompt_exp_10.txt"
+                )
+                with open(file_path) as f:
+                    file_text = f.read()
+            else:
+                assert base == 2
+                file_path = os.path.join(
+                    current_dir, "..", "prompts_txt/robustness_system_prompt_exp_2.txt"
+                )
+                with open(file_path) as f:
+                    file_text = f.read()
+
+            pretext = [
+                {
+                    "role": "system",
+                    "content": file_text,
+                }
+            ]
+        else:
+            pretext = [
+                {
+                    "role": "system",
+                    "content": pre_prompt,
+                }
+            ]
+
         whole_prompt = (
             pretext
             + prompt_text

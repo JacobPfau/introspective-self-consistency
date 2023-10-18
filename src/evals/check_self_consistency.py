@@ -31,6 +31,7 @@ def self_consistency_evaluation(
     samples: int,
     role_prompt: Optional[str] = None,
     seed: int = 0,
+    show_function_space: bool = False,
 ):
     """
     Given a sequence, prompt the model to both continue the sequence and
@@ -50,6 +51,7 @@ def self_consistency_evaluation(
         shots=shots,
         shot_method=shot_method,
         seed=seed,
+        show_function_space=show_function_space,
     )
 
     explanation_prompt = create_explanation_prompt(
@@ -61,6 +63,7 @@ def self_consistency_evaluation(
         shots=shots,
         shot_method=shot_method,
         seed=seed,
+        show_function_space=show_function_space,
     )
 
     # Make the sequence base 2 if necessary

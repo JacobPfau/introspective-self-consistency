@@ -68,6 +68,7 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
     max_constant_term_two: int = 5
     num_steps_to_check: int = 2
     step_offsets: int = 5
+    show_function_space: bool = False
 
     def __post_init__(self):
         super().__post_init__()
