@@ -100,3 +100,4 @@ class Q21LogprobInequalityConfig(BasePrompttypeConfig):
 class Q22ModelVerbalizationConfig(BaseEvalConfig):
     num_shots: int = field(default=4)
     max_considerations: int = field(default=5)
+    shot_pool_term: int = field(default=6)

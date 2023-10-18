@@ -86,12 +86,12 @@ python main.py -m +task=compute_dependence_with_base_changes task_prompt=self-co
 This eval addresses the consideration of alternative by obtaining log probabilities of different valid and invalid answers to a given ambiguous sequence. We wish to determine whether the model consistently allocates significant probability mass to valid options and what distribution over log probabilities of alternative answers can be observed.
 
 ```sh
-python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10,12
+python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10 seed=41,42,43
 ```
 
 ## Q2.2: Verbalization of Alternatives
 ```sh
-python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10,12
+python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10 model=text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314 seed=41,42,43
 ```
 
 # Tests

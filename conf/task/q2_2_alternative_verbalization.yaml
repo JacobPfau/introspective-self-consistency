@@ -1,7 +1,7 @@
 # @package _global_
 task: q2_2_alternative_verbalization
 model: text-davinci-003
-csv_input_path: data/q2_functions/consistent_functions_by_model.csv
 seed: 41
 num_shots: 4
 max_considerations: 5
+shot_pool_term: 6
