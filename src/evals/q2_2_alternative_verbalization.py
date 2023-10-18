@@ -39,7 +39,6 @@ def _eval_sequence_completion(
         model, turns=completion_prompt["prompt_turns"]
     )  # completions based on priming the model
 
-    # TODO: properly parse response for different models
     possible_completions = [elem.strip() for elem in response.split("\\n")]
     if len(possible_completions) > max_considerations:
         logger.warning(

@@ -4,3 +4,4 @@ model: text-davinci-003
 seed: 41
 num_shots: 4
 max_considerations: 5
+shot_pool_term: 6

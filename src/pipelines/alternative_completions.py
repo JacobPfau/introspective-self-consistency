@@ -219,11 +219,11 @@ def get_data_with_alternatives(
     return amb_seqs, data
 
 
-def get_data_with_valid_alternatives_only():
+def get_data_with_valid_alternatives_only(shot_pool_term: int = 6) -> Tuple[dict, dict]:
     # for Q2.2 we only need valid alternatives
 
     # use ambiguous functions generate with default params as input data
-    amb_seqs = find_ambiguous_integer_sequences()
+    amb_seqs_default = find_ambiguous_integer_sequences()
     # {'fn': 'lambda x: (1 * x) ** 1', 'offset': 0, 'metadata': ('exponential_progression', 0, 1)}
 
     data = {}
@@ -231,7 +231,9 @@ def get_data_with_valid_alternatives_only():
     # generate dataset for this eval:
     # 1) generate ambiguous sequence given a valid explanation and find alternative, valid explanation
     # 2) generate valid completions
-    for seq, amb_fns in tqdm(amb_seqs.items(), desc="Generating data for Q2.2 eval"):
+    for seq, amb_fns in tqdm(
+        amb_seqs_default.items(), desc="Generating data for Q2.2 eval"
+    ):
 
         amb_fn = random.choice(amb_fns)
 
@@ -239,7 +241,7 @@ def get_data_with_valid_alternatives_only():
         try:
             sequence, valid_fns = _get_valid_alternative_funcs(
                 amb_fn,
-                amb_seqs,
+                amb_seqs_default,
                 num_valid=-1,
             )
         except KeyError as e:
@@ -263,4 +265,17 @@ def get_data_with_valid_alternatives_only():
 
             data[sequence] = entry
 
-    return amb_seqs, data
+    # generate larger set of ambiguous sequences that is different from the default set
+    # use this set to sample in-context demos for the model
+    # need a larger set with increasing values of `num_shots` to ensure sufficient samples
+    logger.info(
+        "Start generating larger set of ambiguous sequences for in-context demos."
+    )
+    amb_seqs_shot_pool = find_ambiguous_integer_sequences(
+        max_constant_term_one=shot_pool_term,
+        max_constant_term_two=shot_pool_term,
+        num_steps_to_check=4,
+        step_offsets=shot_pool_term,
+    )
+
+    return amb_seqs_shot_pool, data

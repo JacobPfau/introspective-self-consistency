@@ -82,7 +82,9 @@ def _sample_shot_pool_from_amb_seqs(
 
     if n_shots > len(ambiguous_sequences):
         raise ValueError(
-            f"Number of shots {n_shots} is larger than the number of ambiguous sequences {len(ambiguous_sequences)}"
+            f"Number of shots {n_shots} is larger than the number of ambiguous sequences {len(ambiguous_sequences)}. \
+                You may need to adjust the `shot_pool_term` parameter in the config \
+                to generate a larger set of ambiguous sequences to sample from."
         )
 
     shot_pool = {
