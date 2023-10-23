@@ -25,7 +25,6 @@ The sequences will be taken from the list of ambiguous sequences.
 """
 
 import logging
-import os
 import random
 from typing import List, Optional, Union
 
@@ -36,6 +35,7 @@ from src.models.openai_model import (
 )
 from src.pipelines import ShotSamplingType
 from src.pipelines.sequence_completions import sequence_functions
+from src.prompt_generation import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
 from src.prompt_generation.robustness_checks.utils import (
     extend_prompt,
@@ -90,24 +90,13 @@ def create_continuation_prompt(
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
         if show_function_space:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
 
             if base == 10:
-                file_path = os.path.join(
-                    current_dir,
-                    "..",
-                    "prompts_txt/robustness_system_prompt_cont_10.txt",
-                )
-                with open(file_path) as f:
-                    file_text = f.read()
+                file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE10)
+            elif base == 2:
+                file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE2)
             else:
-                assert base == 2
-                file_path = os.path.join(
-                    current_dir, "..", "prompts_txt/robustness_system_prompt_cont_2.txt"
-                )
-                with open(file_path) as f:
-                    file_text = f.read()
-
+                raise ValueError(f"Invalid base: {base}")
             pretext = [
                 {
                     "role": "system",
