@@ -1,0 +1,15 @@
+task: compute_dependence_with_base_changes
+model: gpt-4-0314
+base: 10
+num_samples: 1
+on_ambiguous_sequences: true
+num_shots: 4
+few_shot_prompt_type: random
+task_prompt: random-ambiguity
+role_prompt: null
+custom_sequences: true
+max_constant_term_one: 5
+max_constant_term_two: 5
+num_steps_to_check: 2
+step_offsets: 5
+show_function_space: true

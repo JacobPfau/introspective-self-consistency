@@ -25,3 +25,7 @@ data/*
 NYU_key.txt
 results/*
 *.ipynb
+
+# Adding results of the final experiment
+!results/Robustness-Results-Part-1
+!results/Robustness-Results-Part-2

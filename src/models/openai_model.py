@@ -12,7 +12,7 @@ CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 _MAX_RETRIES = 3
-_RETRY_TIMEOUT = 1
+_RETRY_TIMEOUT = 5
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -57,7 +57,7 @@ def _with_retries(api_call: Callable[[], T], invalid_response: str) -> T:
             time.sleep(_RETRY_TIMEOUT)
         except RateLimitError:
             logger.error("Rate limiting, Sleep and try again.")
-            time.sleep(_RETRY_TIMEOUT)
+            time.sleep(_RETRY_TIMEOUT * 3)
         except ServiceUnavailableError:
             logger.error("Service Unvailable, Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)
