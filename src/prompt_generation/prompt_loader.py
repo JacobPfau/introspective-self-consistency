@@ -3,6 +3,8 @@ from enum import Enum
 
 from hydra.utils import get_original_cwd
 
+from src.pipelines.sequences import get_sequences_as_dict
+
 
 class PromptBase(Enum):
     BASE_COMPLETION = "base_completion"
@@ -10,8 +12,10 @@ class PromptBase(Enum):
     EXPLANATION_MULTIPLE_CHOICE = "base_explanation_multiple_choice"
     CONSIDERATIONS = "consideration"
     SYSTEM_MATH = "system_math"
+    SYSTEM_FUNCTION_SPACE = "system_function_space"
     BASE_CONSISTENCY = "base_consistency"
     CONSISTENCY_COMPLETION = "consistency_completion"
+    POSSIBLE_COMPLETION = "possible_completion"
     ROBUST_COMPLETION_BASE10 = "robust_completion_base10"
     ROBUST_COMPLETION_BASE2 = "robust_completion_base2"
     ROBUST_EXPLANATION_BASE10 = "robust_explanation_base10"
@@ -50,6 +54,10 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
         path = os.path.join(
             root_dir, "src/prompt_generation/prompts_txt/system_math.txt"
         )
+    elif prompt_base == PromptBase.POSSIBLE_COMPLETION:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/possible_completion.txt"
+        )
     elif prompt_base == PromptBase.BASE_CONSISTENCY:
         path = os.path.join(
             root_dir, "src/prompt_generation/prompts_txt/base_consistency.txt"
@@ -58,6 +66,18 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
         path = os.path.join(
             root_dir, "src/prompt_generation/prompts_txt/consistency_completion.txt"
         )
+    elif prompt_base == PromptBase.SYSTEM_FUNCTION_SPACE:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/system_function_space.txt"
+        )
+        base_prompt = _load_base_prompt_from_txt(path)
+
+        # progressions have two terms A and B
+        for fn_name, base_fn in get_sequences_as_dict().items():
+            base_prompt += "- " + fn_name + " -> " + base_fn.format("a", "b") + " \n"
+
+        return base_prompt
+
     elif prompt_base == PromptBase.ROBUST_COMPLETION_BASE10:
         path = os.path.join(
             root_dir,

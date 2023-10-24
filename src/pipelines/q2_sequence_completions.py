@@ -18,14 +18,12 @@ def _create_sequence_prompt(
 ) -> Tuple[str, str, str]:
     """Creates a prompt for completion type or explanation type prompts"""
 
+    prompt = ""
     answer = ""
     if task_type == TaskType.COMPLETION:
-        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
-        if use_multiple_choice:
-            # TODO: do we ever use this?
-            pass
-        elif max_considerations is not None and model is not None:
-            prompt = prompt[:-2]  # leave out the last period
+        prompt = get_formatted_prompt(PromptBase.POSSIBLE_COMPLETION, {"seq": sequence})
+        if max_considerations is not None and model is not None:
+
             prompt += get_formatted_prompt(
                 PromptBase.CONSIDERATIONS,
                 {"n_consider": max_considerations, "model_name": model.value},
@@ -42,7 +40,8 @@ def _create_sequence_prompt(
             answer = "\\n".join(
                 [str(ans) for ans in valid_answers[:max_considerations]]
             )
-
+        elif use_multiple_choice:
+            raise NotImplementedError("No multiple choice for completion prompts")
         else:
             raise NotImplementedError()
 
@@ -67,18 +66,28 @@ def _create_sequence_prompt(
             answer = "\\n".join(valid_fns[:max_considerations])
         else:
             raise NotImplementedError()
+    else:
+        raise NotImplementedError(f"Task type not implemented: {task_type}")
 
     return prompt, answer
 
 
-def sample_shot_pool_from_amb_seqs(
+def _sample_shot_pool_from_amb_seqs(
     ambiguous_sequences: dict,
     sequence: str,
     n_shots: int = 8,
 ) -> Dict[str, Any]:
     """Generate a pool of `n_shots` of candidate ambiguous sequences and functions.
-    Candidates are sampled randomly from the set of ambiguous sequences
+    Candidates are sampled randomly from the set of ambiguous sequences.
+    Explicitly excludes the base `sequence` from the pool.
     """
+
+    if n_shots > len(ambiguous_sequences):
+        raise ValueError(
+            f"Number of shots {n_shots} is larger than the number of ambiguous sequences {len(ambiguous_sequences)}. \
+                You may need to adjust the `shot_pool_term` parameter in the config \
+                to generate a larger set of ambiguous sequences to sample from."
+        )
 
     shot_pool = {
         k: ambiguous_sequences[k]
@@ -108,7 +117,7 @@ def _sample_shots_with_considerations(
     """
 
     # sample shot pool from ambiguous sequences
-    shots = sample_shot_pool_from_amb_seqs(
+    shots = _sample_shot_pool_from_amb_seqs(
         ambiguous_sequences=ambiguous_sequences,
         sequence=sequence,
         n_shots=n_shots,
@@ -159,7 +168,7 @@ def generate_sequence_completion_prompt_with_valid_continuations(
     prompt_turns = [
         {
             "role": "system",
-            "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 

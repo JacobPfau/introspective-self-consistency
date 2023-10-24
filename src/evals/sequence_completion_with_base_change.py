@@ -19,6 +19,8 @@ def evaluate_compute_dependence_with_base_changes(
     seed = config.seed
     results = {}
     all_data = []
+
+    logger.info("Start evaluating compute dependence with base changes.")
     if config.on_ambiguous_sequences:
         # Get the ambiguous sequences
         # Use default parameters for now

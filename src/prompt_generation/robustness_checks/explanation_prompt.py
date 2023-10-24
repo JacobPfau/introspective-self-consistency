@@ -53,9 +53,6 @@ which generated the preceding sequences base {}. Assume the first number was gen
 the second by f(1), the third by f(2), and so on.
 """
 
-# TODO: fix generating functions to include recursive progressions, an ok fix for now.
-sequence_functions = sequence_functions.copy()
-
 
 def create_explanation_prompt(
     sequence: List[int],
