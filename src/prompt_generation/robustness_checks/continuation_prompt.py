@@ -25,7 +25,6 @@ The sequences will be taken from the list of ambiguous sequences.
 """
 
 import logging
-import os
 import random
 from typing import List, Optional, Union
 
@@ -35,7 +34,11 @@ from src.models.openai_model import (
     OpenAITextModels,
 )
 from src.pipelines import ShotSamplingType
-from src.pipelines.sequence_completions import sequence_functions
+from src.pipelines.sequence_completions import (
+    binary_sequence_functions,
+    sequence_functions,
+)
+from src.prompt_generation import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
 from src.prompt_generation.robustness_checks.utils import (
     extend_prompt,
@@ -80,34 +83,34 @@ def create_continuation_prompt(
     # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
-        assert isinstance(prompt_text, str)
-        pretext = "Here are some examples of sequence continuations."
-        pretext += "\n"
-        text = pretext + prompt_text + text
-        text += "\n"
-        text += "A: "
+        text = get_formatted_prompt(
+            PromptBase.COMPLETION_SKELETON_TEXT,
+            {"prompt_text": prompt_text, "text": text},
+        )
         return text
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
         if show_function_space:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
 
             if base == 10:
-                file_path = os.path.join(
-                    current_dir,
-                    "..",
-                    "prompts_txt/robustness_system_prompt_cont_10.txt",
-                )
-                with open(file_path) as f:
-                    file_text = f.read()
+                file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE10)
+                all_sequences = sequence_functions
+            elif base == 2:
+                file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE2)
+                all_sequences = binary_sequence_functions
             else:
-                assert base == 2
-                file_path = os.path.join(
-                    current_dir, "..", "prompts_txt/robustness_system_prompt_cont_2.txt"
-                )
-                with open(file_path) as f:
-                    file_text = f.read()
+                raise ValueError(f"Invalid base: {base}")
 
+                # Add the functions to the pretext
+            all_sequences_formatted = {
+                sequence: all_sequences[sequence].format("a", "b")
+                for sequence in all_sequences
+            }
+
+            for sequence_type in all_sequences_formatted:
+                file_text += (
+                    sequence_type + "->" + all_sequences_formatted[sequence_type] + "\n"
+                )
             pretext = [
                 {
                     "role": "system",
@@ -156,19 +159,18 @@ def generate_cont_shot_prompt(
         raise ValueError(f"Invalid shot method: {shot_method}")
 
     if model_name in OpenAITextModels.list():
-        text = "Q: "
         if base == 10:
-            text += ",".join([str(x) for x in sequence])
-            a_text = str(eval(fn)(sequence_length))
+            sequence_str = ",".join([str(x) for x in sequence])
+            continuation = str(eval(fn)(sequence_length))
         elif base == 2:
-            text += ",".join([bin(x) for x in sequence])
-            a_text = bin(eval(fn)(sequence_length))
+            sequence_str = ",".join([bin(x) for x in sequence])
+            continuation = bin(eval(fn)(sequence_length))
         else:
             raise ValueError(f"Invalid base: {base}")
-        text += "\n"
-        text += "A: "
-        text += a_text
-        text += "\n"
+        text = get_formatted_prompt(
+            PromptBase.COMPLETION_SHOT_TEXT,
+            {"sequence": sequence_str, "continuation": continuation},
+        )
         return text
 
     elif model_name in OpenAIChatModels.list():

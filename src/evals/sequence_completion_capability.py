@@ -79,7 +79,7 @@ def _sequence_completion_eval(
 
 
 def evaluate_sequence_completion_capability(config: SequenceCompletionCapabilityConfig):
-    logger.info("Evaluating sequence completion capability...")
+    logger.info("Start evaluating sequence completion capability.")
 
     config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
     df = pd.read_csv(config.csv_input_path)
@@ -122,7 +122,7 @@ def evaluate_sequence_completion_capability(config: SequenceCompletionCapability
     completion_is_correct = round(np.mean(completion_accs), 2) * 100
     logger.info(
         f"""
-        Evaluated {len(completion_data)} ambiguous sequences of {total_sequences} total.
+        Finished evaluating {len(completion_data)} ambiguous sequences of {total_sequences} total.
         Resulting in:
         - {rule_matches_sequence}% rules_matches_sequence
         - {completion_is_correct}% completion_is_correct

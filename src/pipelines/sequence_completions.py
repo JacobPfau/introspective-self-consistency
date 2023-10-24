@@ -42,6 +42,7 @@ import numpy as np
 
 from src.models import BaseModel
 from src.pipelines.classes import ShotSamplingType, TaskType
+from src.pipelines.sequences import get_sequences_as_dict
 from src.prompt_generation import PromptBase, get_formatted_prompt
 
 # Integer sequence functions
@@ -60,6 +61,21 @@ sequence_functions = {
     ),
 }
 
+binary_sequence_functions = {
+    "arithmetic_progression": "lambda x: bin(({} * x) + {})",
+    "geometric_progression": "lambda x: bin(({} * x) * {})",
+    "exponential_progression": "lambda x: bin(({} * x) ** {})",
+    "power_progression": "lambda x: bin({} ** ({} * x))",
+    "bit_or_progression": "lambda x: bin(({} * x) | {})",
+    "modular_progression": "lambda x: bin((x * {}) % ({}+1))",
+    "indexing_criteria_progression": (
+        "lambda x: bin([i for i in range(100) if i % ({} + 1) or i % ({} + 1)][x])"
+    ),
+    "recursive_progression": (
+        "(lambda a:lambda v:bin(a(a,v)))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
+    ),
+}
+
 
 def find_ambiguous_integer_sequences(
     max_constant_term_one: int = 4,
@@ -70,10 +86,9 @@ def find_ambiguous_integer_sequences(
     disambiguate_steps: int = 4,
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
-    valid_sequence_functions: dict = sequence_functions,
 ) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
-    Find ambiguous_integer_sequences using brute force search
+    Find ambiguous sequence using brute force search
     over a set of progressions.
 
     A sequence is said to ambiguous if an initial set of two or more completions
@@ -94,7 +109,7 @@ def find_ambiguous_integer_sequences(
         {'fn': 'lambda x: (2*x) + 1', 'offset': 0}
     ]
     """
-    progression_base_fns = valid_sequence_functions
+    progression_base_fns = get_sequences_as_dict()
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
         for const_term_two in range(max_constant_term_two):
@@ -115,7 +130,7 @@ def find_ambiguous_integer_sequences(
             # check the sequence progressions
             # through n steps and add to ambiguous_sequences
             # if ambiguous
-            check_ambiguity(
+            _check_ambiguity(
                 num_steps_to_check,
                 step_offsets,
                 ambiguous_sequences,
@@ -131,7 +146,7 @@ def find_ambiguous_integer_sequences(
     return ambiguous_sequences
 
 
-def check_ambiguity(
+def _check_ambiguity(
     num_steps_to_check: int,
     step_offsets: int,
     ambiguous_sequences: dict,
@@ -253,23 +268,22 @@ def generate_shot_pool(
 
     fn_pool = []
     if shot_type == ShotSamplingType.RANDOM:
-        fn_pool = list(sequence_functions.values())
+        fn_pool = list(get_sequences_as_dict().values())
     elif shot_type == ShotSamplingType.SAME_CLASS:
         fn_pool = list(
             seq_fn
-            for seq_key, seq_fn in sequence_functions.items()
+            for seq_key, seq_fn in get_sequences_as_dict().items()
             if seq_key == base_fn["metadata"][0]
         )
     elif shot_type == ShotSamplingType.EXCLUDE_CLASS:
         fn_pool = list(
             seq_fn
-            for seq_key, seq_fn in sequence_functions.items()
+            for seq_key, seq_fn in get_sequences_as_dict().items()
             if seq_key != base_fn["metadata"][0]
         )
 
     shot_pool = []
     # we generate a prompt_pool with random parameters
-    # TODO: move these magic strings to somewhere more visible
     pool_size = 2 * n_shots
     if shot_type in [
         ShotSamplingType.RANDOM,
@@ -284,10 +298,12 @@ def generate_shot_pool(
             shot_pool.append(
                 {"fn": fn.format(first_term, second_term), "offset": offset}
             )
+
     elif shot_type == ShotSamplingType.SAME_FN:
         for _ in range(pool_size):
             offset = random.randint(0, 10)
             shot_pool.append({"fn": base_fn["fn"], "offset": offset})
+
     elif shot_type == ShotSamplingType.AMBIGUOUS:
         while len(shot_pool) < pool_size:
             fn_item = random.choice(list(ambiguous_sequences.items()))
@@ -443,7 +459,7 @@ def generate_sequence_completion_prompt(
     prompt_turns = [
         {
             "role": "system",
-            "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 
@@ -480,11 +496,12 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
     shot_type: Union[ShotSamplingType, str] = "random",
     ambiguous_sequences: dict = None,
 ) -> dict:
+
     task_type = TaskType.EXPLANATION
     prompt_turns = [
         {
             "role": "system",
-            "content": get_formatted_prompt(PromptBase.SYSTEM_MATH),
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 
@@ -510,7 +527,7 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
         ]
         prompt_turns.extend(turns)
 
-    prompt, answer, _ = _create_sequence_prompt(
+    prompt, answer = _create_sequence_prompt(
         sequence, fn_item, task_type, use_multiple_choice=True
     )
 

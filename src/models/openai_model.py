@@ -4,7 +4,7 @@ import time
 from typing import Callable, List, Tuple, TypeVar, Union
 
 import openai
-from openai.error import RateLimitError, ServiceUnavailableError
+from openai.error import RateLimitError, ServiceUnavailableError, Timeout
 
 from src.models.base_model import BaseModel
 
@@ -60,7 +60,10 @@ def _with_retries(api_call: Callable[[], T], invalid_response: str) -> T:
             time.sleep(_RETRY_TIMEOUT * 3)
         except ServiceUnavailableError:
             logger.error("Service Unvailable, Sleep and try again.")
-            time.sleep(_RETRY_TIMEOUT)
+            time.sleep(_RETRY_TIMEOUT * 3)
+        except Timeout:
+            logger.error("Request timed out, Sleep and try again.")
+            time.sleep(_RETRY_TIMEOUT * 3)
         except KeyError:
             logger.warning("Unexpected response format. Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT)

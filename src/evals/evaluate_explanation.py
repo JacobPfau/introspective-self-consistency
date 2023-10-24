@@ -1,3 +1,4 @@
+import traceback
 from logging import getLogger
 from typing import Dict, List, Union
 
@@ -25,6 +26,9 @@ def valid_explanation(
         return True
     except Exception as e:
         logger.info(e)
+        logger.info(traceback.format_exc())
+        logger.info(f"invalid explanation: {fn_form}")
+        logger.info(f"sequence_length: {sequence_length}")
         return False
 
 
@@ -38,7 +42,6 @@ def generate_explanation(
     TODO: refactor code, entirely copied from generate_continuation
     """
     if model_name in OpenAITextModels.list():
-        assert isinstance(prompt, str)
         # Feed this into the model
         model_response = generate_text_completion(
             prompt=prompt,
@@ -47,7 +50,6 @@ def generate_explanation(
             model=model_name,
         )
     elif model_name in OpenAIChatModels.list():
-        assert isinstance(prompt, list)
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,

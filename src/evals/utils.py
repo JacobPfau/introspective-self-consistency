@@ -8,7 +8,7 @@ from src.models.openai_model import (
     generate_text_completion,
 )
 from src.pipelines.baseb_sequence_completions import numberToBase
-from src.pipelines.sequence_completions import sequence_functions
+from src.pipelines.sequences import get_sequences_as_dict
 
 
 def generate_wrong_functions(
@@ -16,7 +16,7 @@ def generate_wrong_functions(
     num_functions: int = 5,
     offset_range: Tuple[int, int] = (0, 10),
     num_range: Tuple[int, int] = (0, 10),
-    func_pool: dict = sequence_functions,
+    func_pool: dict = None,
 ) -> List[str]:
     """
     Given an integer sequence, and a method of generating functions, generate a list of incorrect functions.
@@ -26,6 +26,10 @@ def generate_wrong_functions(
         # Turn the sequence into a list of ints
         sequence = [int(x.strip()) for x in sequence.split(",")]
     sequence_length = len(sequence)
+
+    if func_pool is None:
+        func_pool = get_sequences_as_dict()
+
     output = []
     i = 0
     while i < len(range(num_functions)):

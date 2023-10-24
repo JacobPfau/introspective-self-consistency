@@ -1,4 +1,4 @@
-# "Introspective Truthfulness in LMs" - Repository for AI safety camp 2023
+# "Self-Consistency of Large Language Models under Ambiguity" - Repository for the paper resulting from AI safety camp 2023
 
 # Environment
 Best practice is to create a virtual environment and install relevant dependencies in there to develop and run the code.
@@ -25,7 +25,7 @@ When you get stuck/annoyed by pre-commit rejecting your commit, you may choose t
 
 To run a specific task, we simply specify it via the "task" parameter in the call to main.py:
 ```sh
-python main.py +task=ambibench_completion # runs exactly that task  ("+" before task needed for hydra weirdness reasons)
+python main.py +task=sequence_completion_equality # runs exactly that task  ("+" before task needed for hydra syntax)
 ```
 
 Note that a single "hydra run" is not the same as a single invocation of `python main.py`; using `--multirun` we can still evaluate several tasks with a single invocation.
@@ -34,7 +34,7 @@ Note that a single "hydra run" is not the same as a single invocation of `python
 ## How to do multiple runs at once
 For this we rely on the standard hydra `--multirun` mechanism, as follows:
 ```sh
-python main.py --multirun +task=ambibench_completion,ambi_bench_category_prediction  # '-m' can be used as shorthand for '--multirun'
+python main.py --multirun +task=sequence_completion_capability,sequence_completion_equality  # '-m' can be used as shorthand for '--multirun'
 ```
 
 ## How to sweep over both tasks _and_ custom configurations per task
@@ -92,18 +92,18 @@ python main.py -m +task=compute_dependence_with_base_changes task_prompt=self-co
 This eval addresses the consideration of alternative by obtaining log probabilities of different valid and invalid answers to a given ambiguous sequence. We wish to determine whether the model consistently allocates significant probability mass to valid options and what distribution over log probabilities of alternative answers can be observed.
 
 ```sh
-python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10,12
+python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10 seed=41,42,43
 ```
 
 ## Q2.2: Verbalization of Alternatives
 ```sh
-python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10,12
+python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10 model=text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314 seed=41,42,43
 ```
 
 # Tests
 Tests are run using `pytest`.
 The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
-To work around this invoke pytest as a python module:
+To work around this invoke pytest as a python module or update Python path:
 ```sh
-python -m pytest src/tests
+python -m pytest tests
 ```

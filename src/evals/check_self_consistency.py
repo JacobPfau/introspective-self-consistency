@@ -111,13 +111,13 @@ def self_consistency_evaluation(
         result["explanation"] = explanation
         # Parse explanation
         try:
-            fn = parse_explanation(explanation)
+            fn = parse_explanation(explanation, model_name=model_name)
         except BaseException:
             logger.info(f"invalid explanation - couldn't parse: {explanation}")
             total_results.append(result)
             continue
 
-        if not valid_explanation(fn, len(sequence_str)):
+        if not valid_explanation(fn, len(sequence)):
             logger.info(f"invalid explanation: {explanation}")
             total_results.append(result)
             continue
