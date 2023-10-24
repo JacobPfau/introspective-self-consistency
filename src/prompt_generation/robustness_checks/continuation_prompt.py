@@ -34,7 +34,10 @@ from src.models.openai_model import (
     OpenAITextModels,
 )
 from src.pipelines import ShotSamplingType
-from src.pipelines.sequence_completions import sequence_functions
+from src.pipelines.sequence_completions import (
+    binary_sequence_functions,
+    sequence_functions,
+)
 from src.prompt_generation import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
 from src.prompt_generation.robustness_checks.utils import (
@@ -91,10 +94,23 @@ def create_continuation_prompt(
 
             if base == 10:
                 file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE10)
+                all_sequences = sequence_functions
             elif base == 2:
                 file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE2)
+                all_sequences = binary_sequence_functions
             else:
                 raise ValueError(f"Invalid base: {base}")
+
+                # Add the functions to the pretext
+            all_sequences_formatted = {
+                sequence: all_sequences[sequence].format("a", "b")
+                for sequence in all_sequences
+            }
+
+            for sequence_type in all_sequences_formatted:
+                file_text += (
+                    sequence_type + "->" + all_sequences_formatted[sequence_type] + "\n"
+                )
             pretext = [
                 {
                     "role": "system",

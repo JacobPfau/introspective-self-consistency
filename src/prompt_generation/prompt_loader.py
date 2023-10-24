@@ -71,12 +71,12 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
     elif prompt_base == PromptBase.ROBUST_EXPLANATION_BASE10:
         path = os.path.join(
             root_dir,
-            "src/prompt_generation/prompts_txt/robustness_system_prompt_expl_10.txt",
+            "src/prompt_generation/prompts_txt/robustness_system_prompt_exp_10.txt",
         )
     elif prompt_base == PromptBase.ROBUST_EXPLANATION_BASE2:
         path = os.path.join(
             root_dir,
-            "src/prompt_generation/prompts_txt/robustness_system_prompt_expl_2.txt",
+            "src/prompt_generation/prompts_txt/robustness_system_prompt_exp_2.txt",
         )
     elif prompt_base == PromptBase.ROLE_PROMPT:
         path = os.path.join(
