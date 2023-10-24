@@ -81,11 +81,11 @@ def create_continuation_prompt(
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
         assert isinstance(prompt_text, str)
-        pretext = "Here are some examples of sequence continuations."
-        pretext += "\n"
-        text = pretext + prompt_text + text
-        text += "\n"
-        text += "A: "
+        text = get_formatted_prompt(
+            PromptBase.COMPLETION_SKELETON_TEXT,
+            {"prompt_text": prompt_text, "text": text},
+        )
+        logger.info(f"Full Completion Prompt:{text}")
         return text
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
@@ -145,19 +145,18 @@ def generate_cont_shot_prompt(
         raise ValueError(f"Invalid shot method: {shot_method}")
 
     if model_name in OpenAITextModels.list():
-        text = "Q: "
         if base == 10:
-            text += ",".join([str(x) for x in sequence])
-            a_text = str(eval(fn)(sequence_length))
+            sequence_str = ",".join([str(x) for x in sequence])
+            continuation = str(eval(fn)(sequence_length))
         elif base == 2:
-            text += ",".join([bin(x) for x in sequence])
-            a_text = bin(eval(fn)(sequence_length))
+            sequence_str = ",".join([bin(x) for x in sequence])
+            continuation = bin(eval(fn)(sequence_length))
         else:
             raise ValueError(f"Invalid base: {base}")
-        text += "\n"
-        text += "A: "
-        text += a_text
-        text += "\n"
+        text = get_formatted_prompt(
+            PromptBase.COMPLETION_SHOT_TEXT,
+            {"sequence": sequence_str, "continuation": continuation},
+        )
         return text
 
     elif model_name in OpenAIChatModels.list():

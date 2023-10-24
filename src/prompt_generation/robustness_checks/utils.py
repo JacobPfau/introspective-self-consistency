@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import OpenAIChatModels, OpenAITextModels
+from src.prompt_generation.prompt_loader import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import ROLE_PROMPTS
 
 
@@ -68,17 +69,23 @@ def start_question(
     """
     Start the question to prompt the model with, using the role and sequence.
     """
-    text += "\n"
-    # TODO: Decide if we want role prompt to go here
-    if role_prompt is not None:
-        text += ROLE_PROMPTS[role_prompt]
-        text += "\n"
-    text += f"The sequence is in base {base}."
-    text += "\nQ: "
     if base == 10:
-        text += ",".join([str(x) for x in sequence])
+        sequence_str = ",".join([str(x) for x in sequence])
     elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
+        sequence_str = ",".join([bin(x) for x in sequence])
     else:
         raise ValueError(f"Invalid base: {base}")
-    return text
+    if role_prompt is None:
+        return text + get_formatted_prompt(
+            PromptBase.ROLE_PROMPT,
+            {"role_prompt": "", "seq": sequence_str, "base": base},
+        )
+    else:
+        return text + get_formatted_prompt(
+            PromptBase.ROLE_PROMPT,
+            {
+                "role_prompt": ROLE_PROMPTS[role_prompt],
+                "seq": sequence_str,
+                "base": base,
+            },
+        )

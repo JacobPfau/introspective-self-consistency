@@ -95,7 +95,8 @@ def create_explanation_prompt(
         pretext += "\n"
         text = pretext + prompt_text + text
         text += "\n"
-        text += "A: "
+        text += "Explanation: "
+        logger.info(f"Full Explanation Prompt:{text}")
         return text
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
@@ -169,13 +170,10 @@ def generate_exp_shot_prompt(
         raise ValueError(f"Invalid shot method: {shot_method}")
 
     if model_name in OpenAITextModels.list():
-        text = "Q: "
-        text += ",".join([str(x) for x in sequence])
-        text += "\n"
-        text += "Explanation: "
-        text += fn
-        text += "\n"
-        text += "\n"
+        sequence_str = ",".join([str(x) for x in sequence])
+        text = get_formatted_prompt(
+            PromptBase.EXPLANATION_SHOT_TEXT, {"sequence": sequence_str, "fn": fn}
+        )
         return text
 
     elif model_name in OpenAIChatModels.list():
@@ -193,23 +191,26 @@ def generate_exp_shot_prompt(
         raise ValueError(f"Invalid model name: {model_name}")
 
 
-def parse_explanation(model_response: str) -> str:
+def parse_explanation(model_response: str, model_name: str) -> str:
     """
     Parse an explanation into a function.
     """
-    # Splitting the string into lines
-    lines = model_response.split("\n")
+    if model_name in OpenAITextModels.list():
+        return model_response
+    elif model_name in OpenAIChatModels.list():
+        # Splitting the string into lines
+        lines = model_response.split("\n")
 
-    # Initializing the variables with None
-    x = ""
+        # Initializing the variables with None
+        x = ""
 
-    # Looping over the lines
-    for line in lines:
-        # Splitting the line into key and value
-        parts = line.split(": ", 1)
-        if len(parts) == 2:
-            key, value = parts
-            # Saving the value based on the key
-            if key == "Explanation":
-                x = value
-    return x
+        # Looping over the lines
+        for line in lines:
+            # Splitting the line into key and value
+            parts = line.split(": ", 1)
+            if len(parts) == 2:
+                key, value = parts
+                # Saving the value based on the key
+                if key == "Explanation":
+                    x = value
+        return x

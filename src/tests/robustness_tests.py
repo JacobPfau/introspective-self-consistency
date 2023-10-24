@@ -45,7 +45,22 @@ def cont_prompt_test():
         print(continuation_prompt)
 
 
+def create_explanation_prompt_test():
+    texto = create_continuation_prompt(
+        sequence=[1, 2, 3, 4, 5],
+        task_prompt="self-consistency",
+        role_prompt=None,
+        model_name="davinci",
+        base=10,
+        shots=4,
+        shot_method=ShotSamplingType.RANDOM,
+        seed=0,
+    )
+    print(texto)
+
+
 if __name__ == "__main__":
     # ambiguous_sequences_test()
     # generate_random_fn_sequence_test()
-    cont_prompt_test()
+    # cont_prompt_test()
+    create_explanation_prompt_test()

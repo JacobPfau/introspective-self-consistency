@@ -1,3 +1,4 @@
+import traceback
 from logging import getLogger
 from typing import Dict, List, Union
 
@@ -19,12 +20,18 @@ def valid_explanation(
     Given a function form and an offset as supplied by the model,
     return whether the string is a valid python function.
     """
+    assert isinstance(fn_form, str)
+    assert isinstance(sequence_length, int)
+    assert sequence_length >= 0
     try:
         # TODO: need to have this work for an arbitrary number of arguments
         [eval(fn_form)(i) for i in range(sequence_length + 1)]
         return True
     except Exception as e:
         logger.info(e)
+        logger.info(traceback.format_exc())
+        logger.info(f"invalid explanation: {fn_form}")
+        logger.info(f"sequence_length: {sequence_length}")
         return False
 
 
