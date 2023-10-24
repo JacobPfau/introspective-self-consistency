@@ -61,7 +61,6 @@ class SequenceCompletionEqConfig(BasePrompttypeConfig):
     max_offset = MAX_OFFSET
 
 
-@dataclass
 class SequenceCompletionBaseChangeConfig(BasePrompttypeConfig):
     num_samples: int = 1
     on_ambiguous_sequences: bool = True
