@@ -89,14 +89,12 @@ def create_explanation_prompt(
     pre_prompt = pre_prompt.format(base)
     # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
-        assert isinstance(prompt_text, str)
         # Prepend to the shots
         pretext = pre_prompt + "\n"
         pretext += "\n"
         text = pretext + prompt_text + text
         text += "\n"
         text += "Explanation: "
-        logger.info(f"Full Explanation Prompt:{text}")
         return text
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
@@ -155,7 +153,6 @@ def generate_exp_shot_prompt(
             # Reformat fn to replace every x after the first with x+offset
             fn = reformat_function(fn, offset, base)
             try:
-                assert isinstance(fn, str)
                 sequence = [eval(fn)(x) for x in range(sequence_length)]
                 break
             except RecursionError:

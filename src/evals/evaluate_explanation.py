@@ -20,9 +20,6 @@ def valid_explanation(
     Given a function form and an offset as supplied by the model,
     return whether the string is a valid python function.
     """
-    assert isinstance(fn_form, str)
-    assert isinstance(sequence_length, int)
-    assert sequence_length >= 0
     try:
         # TODO: need to have this work for an arbitrary number of arguments
         [eval(fn_form)(i) for i in range(sequence_length + 1)]
@@ -45,7 +42,6 @@ def generate_explanation(
     TODO: refactor code, entirely copied from generate_continuation
     """
     if model_name in OpenAITextModels.list():
-        assert isinstance(prompt, str)
         # Feed this into the model
         model_response = generate_text_completion(
             prompt=prompt,
@@ -54,7 +50,6 @@ def generate_explanation(
             model=model_name,
         )
     elif model_name in OpenAIChatModels.list():
-        assert isinstance(prompt, list)
         # Feed this into the model
         model_response = generate_chat_completion(
             prompt_turns=prompt,

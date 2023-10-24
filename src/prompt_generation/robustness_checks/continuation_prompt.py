@@ -80,12 +80,10 @@ def create_continuation_prompt(
     # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
-        assert isinstance(prompt_text, str)
         text = get_formatted_prompt(
             PromptBase.COMPLETION_SKELETON_TEXT,
             {"prompt_text": prompt_text, "text": text},
         )
-        logger.info(f"Full Completion Prompt:{text}")
         return text
     elif model_name in OpenAIChatModels.list():
         assert isinstance(prompt_text, list)
