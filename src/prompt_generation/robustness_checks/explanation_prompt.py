@@ -32,10 +32,10 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
-from src.pipelines import ShotSamplingType
-from src.pipelines.sequence_completions import (
-    binary_sequence_functions,
-    sequence_functions,
+from src.pipelines import (
+    ShotSamplingType,
+    get_binary_sequences_as_dict,
+    get_sequences_as_dict,
 )
 from src.prompt_generation import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
@@ -101,10 +101,10 @@ def create_explanation_prompt(
         if show_function_space:
             if base == 10:
                 file_text = get_formatted_prompt(PromptBase.ROBUST_EXPLANATION_BASE10)
-                all_sequences = sequence_functions
+                all_sequences = get_sequences_as_dict()
             elif base == 2:
                 file_text = get_formatted_prompt(PromptBase.ROBUST_EXPLANATION_BASE2)
-                all_sequences = binary_sequence_functions
+                all_sequences = get_binary_sequences_as_dict()
             else:
                 raise ValueError(f"Invalid base: {base}")
 
@@ -160,6 +160,7 @@ def generate_exp_shot_prompt(
     """
     if shot_method == ShotSamplingType.RANDOM:
         for i in range(6):
+            sequence_functions = get_sequences_as_dict()
             fn, offset = _generate_random_function(
                 sequence_functions, num_range, offset_range, seed
             )

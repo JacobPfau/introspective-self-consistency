@@ -33,10 +33,10 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
-from src.pipelines import ShotSamplingType
-from src.pipelines.sequence_completions import (
-    binary_sequence_functions,
-    sequence_functions,
+from src.pipelines import (
+    ShotSamplingType,
+    get_binary_sequences_as_dict,
+    get_sequences_as_dict,
 )
 from src.prompt_generation import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
@@ -94,10 +94,10 @@ def create_continuation_prompt(
 
             if base == 10:
                 file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE10)
-                all_sequences = sequence_functions
+                all_sequences = get_sequences_as_dict()
             elif base == 2:
                 file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE2)
-                all_sequences = binary_sequence_functions
+                all_sequences = get_binary_sequences_as_dict()
             else:
                 raise ValueError(f"Invalid base: {base}")
 
@@ -150,6 +150,7 @@ def generate_cont_shot_prompt(
     Generate a single shot prompt for a continuation.
     """
     if shot_method == ShotSamplingType.RANDOM:
+        sequence_functions = get_sequences_as_dict()
         fn, sequence = generate_random_fn_sequence(
             sequence_functions, num_range, offset_range, sequence_length
         )

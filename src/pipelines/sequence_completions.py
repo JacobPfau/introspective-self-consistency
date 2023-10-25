@@ -61,21 +61,6 @@ sequence_functions = {
     ),
 }
 
-binary_sequence_functions = {
-    "arithmetic_progression": "lambda x: bin(({} * x) + {})",
-    "geometric_progression": "lambda x: bin(({} * x) * {})",
-    "exponential_progression": "lambda x: bin(({} * x) ** {})",
-    "power_progression": "lambda x: bin({} ** ({} * x))",
-    "bit_or_progression": "lambda x: bin(({} * x) | {})",
-    "modular_progression": "lambda x: bin((x * {}) % ({}+1))",
-    "indexing_criteria_progression": (
-        "lambda x: bin([i for i in range(100) if i % ({} + 1) or i % ({} + 1)][x])"
-    ),
-    "recursive_progression": (
-        "(lambda a:lambda v:bin(a(a,v)))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
-    ),
-}
-
 
 def find_ambiguous_integer_sequences(
     max_constant_term_one: int = 4,
