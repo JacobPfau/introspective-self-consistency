@@ -1,9 +1,9 @@
 import random
 
-from src.pipelines import ShotSamplingType
-from src.pipelines.sequence_completions import (
+from src.pipelines import (
+    ShotSamplingType,
     find_ambiguous_integer_sequences,
-    sequence_functions,
+    get_sequences_as_dict,
 )
 from src.prompt_generation.robustness_checks.continuation_prompt import (
     create_continuation_prompt,
@@ -16,9 +16,14 @@ def ambiguous_sequences_test():
 
 
 def generate_random_fn_sequence_test():
-    recursive_template = sequence_functions["recursive_progression"]
-    recursive_fn = recursive_template.format(230, 100)
-    print(eval(recursive_fn)(500))
+    sequence_functions = get_sequences_as_dict()
+
+    if "recursive_progression" in sequence_functions:
+        recursive_template = sequence_functions["recursive_progression"]
+        recursive_fn = recursive_template.format(230, 100)
+        print(eval(recursive_fn)(500))
+    else:
+        raise KeyError("'recursive_progression' not in list of all sequences!")
 
 
 def cont_prompt_test():
@@ -60,7 +65,7 @@ def create_explanation_prompt_test():
 
 
 if __name__ == "__main__":
-    # ambiguous_sequences_test()
-    # generate_random_fn_sequence_test()
-    # cont_prompt_test()
+    ambiguous_sequences_test()
+    generate_random_fn_sequence_test()
+    cont_prompt_test()
     create_explanation_prompt_test()
