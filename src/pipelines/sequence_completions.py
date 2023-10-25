@@ -45,22 +45,6 @@ from src.pipelines.classes import ShotSamplingType, TaskType
 from src.pipelines.sequences import get_sequences_as_dict
 from src.prompt_generation import PromptBase, get_formatted_prompt
 
-# Integer sequence functions
-sequence_functions = {
-    "arithmetic_progression": "lambda x: ({} * x) + {}",
-    "geometric_progression": "lambda x: ({} * x) * {}",
-    "exponential_progression": "lambda x: ({} * x) ** {}",
-    "power_progression": "lambda x: {} ** ({} * x)",
-    "bit_or_progression": "lambda x: ({} * x) | {}",
-    "modular_progression": "lambda x: (x * {}) % ({}+1)",
-    "indexing_criteria_progression": (
-        "lambda x: [i for i in range(100) if i % ({} + 1) or i % ({} + 1)][x]"
-    ),
-    "recursive_progression": (
-        "(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
-    ),
-}
-
 
 def find_ambiguous_integer_sequences(
     max_constant_term_one: int = 4,
