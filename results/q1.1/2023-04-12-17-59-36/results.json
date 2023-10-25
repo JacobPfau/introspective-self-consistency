@@ -1,1 +1,0 @@
-{"modular_progression": {"results": {"lambda x: (x * 1) % (2+1)": {"correct": 7, "incorrect": 3}, "lambda x: (x * 4) % (2+1)": {"correct": 3, "incorrect": 7}}, "average accuracy": 0.5, "total": 2}}

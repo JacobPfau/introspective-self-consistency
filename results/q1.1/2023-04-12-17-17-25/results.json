@@ -1,1 +1,0 @@
-{"lambda x: (2 * x) + 0": {"correct": 5, "incorrect": 0, "invalid": 0}, "lambda x: (2 * x) | 0": {"correct": 3, "incorrect": 2, "invalid": 0}, "lambda x: (2 * x) ** 1": {"correct": 3, "incorrect": 2, "invalid": 0}, "lambda x: (2 * x) * 1": {"correct": 4, "incorrect": 1, "invalid": 0}, "lambda x: (1 * x) * 2": {"correct": 4, "incorrect": 1, "invalid": 0}}
