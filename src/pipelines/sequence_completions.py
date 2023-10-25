@@ -144,8 +144,11 @@ def _check_ambiguity(
     for step_a_offset in range(step_offsets):
         for step_b_offset in range(step_offsets):
             completions = []
-            seq_acceptable = 0  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
-            # 0 if not ambiguous/not disambiguate-able. Otherwise stores index of disambiguating value
+            if disambiguate:
+                seq_acceptable = 0  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
+                # 0 if not ambiguous/not disambiguate-able. Otherwise stores index of disambiguating value
+            else:
+                seq_acceptable = 1
             for step in range(num_steps_to_check):
                 fn_a_step = eval(fn_a)(step + step_a_offset)
                 fn_b_step = eval(fn_b)(step + step_b_offset)

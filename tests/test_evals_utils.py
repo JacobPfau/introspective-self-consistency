@@ -1,12 +1,9 @@
 import json
 from pprint import pprint
 
-import evals.utils as utils
-from evals.prompts.choose_function import (
-    create_question_text,
-    function_selection_prompt,
-)
-from models.openai_model import DAVINCI_MODEL_NAME  # , CHAT_MODEL_NAME
+import src.evals.utils as utils
+
+# from src.models.openai_model import DAVINCI_MODEL_NAME  # , CHAT_MODEL_NAME
 
 # TODO: make these proper tests
 
@@ -43,14 +40,14 @@ def test_choose_function():
             print(result)
 
 
-def prompt_test():
-    prompt = function_selection_prompt(
-        num_shots=5,
-        sequence_length=5,
-        num_functions=4,
-        model_name=DAVINCI_MODEL_NAME,
-    )
-    print(prompt)
+# def prompt_test():
+#     prompt = function_selection_prompt(
+#         num_shots=5,
+#         sequence_length=5,
+#         num_functions=4,
+#         model_name=DAVINCI_MODEL_NAME,
+#     )
+#     print(prompt)
 
 
 def test_function_identification():
@@ -96,12 +93,12 @@ def test_base_conversion():
     print(utils.convert_numbers_to_base_b(stringo, base))
 
 
-def test_create_question_text_baseb():
-    # stringo = "lambda x: x ** 420 69 69 16 81"
-    base = 2
-    print(create_question_text(5, False, 6, base))
+# def test_create_question_text_baseb():
+#     # stringo = "lambda x: x ** 420 69 69 16 81"
+#     base = 2
+#     print(create_question_text(5, False, 6, base))
 
 
 if __name__ == "__main__":
     test_base_conversion()
-    test_create_question_text_baseb()
+    # test_create_question_text_baseb()

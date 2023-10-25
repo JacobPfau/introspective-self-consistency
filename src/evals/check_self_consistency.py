@@ -8,6 +8,7 @@ from src.evals.evaluate_explanation import (
     generate_implied_sequence,
     valid_explanation,
 )
+from src.pipelines import ShotSamplingType
 from src.prompt_generation.robustness_checks.continuation_prompt import (
     create_continuation_prompt,
 )
@@ -25,11 +26,12 @@ def self_consistency_evaluation(
     task_prompt: str,
     base: int,
     shots: int,
-    shot_method: str,
+    shot_method: ShotSamplingType,
     temperature: float,
     samples: int,
     role_prompt: Optional[str] = None,
     seed: int = 0,
+    show_function_space: bool = False,
 ):
     """
     Given a sequence, prompt the model to both continue the sequence and
@@ -48,6 +50,8 @@ def self_consistency_evaluation(
         base=base,
         shots=shots,
         shot_method=shot_method,
+        seed=seed,
+        show_function_space=show_function_space,
     )
 
     explanation_prompt = create_explanation_prompt(
@@ -58,11 +62,15 @@ def self_consistency_evaluation(
         base=base,
         shots=shots,
         shot_method=shot_method,
+        seed=seed,
+        show_function_space=show_function_space,
     )
 
     # Make the sequence base 2 if necessary
     if base == 2:
-        sequence = [bin(i) for i in sequence]
+        sequence_str = [bin(i) for i in sequence]
+    else:
+        sequence_str = [str(i) for i in sequence]
 
     for _ in range(samples):
         result = {
@@ -103,7 +111,7 @@ def self_consistency_evaluation(
         result["explanation"] = explanation
         # Parse explanation
         try:
-            fn = parse_explanation(explanation)
+            fn = parse_explanation(explanation, model_name=model_name)
         except BaseException:
             logger.info(f"invalid explanation - couldn't parse: {explanation}")
             total_results.append(result)
@@ -117,12 +125,12 @@ def self_consistency_evaluation(
             # check if the explanation is valid up to the continuation
             implied_sequence = generate_implied_sequence(
                 fn_form=fn,
-                sequence_length=len(sequence),
+                sequence_length=len(sequence_str),
             )
 
             implied_continuation = generate_implied_continuation(
                 fn_form=fn,
-                sequence_length=len(sequence),
+                sequence_length=len(sequence_str),
             )
 
         result["implied sequence"] = implied_sequence
@@ -130,8 +138,8 @@ def self_consistency_evaluation(
 
         # Check the explanation is accurate
         logger.info(f"implied_sequence: {implied_sequence}")
-        logger.info(f"sequence: {sequence}")
-        if implied_sequence == sequence:
+        logger.info(f"sequence: {sequence_str}")
+        if implied_sequence == sequence_str:
             correct = True
         else:
             correct = False

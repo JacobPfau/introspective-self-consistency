@@ -28,21 +28,24 @@ import logging
 import random
 from typing import List, Optional, Union
 
-from src.evals.utils import _generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     OpenAIChatModels,
     OpenAITextModels,
 )
-from src.pipelines.sequences import get_sequences_as_dict
-from src.prompt_generation.robustness_checks.distribution_prompt import (
-    ROLE_PROMPTS,
-    TASK_PROMPTS,
+from src.pipelines import (
+    ShotSamplingType,
+    get_binary_sequences_as_dict,
+    get_sequences_as_dict,
 )
-
-# TODO: fix generating functions to include recursive progressions, an ok fix for now.
-_SEQUENCE_FUNCTIONS = get_sequences_as_dict().copy()
-del _SEQUENCE_FUNCTIONS["recursive"]
+from src.prompt_generation import PromptBase, get_formatted_prompt
+from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
+from src.prompt_generation.robustness_checks.utils import (
+    extend_prompt,
+    generate_random_fn_sequence,
+    initialise_prompt,
+    start_question,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -53,16 +56,18 @@ def create_continuation_prompt(
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
-    shot_method: str = "random",
+    shot_method: ShotSamplingType = ShotSamplingType.RANDOM,
     role_prompt: Optional[str] = None,
     seed: int = 0,
+    show_function_space: bool = False,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
     """
     random.seed(seed)
     sequence_length = len(sequence)
-    prompt_text = "" if model_name in OpenAITextModels.list() else []
+    prompt_text = initialise_prompt(model_name)
+    # Generate the few shot examples
     if shots > 0:
         for i in range(shots):
             # Note: we are using the sequence length implicitly specified by
@@ -70,37 +75,56 @@ def create_continuation_prompt(
             shot_prompt = generate_cont_shot_prompt(
                 shot_method, sequence_length, model_name, base, i
             )
-            prompt_text += shot_prompt
+            prompt_text = extend_prompt(prompt_text, shot_prompt)
 
+    # Generate the continuation prompt
     text = TASK_PROMPTS[task_prompt]["continuation"]
-    text += "\n"
-    # TODO: Decide if we want role prompt to go here
-    if role_prompt is not None:
-        text += ROLE_PROMPTS[role_prompt]
-        text += "\n"
-    text += f"The sequence is in base {base}."
-    text += "\nQ: "
-    if base == 10:
-        text += ",".join([str(x) for x in sequence])
-    elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
-    else:
-        raise ValueError(f"Invalid base: {base}")
+    text = start_question(text, sequence, base, role_prompt)
+    # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
-        pretext = "Here are some examples of sequence continuations."
-        pretext += "\n"
-        text = pretext + prompt_text + text
-        text += "\n"
-        text += "A: "
+        text = get_formatted_prompt(
+            PromptBase.COMPLETION_SKELETON_TEXT,
+            {"prompt_text": prompt_text, "text": text},
+        )
         return text
     elif model_name in OpenAIChatModels.list():
-        pretext = [
-            {
-                "role": "system",
-                "content": "Here are some examples of sequence continuations.",
+        assert isinstance(prompt_text, list)
+        if show_function_space:
+
+            if base == 10:
+                file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE10)
+                all_sequences = get_sequences_as_dict()
+            elif base == 2:
+                file_text = get_formatted_prompt(PromptBase.ROBUST_COMPLETION_BASE2)
+                all_sequences = get_binary_sequences_as_dict()
+            else:
+                raise ValueError(f"Invalid base: {base}")
+
+                # Add the functions to the pretext
+            all_sequences_formatted = {
+                sequence: all_sequences[sequence].format("a", "b")
+                for sequence in all_sequences
             }
-        ]
+
+            for sequence_type in all_sequences_formatted:
+                file_text += (
+                    sequence_type + "->" + all_sequences_formatted[sequence_type] + "\n"
+                )
+            pretext = [
+                {
+                    "role": "system",
+                    "content": file_text,
+                }
+            ]
+
+        else:
+            pretext = [
+                {
+                    "role": "system",
+                    "content": "Here are some examples of sequence continuations.",
+                }
+            ]
 
         whole_prompt = (
             pretext
@@ -114,30 +138,40 @@ def create_continuation_prompt(
 
 
 def generate_cont_shot_prompt(
-    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10, shot=1
+    shot_method,
+    sequence_length,
+    model_name=DAVINCI_MODEL_NAME,
+    base=10,
+    shot=1,
+    num_range=(0, 7),
+    offset_range=(0, 7),
 ):
     """
     Generate a single shot prompt for a continuation.
     """
-    if shot_method == "random":
-        fn, offset = _generate_random_function(_SEQUENCE_FUNCTIONS, (0, 7), (0, 7))
-        # replace
-        fn = reformat_function(fn, offset)
-        sequence = [eval(fn)(x) for x in range(sequence_length)]
+    if shot_method == ShotSamplingType.RANDOM:
+        sequence_functions = get_sequences_as_dict()
+        fn, sequence = generate_random_fn_sequence(
+            sequence_functions, num_range, offset_range, sequence_length
+        )
+        for x in sequence:
+            assert isinstance(x, int)
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
+
     if model_name in OpenAITextModels.list():
-        text = "Q: "
         if base == 10:
-            text += ",".join([str(x) for x in sequence])
-            a_text = str(eval(fn)(sequence_length))
+            sequence_str = ",".join([str(x) for x in sequence])
+            continuation = str(eval(fn)(sequence_length))
         elif base == 2:
-            text += ",".join([bin(x) for x in sequence])
-            a_text = bin(eval(fn)(sequence_length))
-        text += "\n"
-        text += "A: "
-        text += a_text
-        text += "\n"
+            sequence_str = ",".join([bin(x) for x in sequence])
+            continuation = bin(eval(fn)(sequence_length))
+        else:
+            raise ValueError(f"Invalid base: {base}")
+        text = get_formatted_prompt(
+            PromptBase.COMPLETION_SHOT_TEXT,
+            {"sequence": sequence_str, "continuation": continuation},
+        )
         return text
 
     elif model_name in OpenAIChatModels.list():
@@ -147,6 +181,8 @@ def generate_cont_shot_prompt(
         elif base == 2:
             q_text = ",".join([bin(x) for x in sequence])
             a_text = bin(eval(fn)(sequence_length))
+        else:
+            raise ValueError(f"Invalid base: {base}")
         response = [{"role": "user", "content": q_text}]
         response += [{"role": "assistant", "content": a_text}]
         return response

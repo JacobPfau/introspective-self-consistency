@@ -8,3 +8,10 @@ num_shots: 4
 few_shot_prompt_type: random
 task_prompt: self-consistency
 role_prompt: null
+custom_sequences: false
+max_constant_term_one: 5
+max_constant_term_two: 5
+num_steps_to_check: 2
+step_offsets: 5
+show_function_space: false
+seed: 21

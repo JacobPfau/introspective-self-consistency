@@ -32,10 +32,17 @@ from src.models.openai_model import (
     OpenAIChatModels,
     OpenAITextModels,
 )
-from src.pipelines.sequences import get_sequences_as_dict
-from src.prompt_generation.robustness_checks.distribution_prompt import (
-    ROLE_PROMPTS,
-    TASK_PROMPTS,
+from src.pipelines import (
+    ShotSamplingType,
+    get_binary_sequences_as_dict,
+    get_sequences_as_dict,
+)
+from src.prompt_generation import PromptBase, get_formatted_prompt
+from src.prompt_generation.robustness_checks.distribution_prompt import TASK_PROMPTS
+from src.prompt_generation.robustness_checks.utils import (
+    extend_prompt,
+    initialise_prompt,
+    start_question,
 )
 
 logger = getLogger(__name__)
@@ -46,9 +53,6 @@ which generated the preceding sequences base {}. Assume the first number was gen
 the second by f(1), the third by f(2), and so on.
 """
 
-# TODO: fix generating functions to include recursive progressions, an ok fix for now.
-sequence_functions = get_sequences_as_dict().copy()
-
 
 def create_explanation_prompt(
     sequence: List[int],
@@ -56,57 +60,78 @@ def create_explanation_prompt(
     model_name: str = DAVINCI_MODEL_NAME,
     base: int = 10,
     shots: int = 0,
-    shot_method: str = "random",
+    shot_method: ShotSamplingType = ShotSamplingType.RANDOM,
     role_prompt: Optional[str] = None,
     seed: int = 0,
+    show_function_space: bool = False,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
     """
-    random.seed(seed)
     sequence_length = len(sequence)
-    prompt_text = "" if model_name in OpenAITextModels.list() else []
+    prompt_text = initialise_prompt(model_name)
+    # Generate the few shot examples
     if shots > 0:
-        for i in range(shots):
+        for _ in range(shots):
             # Note: we are using the sequence length implicitly specified by
             # the target sequence to generate the prompts.
             shot_prompt = generate_exp_shot_prompt(
-                shot_method, sequence_length, model_name, base
+                shot_method, sequence_length, model_name, base, seed
             )
-            prompt_text += shot_prompt
+            prompt_text = extend_prompt(prompt_text, shot_prompt)
+            seed += 1
 
+    # Generate the explanation prompt
     text = TASK_PROMPTS[task_prompt]["explanation"]
-    text += "\n"
-    # TODO: Decide if we want role prompt to go here
-    if role_prompt is not None:
-        text += ROLE_PROMPTS[role_prompt]
-        text += "\n"
-    text += f"The sequence is in base {base}."
-    text += "\nQ: "
-    if base == 10:
-        text += ",".join([str(x) for x in sequence])
-    elif base == 2:
-        text += ",".join([bin(x) for x in sequence])
-    else:
-        raise ValueError(f"Invalid base: {base}")
+    text = start_question(text, sequence, base, role_prompt)
     pre_prompt = PRE_PROMPT
     pre_prompt = pre_prompt.format(base)
-    # logger.info(pre_prompt)
+    # Combine together to form the final prompt
     if model_name in OpenAITextModels.list():
         # Prepend to the shots
         pretext = pre_prompt + "\n"
         pretext += "\n"
         text = pretext + prompt_text + text
         text += "\n"
-        text += "A: "
+        text += "Explanation: "
         return text
     elif model_name in OpenAIChatModels.list():
-        pretext = [
-            {
-                "role": "system",
-                "content": pre_prompt,
+        assert isinstance(prompt_text, list)
+        if show_function_space:
+            if base == 10:
+                file_text = get_formatted_prompt(PromptBase.ROBUST_EXPLANATION_BASE10)
+                all_sequences = get_sequences_as_dict()
+            elif base == 2:
+                file_text = get_formatted_prompt(PromptBase.ROBUST_EXPLANATION_BASE2)
+                all_sequences = get_binary_sequences_as_dict()
+            else:
+                raise ValueError(f"Invalid base: {base}")
+
+            # Add the functions to the pretext
+            all_sequences_formatted = {
+                sequence: all_sequences[sequence].format("a", "b")
+                for sequence in all_sequences
             }
-        ]
+
+            for sequence_type in all_sequences_formatted:
+                file_text += (
+                    sequence_type + "->" + all_sequences_formatted[sequence_type] + "\n"
+                )
+
+            pretext = [
+                {
+                    "role": "system",
+                    "content": file_text,
+                }
+            ]
+        else:
+            pretext = [
+                {
+                    "role": "system",
+                    "content": pre_prompt,
+                }
+            ]
+
         whole_prompt = (
             pretext
             + prompt_text
@@ -120,34 +145,52 @@ def create_explanation_prompt(
 
 
 def generate_exp_shot_prompt(
-    shot_method, sequence_length, model_name=DAVINCI_MODEL_NAME, base=10
+    shot_method: ShotSamplingType,
+    sequence_length: int,
+    model_name=DAVINCI_MODEL_NAME,
+    base=10,
+    seed=0,
+    shot=1,
+    num_range=(0, 7),
+    offset_range=(0, 7),
 ):
     """
     Generate a single shot prompt for a explanation.
     """
-    if shot_method == "random":
-        fn, offset = _generate_random_function(sequence_functions, (0, 7), (0, 7))
-        # Reformat fn to replace every x after the first with x+offset
-        fn = reformat_function(fn, offset, base)
-        sequence = [eval(fn)(x) for x in range(sequence_length)]
+    if shot_method == ShotSamplingType.RANDOM:
+        for i in range(6):
+            sequence_functions = get_sequences_as_dict()
+            fn, offset = _generate_random_function(
+                sequence_functions, num_range, offset_range, seed
+            )
+            # Reformat fn to replace every x after the first with x+offset
+            fn = reformat_function(fn, offset, base)
+            try:
+                sequence = [eval(fn)(x) for x in range(sequence_length)]
+                break
+            except RecursionError:
+                logger.info(f"Recursion Error in generate_exp_shot_prompt: {fn}")
+                seed += 1
+                random.seed(seed)
+                if i == 5:
+                    raise ValueError(
+                        "Kept generating improper recursive functions, try again!"
+                    )
     else:
         raise ValueError(f"Invalid shot method: {shot_method}")
 
     if model_name in OpenAITextModels.list():
-        text = "Q: "
-        text += ",".join([str(x) for x in sequence])
-        text += "\n"
-        text += "Explanation: "
-        text += fn
-        text += "\n"
-        text += "\n"
+        sequence_str = ",".join([str(x) for x in sequence])
+        text = get_formatted_prompt(
+            PromptBase.EXPLANATION_SHOT_TEXT, {"sequence": sequence_str, "fn": fn}
+        )
         return text
 
     elif model_name in OpenAIChatModels.list():
         if base == 10 or base == 2:
             q_text = ",".join([str(x) for x in sequence])
-        # elif base == 2:
-        #     q_text = ",".join([bin(x) for x in sequence])
+        else:
+            raise ValueError(f"Invalid base: {base}")
         response = [{"role": "user", "content": q_text}]
         a_text = "Explanation: " + fn
         response += [{"role": "assistant", "content": a_text}]
@@ -158,23 +201,26 @@ def generate_exp_shot_prompt(
         raise ValueError(f"Invalid model name: {model_name}")
 
 
-def parse_explanation(model_response: str) -> tuple[str, str]:
+def parse_explanation(model_response: str, model_name: str) -> str:
     """
     Parse an explanation into a function.
     """
-    # Splitting the string into lines
-    lines = model_response.split("\n")
+    if model_name in OpenAITextModels.list():
+        return model_response
+    elif model_name in OpenAIChatModels.list():
+        # Splitting the string into lines
+        lines = model_response.split("\n")
 
-    # Initializing the variables with None
-    x = ""
+        # Initializing the variables with None
+        x = ""
 
-    # Looping over the lines
-    for line in lines:
-        # Splitting the line into key and value
-        parts = line.split(": ", 1)
-        if len(parts) == 2:
-            key, value = parts
-            # Saving the value based on the key
-            if key == "Explanation":
-                x = value
-    return x
+        # Looping over the lines
+        for line in lines:
+            # Splitting the line into key and value
+            parts = line.split(": ", 1)
+            if len(parts) == 2:
+                key, value = parts
+                # Saving the value based on the key
+                if key == "Explanation":
+                    x = value
+        return x

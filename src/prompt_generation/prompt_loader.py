@@ -16,6 +16,15 @@ class PromptBase(Enum):
     BASE_CONSISTENCY = "base_consistency"
     CONSISTENCY_COMPLETION = "consistency_completion"
     POSSIBLE_COMPLETION = "possible_completion"
+    ROBUST_COMPLETION_BASE10 = "robust_completion_base10"
+    ROBUST_COMPLETION_BASE2 = "robust_completion_base2"
+    ROBUST_EXPLANATION_BASE10 = "robust_explanation_base10"
+    ROBUST_EXPLANATION_BASE2 = "robust_explanation_base2"
+    ROLE_PROMPT = "role_prompt"
+    COMPLETION_SKELETON_TEXT = "completion_skeleton_text"
+    EXPALANATION_SKELETON_TEXT = "explanation_skeleton_text"
+    COMPLETION_SHOT_TEXT = "completion_shot_text"
+    EXPLANATION_SHOT_TEXT = "explanation_shot_text"
 
 
 def _load_base_prompt_from_txt(txt_file: str) -> str:
@@ -69,6 +78,46 @@ def get_formatted_prompt(prompt_base: PromptBase, kw_args: dict = {}) -> str:
 
         return base_prompt
 
+    elif prompt_base == PromptBase.ROBUST_COMPLETION_BASE10:
+        path = os.path.join(
+            root_dir,
+            "src/prompt_generation/prompts_txt/robustness_system_prompt_cont_10.txt",
+        )
+    elif prompt_base == PromptBase.ROBUST_COMPLETION_BASE2:
+        path = os.path.join(
+            root_dir,
+            "src/prompt_generation/prompts_txt/robustness_system_prompt_cont_2.txt",
+        )
+    elif prompt_base == PromptBase.ROBUST_EXPLANATION_BASE10:
+        path = os.path.join(
+            root_dir,
+            "src/prompt_generation/prompts_txt/robustness_system_prompt_exp_10.txt",
+        )
+    elif prompt_base == PromptBase.ROBUST_EXPLANATION_BASE2:
+        path = os.path.join(
+            root_dir,
+            "src/prompt_generation/prompts_txt/robustness_system_prompt_exp_2.txt",
+        )
+    elif prompt_base == PromptBase.ROLE_PROMPT:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/role_prompt.txt"
+        )
+    elif prompt_base == PromptBase.COMPLETION_SKELETON_TEXT:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/continuation_skeleton_text.txt"
+        )
+    elif prompt_base == PromptBase.EXPALANATION_SKELETON_TEXT:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/explanation_skeleton.txt"
+        )
+    elif prompt_base == PromptBase.EXPLANATION_SHOT_TEXT:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/explanation_shot_text.txt"
+        )
+    elif prompt_base == PromptBase.COMPLETION_SHOT_TEXT:
+        path = os.path.join(
+            root_dir, "src/prompt_generation/prompts_txt/continuation_shot_text.txt"
+        )
     else:
         raise ValueError(f"Invalid prompt base: {prompt_base}")
 

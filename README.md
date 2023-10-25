@@ -59,7 +59,13 @@ python main.py --multirun +task=sequence_completion_capability model=davinci,tex
 python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314,claude-v1
 ```
 
-## Q1.2: Self-Consistency under
+## Q1.2: Self-Consistency Robustness
+
+```sh
+python main.py --multirun +task=compute_dependence_with_base_changes model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314
+```
+
+### Speaker and Task Changes
 
 The goal of Q1.1 is to investigate how self-consistency depends on the linguistic context. We vary both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
 

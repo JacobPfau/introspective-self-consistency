@@ -12,7 +12,7 @@ CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
 _MAX_RETRIES = 3
-_RETRY_TIMEOUT = 10
+_RETRY_TIMEOUT = 1
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
