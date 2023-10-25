@@ -4,7 +4,7 @@ This repository accomapnies and produces the results from our [paper](https://ar
 **Abstract:** Large language models (LLMs) that do not give consistent answers across contexts are problematic when used for tasks with expectations of consistency, e.g., question-answering, explanations, etc. Our work presents an evaluation benchmark for self-consistency in cases of under-specification where two or more answers can be correct. We conduct a series of behavioral experiments on the OpenAI model suite using an ambiguous integer sequence completion task. We find that average consistency ranges from 67\% to 82\%, far higher than would be predicted if a model's consistency was random, and increases as model capability improves. Furthermore, we show that models tend to maintain self-consistency across a series of robustness checks, including prompting speaker changes and sequence length changes. These results suggest that self-consistency arises as an emergent capability without specifically training for it. Despite this, we find that models are uncalibrated when judging their own consistency, with models displaying both over- and under-confidence. We also propose a nonparametric test for determining from token output distribution whether a model assigns non-trivial probability to alternative answers. Using this test, we find that despite increases in self-consistency, models usually place significant weight on alternative, inconsistent answers. This distribution of probability mass provides evidence that even highly self-consistent models internally compute multiple possible responses.
 
 
-# Environment
+# Setup
 Best practice is to create a virtual environment and install relevant dependencies in there to develop and run the code.
 
 ```
@@ -24,6 +24,15 @@ This makes applies various hooks before when you commit code. These hooks check 
 You can read more [here](https://pre-commit.com/).
 
 When you get stuck/annoyed by pre-commit rejecting your commit, you may choose to run `git commit -m "your message" --no-verify` or `-n` to skip the hooks. This is not recommended because it bypasses the linting and can introduce trouble for other devs.
+
+## Tests
+Tests can be run with `pytest`.
+The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
+To work around this invoke pytest as a python module or update Python path:
+```sh
+python -m pytest tests
+```
+
 
 # Experiments
 
@@ -102,12 +111,4 @@ python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10 seed=41,42,43
 ## Q2.2: Verbalization of Alternatives
 ```sh
 python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10 model=text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314 seed=41,42,43
-```
-
-# Tests
-Tests are run using `pytest`.
-The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
-To work around this invoke pytest as a python module or update Python path:
-```sh
-python -m pytest tests
 ```

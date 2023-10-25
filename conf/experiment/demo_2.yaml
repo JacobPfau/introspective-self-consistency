@@ -1,8 +1,0 @@
-# @package _global_
-# note:
-#  the line above is necessary to make Hydra treat the following as top-level config parameters
-#  instead of nested under "experiment"
-model: gpt-4-0314 # the delta from the default config ...
-
-defaults: # ... all other parameters are taken from the default task config
-  - /task/ambibench_completion
