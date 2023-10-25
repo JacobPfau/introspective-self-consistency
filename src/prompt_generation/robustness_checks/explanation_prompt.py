@@ -68,7 +68,6 @@ def create_explanation_prompt(
     """
     Create a prompt to continue a sequence of numbers.
     """
-    random.seed(seed)
     sequence_length = len(sequence)
     prompt_text = initialise_prompt(model_name)
     # Generate the few shot examples
