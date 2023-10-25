@@ -1,0 +1,12 @@
+# @package _global_
+# note:
+#  the line above is necessary to make Hydra treat the following as top-level config parameters
+#  instead of nested under "experiment"
+
+num_shots: [4, 6, 8, 10]
+seed: [41,42,43]
+invalid_fn_type: ["random", "same_class", "exclude_class"]
+model: ["text-davinci-003", "gpt-3.5-turbo-0301", "gpt-4-0314"]
+
+defaults: # ... all other parameters are taken from the default task config
+  - /task/q2_2_alternative_verbalization.yaml
