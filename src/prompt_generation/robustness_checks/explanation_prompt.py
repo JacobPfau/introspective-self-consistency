@@ -26,7 +26,7 @@ import random
 from logging import getLogger
 from typing import List, Optional, Union
 
-from src.evals.utils import _generate_random_function, reformat_function
+from src.evals.utils import generate_random_function, reformat_function
 from src.models.openai_model import (
     DAVINCI_MODEL_NAME,
     OpenAIChatModels,
@@ -160,7 +160,7 @@ def generate_exp_shot_prompt(
     if shot_method == ShotSamplingType.RANDOM:
         for i in range(6):
             sequence_functions = get_sequences_as_dict()
-            fn, offset = _generate_random_function(
+            fn, offset = generate_random_function(
                 sequence_functions, num_range, offset_range, seed
             )
             # Reformat fn to replace every x after the first with x+offset

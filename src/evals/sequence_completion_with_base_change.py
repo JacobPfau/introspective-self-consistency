@@ -57,7 +57,6 @@ def evaluate_compute_dependence_with_base_changes(
                     shot_method=config.few_shot_prompt_type,
                     temperature=0.0,
                     samples=config.num_samples,
-                    seed=seed,
                     show_function_space=config.show_function_space,
                 )
             except Exception as e:

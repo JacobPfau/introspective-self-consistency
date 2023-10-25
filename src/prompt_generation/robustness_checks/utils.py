@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Tuple, Union
 
-from src.evals.utils import _generate_random_function, reformat_function
+from src.evals.utils import generate_random_function, reformat_function
 from src.models.openai_model import OpenAIChatModels, OpenAITextModels
 from src.prompt_generation.prompt_loader import PromptBase, get_formatted_prompt
 from src.prompt_generation.robustness_checks.distribution_prompt import ROLE_PROMPTS
@@ -31,7 +31,7 @@ def generate_random_fn_sequence(
     base: int = 10,
 ) -> Tuple[str, List[int]]:
     for _ in range(3):
-        fn, offset = _generate_random_function(
+        fn, offset = generate_random_function(
             sequence_functions, num_range, offset_range
         )
         fn = reformat_function(fn, offset, base)
