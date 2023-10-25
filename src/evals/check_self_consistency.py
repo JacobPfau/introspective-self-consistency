@@ -30,7 +30,6 @@ def self_consistency_evaluation(
     temperature: float,
     samples: int,
     role_prompt: Optional[str] = None,
-    seed: int = 0,
     show_function_space: bool = False,
 ):
     """
@@ -38,6 +37,9 @@ def self_consistency_evaluation(
     generate an explanation for the sequence (via a python function). Compare
     whether the two outputs are consistent.
     """
+
+    if isinstance(shot_method, str):
+        shot_method = ShotSamplingType(shot_method.lower())
 
     total_results = []
 
@@ -50,7 +52,6 @@ def self_consistency_evaluation(
         base=base,
         shots=shots,
         shot_method=shot_method,
-        seed=seed,
         show_function_space=show_function_space,
     )
 
@@ -62,7 +63,6 @@ def self_consistency_evaluation(
         base=base,
         shots=shots,
         shot_method=shot_method,
-        seed=seed,
         show_function_space=show_function_space,
     )
 

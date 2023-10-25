@@ -25,7 +25,6 @@ The sequences will be taken from the list of ambiguous sequences.
 """
 
 import logging
-import random
 from typing import List, Optional, Union
 
 from src.models.openai_model import (
@@ -58,13 +57,15 @@ def create_continuation_prompt(
     shots: int = 0,
     shot_method: ShotSamplingType = ShotSamplingType.RANDOM,
     role_prompt: Optional[str] = None,
-    seed: int = 0,
     show_function_space: bool = False,
 ) -> Union[str, List[dict]]:
     """
     Create a prompt to continue a sequence of numbers.
     """
-    random.seed(seed)
+
+    if isinstance(shot_method, str):
+        shot_method = ShotSamplingType(shot_method.lower())
+
     sequence_length = len(sequence)
     prompt_text = initialise_prompt(model_name)
     # Generate the few shot examples
