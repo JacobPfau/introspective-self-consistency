@@ -1,0 +1,4 @@
+
+{role_prompt}
+The sequence is in base {base}.
+Q: {seq}

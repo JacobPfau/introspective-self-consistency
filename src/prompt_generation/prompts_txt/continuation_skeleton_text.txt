@@ -1,0 +1,1 @@
+Here are some examples of sequence continuations.\n{prompt_text}{text}\nA:

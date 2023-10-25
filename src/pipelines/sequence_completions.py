@@ -21,9 +21,7 @@ Generating few-shot templtes automatticaly with few-shot types:
     - Sample ambiguous sequences
     - Sample sequences that **do not include similar rules**
 - Samples with ambiguity that show potential options.
-Generate CoT:
-- evaluate step by step with doctest (try before and after answer)
-- resolve each term
+
 (C) Evaluation & Experimental Design
 Exact equality
 - Function generates the next sequence value
@@ -38,79 +36,14 @@ Consistency evaluator - two outputs consistent
 """
 
 import random
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 
 from src.models import BaseModel
-
-PromptType = Literal["random", "same_fn", "same_class", "ambigious", "exclude_class"]
-
-SYSTEM_PROMPT = """
-You are a mathematical assistant.
-You are helping with integer sequences like arithmetic or geometric sequences.
-The sequence's are not always 0 indexed, some are offset starting from an arbitrary i-index value.
-You answer accurately and concisely.
-"""
-
-SYSTEM_PROMPT_COMPLETION = """
-You only respond with numbers.
-"""
-
-SYSTEM_PROMPT_EXPLANATION = """
-You only respond with code.
-"""
-
-BASE_PROMPT = """
-For the sequence: {}
-"""
-
-BASE_PROMPT_COMPLETION = """
-Complete the next number and only the next number.
-"""
-
-BASE_PROMPT_EXPLANATION = """
-Give the code that generates the above sequence.
-"""
-
-BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE = """
-Select the code that generates the above sequence from the following options.
-Only respond with the number of the valid option.
-Options:
-"""
-
-# BASE_PROMPT_COMPLETION_LIST_VALID = """
-# Complete the next number and only the next number"""
-
-# BASE_PROMPT_EXPLANATION_LIST_VALID = """
-# Give the code that generates the above sequence
-# """
-
-COT_PROMPT = """
-Let's solve this step by step:
-"""
-
-COT_STEP = """
-Step {}:
->>> fn = {}; fn({})
-{}
-"""
-
-# Integer sequence functions
-sequence_functions = {
-    "arithmetic_progression": "lambda x: ({} * x) + {}",
-    "geometric_progression": "lambda x: ({} * x) * {}",
-    "exponential_progression": "lambda x: ({} * x) ** {}",
-    "power_progression": "lambda x: {} ** ({} * x)",
-    "bit_or_progression": "lambda x: ({} * x) | {}",
-    "modular_progression": "lambda x: (x * {}) % ({}+1)",
-    "indexing_criteria_progression": (
-        "lambda x: [i for i in range(100) if i % ({} + 1) or i % ({} + 1)][x]"
-    ),
-    "recursive_progression": (
-        "(lambda a:lambda v:a(a,v))(lambda fn,x:1 if x==0 else {} * x * fn(fn,x-1) + {})"
-    ),
-}
+from src.pipelines.classes import ShotSamplingType, TaskType
+from src.pipelines.sequences import get_sequences_as_dict
+from src.prompt_generation import PromptBase, get_formatted_prompt
 
 
 def find_ambiguous_integer_sequences(
@@ -122,10 +55,9 @@ def find_ambiguous_integer_sequences(
     disambiguate_steps: int = 4,
     track_generating_fns: bool = False,
     multiple_offsets: bool = True,
-    valid_sequence_functions: dict = sequence_functions,
 ) -> Dict[str, List[Dict[str, Union[str, int]]]]:
     """
-    Find ambiguous_integer_sequences using brute force search
+    Find ambiguous sequence using brute force search
     over a set of progressions.
 
     A sequence is said to ambiguous if an initial set of two or more completions
@@ -146,7 +78,7 @@ def find_ambiguous_integer_sequences(
         {'fn': 'lambda x: (2*x) + 1', 'offset': 0}
     ]
     """
-    progression_base_fns = valid_sequence_functions
+    progression_base_fns = get_sequences_as_dict()
     progressions_to_check = set()
     for const_term_one in range(max_constant_term_one):
         for const_term_two in range(max_constant_term_two):
@@ -160,14 +92,14 @@ def find_ambiguous_integer_sequences(
     ambiguous_sequences = {}
     for ind, pair in enumerate(progressions_to_check):
         metadata_a, fn_a = pair
-        for metadata_b, fn_b in list(progressions_to_check)[ind + 1:]:
+        for metadata_b, fn_b in list(progressions_to_check)[ind + 1 :]:
             if fn_a == fn_b:
                 continue
 
             # check the sequence progressions
             # through n steps and add to ambiguous_sequences
             # if ambiguous
-            check_ambiguity(
+            _check_ambiguity(
                 num_steps_to_check,
                 step_offsets,
                 ambiguous_sequences,
@@ -183,7 +115,7 @@ def find_ambiguous_integer_sequences(
     return ambiguous_sequences
 
 
-def check_ambiguity(
+def _check_ambiguity(
     num_steps_to_check: int,
     step_offsets: int,
     ambiguous_sequences: dict,
@@ -212,8 +144,11 @@ def check_ambiguity(
     for step_a_offset in range(step_offsets):
         for step_b_offset in range(step_offsets):
             completions = []
-            seq_acceptable = 0  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
-            # 0 if not ambiguous/not disambiguate-able. Otherwise stores index of disambiguating value
+            if disambiguate:
+                seq_acceptable = 0  # tracks if the sequence is ambiguous and (if disambiguate=True) if it is disambiguate-able.
+                # 0 if not ambiguous/not disambiguate-able. Otherwise stores index of disambiguating value
+            else:
+                seq_acceptable = 1
             for step in range(num_steps_to_check):
                 fn_a_step = eval(fn_a)(step + step_a_offset)
                 fn_b_step = eval(fn_b)(step + step_b_offset)
@@ -291,9 +226,7 @@ def check_ambiguity(
 def generate_shot_pool(
     n_shots: int = 8,
     base_fn: dict = None,
-    shot_type: Literal[
-        "random", "same_fn", "same_class", "ambigious", "exclude_class"
-    ] = "random",
+    shot_type: ShotSamplingType = ShotSamplingType.RANDOM,
     ambiguous_sequences: dict = None,
 ) -> List[Dict[str, Any]]:
     """Generate a pool of `n_shots` of candidate functions.
@@ -303,26 +236,29 @@ def generate_shot_pool(
     """
 
     fn_pool = []
-    if shot_type == "random":
-        fn_pool = list(sequence_functions.values())
-    elif shot_type == "same_class":
+    if shot_type == ShotSamplingType.RANDOM:
+        fn_pool = list(get_sequences_as_dict().values())
+    elif shot_type == ShotSamplingType.SAME_CLASS:
         fn_pool = list(
             seq_fn
-            for seq_key, seq_fn in sequence_functions.items()
+            for seq_key, seq_fn in get_sequences_as_dict().items()
             if seq_key == base_fn["metadata"][0]
         )
-    elif shot_type == "exclude_class":
+    elif shot_type == ShotSamplingType.EXCLUDE_CLASS:
         fn_pool = list(
             seq_fn
-            for seq_key, seq_fn in sequence_functions.items()
+            for seq_key, seq_fn in get_sequences_as_dict().items()
             if seq_key != base_fn["metadata"][0]
         )
 
     shot_pool = []
     # we generate a prompt_pool with random parameters
-    # TODO: move these magic strings to somewhere more visible
     pool_size = 2 * n_shots
-    if shot_type in ["random", "same_class", "exclude_class"]:
+    if shot_type in [
+        ShotSamplingType.RANDOM,
+        ShotSamplingType.SAME_CLASS,
+        ShotSamplingType.EXCLUDE_CLASS,
+    ]:
         for _ in range(pool_size):
             offset = random.randint(0, 3)
             first_term = random.randint(1, 5)
@@ -331,11 +267,13 @@ def generate_shot_pool(
             shot_pool.append(
                 {"fn": fn.format(first_term, second_term), "offset": offset}
             )
-    elif shot_type == "same_fn":
+
+    elif shot_type == ShotSamplingType.SAME_FN:
         for _ in range(pool_size):
             offset = random.randint(0, 10)
             shot_pool.append({"fn": base_fn["fn"], "offset": offset})
-    elif shot_type == "ambigious":
+
+    elif shot_type == ShotSamplingType.AMBIGUOUS:
         while len(shot_pool) < pool_size:
             fn_item = random.choice(list(ambiguous_sequences.items()))
             fns = np.random.choice(fn_item[1], 2, replace=False)
@@ -348,20 +286,6 @@ def generate_shot_pool(
     return shots
 
 
-def _cot(fn_item: dict, steps: int) -> str:
-    """
-    Create a chain of thought steps by resolving the function a step at a time
-    for `:steps` steps.
-    """
-    prompt = COT_PROMPT
-    for step in range(steps):
-        completion = resolve_fn(fn_item, step)
-        prompt += COT_STEP.format(
-            step, fn_item["fn"], step + fn_item["offset"], completion
-        )
-    return prompt
-
-
 def resolve_fn(fn_item: dict, step: int) -> int:
     # resolve function to a given step
     step = step + fn_item["offset"]
@@ -371,57 +295,57 @@ def resolve_fn(fn_item: dict, step: int) -> int:
 def _create_sequence_prompt(
     sequence: str,
     fn_item: dict,
-    prompt_type: Literal["completion", "explanation"],
-    use_cot=False,
+    task_type: TaskType,
     use_multiple_choice=False,
-) -> Tuple[str, str, str]:
+) -> Tuple[str, str]:
     """Creates a prompt for completion type or explanation type prompts
 
     Example:
-    >>> _create_sequence_prompt("1,25", {"fn": 'lambda x: 5 ** (2 * x)', 'offset': 0}, "explanation", use_cot=False)
+    >>> _create_sequence_prompt("1,25", {"fn": 'lambda x: 5 ** (2 * x)', 'offset': 0}, "explanation")
     ('\nFor the sequence: 1,25\n\nGive the code that generates the above sequence.\n', 'lambda x: 5 ** (2 * x)', '')
-    >>> _create_sequence_prompt("1,25", {"fn": 'lambda x: 5 ** (2 * x)', 'offset': 0}, "completion", use_cot=False)
+    >>> _create_sequence_prompt("1,25", {"fn": 'lambda x: 5 ** (2 * x)', 'offset': 0}, "completion")
     ('\nFor the sequence: 1,25\n\nComplete the next number and only the next number.\n', 625, '')
 
     Args:
         sequence (str): the sequence
         fn_item (dict): the fn_item
-        prompt_type (Literal[&quot;completion&quot;, &quot;explanation&quot;]): type of prompt to use
-        use_cot (bool, optional)
+        task_type (TaskType): the task type (completion or explanation)
 
     Returns:
-        Tuple[str, str, str]: prompt, compleition, and chain of thought
+        Tuple[str, str]: prompt, completion
     """
-    prompt = BASE_PROMPT.format(sequence)
-    completion = ""
-    if prompt_type == "completion":
-        prompt += BASE_PROMPT_COMPLETION
+
+    if isinstance(task_type, str):
+        task_type = TaskType(task_type)
+
+    if task_type == TaskType.COMPLETION:
+        prompt = get_formatted_prompt(PromptBase.BASE_COMPLETION, {"seq": sequence})
         last_step = len(sequence.split(","))
-        completion = resolve_fn(fn_item, last_step)
-    elif prompt_type == "explanation":
+        completion = str(resolve_fn(fn_item, last_step))
+    elif task_type == TaskType.EXPLANATION:
 
         if use_multiple_choice:
-            prompt += BASE_PROMPT_EXPLANATION_MULTIPLE_CHOICE
+            prompt = get_formatted_prompt(
+                PromptBase.EXPLANATION_MULTIPLE_CHOICE, {"seq": sequence}
+            )
         else:
-            prompt += BASE_PROMPT_EXPLANATION
+            prompt = get_formatted_prompt(
+                PromptBase.BASE_EXPLANATION, {"seq": sequence}
+            )
         completion = fn_item["fn"]
+    else:
+        raise ValueError(f"Invalid task type: {task_type}")
 
-    cot = ""
-    if use_cot:
-        cot = _cot(fn_item, len(sequence.split(",")) + 1)
-    return prompt, completion, cot
+    return prompt, completion
 
 
 def _sample_shots(
     sequence: str,
     fn_item: dict,
     n_shots: int,
-    prompt_type: Literal["completion", "explanation"] = "completion",
-    use_cot: bool = False,
+    task_type: TaskType = TaskType.COMPLETION,
     n_mc_options: Optional[int] = None,
-    shot_type: Literal[
-        "random", "same_fn", "same_class", "ambigious", "exclude_class"
-    ] = "few_shot",
+    shot_type: ShotSamplingType = ShotSamplingType.RANDOM,
     ambiguous_sequences: dict = None,
 ) -> List[Dict[str, Any]]:
     """
@@ -439,11 +363,10 @@ def _sample_shots(
     for shot in shots:
         steps = random.randint(2, 4)
         sequence = get_sequence_string(shot, steps)
-        prompt, answer, cot = _create_sequence_prompt(
+        prompt, answer = _create_sequence_prompt(
             sequence,
             shot,
-            prompt_type,
-            use_cot=use_cot,
+            task_type,
             use_multiple_choice=False if n_mc_options is None else True,
         )
 
@@ -470,7 +393,7 @@ def _sample_shots(
             for i, expl in enumerate(multi_choice_options):
                 prompt += f"{i+1}. {expl['fn']}\n"
 
-        prompts.append({"prompt": prompt, "answer": answer, "cot": cot})
+        prompts.append({"prompt": prompt, "answer": answer})
 
     return prompts
 
@@ -484,49 +407,50 @@ def get_sequence_string(shot, steps) -> str:
 def generate_sequence_completion_prompt(
     sequence: str,
     fn_item: dict,
-    prompt_type: Literal["completion", "explanation"] = "completion",
-    use_cot: bool = False,
+    task_type=TaskType.COMPLETION,
     n_shots: int = 0,
-    shot_type: PromptType = "random",
+    shot_type=ShotSamplingType.RANDOM,
     ambiguous_sequences: dict = None,
 ) -> dict:
     """
     Generate sequence completion prompts
     including support for few_shot with `:n_shots`
-    and chain of thought step completions with `:use_cot`
 
     Returns:
         dict:
     """
-    # TODO: this should be generic so it isn't coupled to ChatGPT
+
+    if isinstance(task_type, str):
+        task_type = TaskType(task_type)
+    if isinstance(shot_type, str):
+        shot_type = ShotSamplingType(shot_type)
+
     prompt_turns = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT,
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
 
     shots = _sample_shots(
         sequence,
         fn_item,
-        prompt_type=prompt_type,
+        task_type=task_type,
         n_shots=n_shots,
-        use_cot=use_cot,
         shot_type=shot_type,
         ambiguous_sequences=ambiguous_sequences,
     )
 
     for shot in shots:
         answer = str(shot["answer"])
-        if use_cot:
-            answer += shot["cot"]
+
         turns = [
             {"role": "user", "content": shot["prompt"]},
             {"role": "assistant", "content": answer},
         ]
         prompt_turns.extend(turns)
 
-    prompt, answer, _ = _create_sequence_prompt(sequence, fn_item, prompt_type)
+    prompt, answer = _create_sequence_prompt(sequence, fn_item, task_type)
 
     prompt_turns.append({"role": "user", "content": prompt})
     return {"prompt_turns": prompt_turns, "answer": answer}
@@ -538,25 +462,26 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
     model: BaseModel,
     n_mc_options: int = 4,
     n_shots: int = 0,
-    shot_type: PromptType = "random",
+    shot_type: Union[ShotSamplingType, str] = "random",
     ambiguous_sequences: dict = None,
 ) -> dict:
 
-    prompt_type = "explanation"
-
+    task_type = TaskType.EXPLANATION
     prompt_turns = [
         {
             "role": "system",
-            "content": SYSTEM_PROMPT,
+            "content": get_formatted_prompt(PromptBase.SYSTEM_FUNCTION_SPACE),
         },
     ]
+
+    if isinstance(shot_type, str):
+        shot_type = ShotSamplingType(shot_type)
 
     shots = _sample_shots(
         sequence,
         fn_item,
-        prompt_type=prompt_type,
+        task_type=TaskType.EXPLANATION,
         n_shots=n_shots,
-        use_cot=False,
         n_mc_options=n_mc_options,
         shot_type=shot_type,
         ambiguous_sequences=ambiguous_sequences,
@@ -571,8 +496,8 @@ def generate_sequence_explanation_prompt_with_multiple_choices(
         ]
         prompt_turns.extend(turns)
 
-    prompt, answer, _ = _create_sequence_prompt(
-        sequence, fn_item, prompt_type, use_multiple_choice=True
+    prompt, answer = _create_sequence_prompt(
+        sequence, fn_item, task_type, use_multiple_choice=True
     )
 
     prompt_turns.append({"role": "user", "content": prompt})

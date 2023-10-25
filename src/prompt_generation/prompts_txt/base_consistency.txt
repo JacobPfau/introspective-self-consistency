@@ -1,0 +1,2 @@
+Is the following sequence: {seq} consistent with the function {fn}?
+Answer (Y/N):

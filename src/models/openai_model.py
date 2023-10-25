@@ -4,16 +4,15 @@ import time
 from typing import Callable, List, Tuple, TypeVar, Union
 
 import openai
-from openai.error import RateLimitError, ServiceUnavailableError
+from openai.error import RateLimitError, ServiceUnavailableError, Timeout
 
 from src.models.base_model import BaseModel
 
 CHAT_PROMPT_TEMPLATE = {"role": "user", "content": ""}
 # TEXT_PROMPT_TEMPLATE is just a simple string or array of strings
 DAVINCI_MODEL_NAME = "text-davinci-003"
-CHAT_MODEL_NAME = "gpt-3.5-turbo"
 _MAX_RETRIES = 3
-_RETRY_TIMEOUT = 10
+_RETRY_TIMEOUT = 1
 # Load your API key from an environment variable or secret management service
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
@@ -24,7 +23,7 @@ class OpenAITextModels(BaseModel):
 
 
 class OpenAIChatModels(BaseModel):
-    CHAT_GPT_35 = "gpt-3.5-turbo"
+    CHAT_GPT_35 = "gpt-3.5-turbo-0301"
     CHAT_GPT_4 = "gpt-4-0314"
 
 
@@ -61,6 +60,9 @@ def _with_retries(api_call: Callable[[], T], invalid_response: str) -> T:
             time.sleep(_RETRY_TIMEOUT)
         except ServiceUnavailableError:
             logger.error("Service Unvailable, Sleep and try again.")
+            time.sleep(_RETRY_TIMEOUT * 3)
+        except Timeout:
+            logger.error("Request timed out, Sleep and try again.")
             time.sleep(_RETRY_TIMEOUT * 3)
         except KeyError:
             logger.warning("Unexpected response format. Sleep and try again.")

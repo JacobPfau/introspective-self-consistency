@@ -12,14 +12,14 @@ from typing import Any, Dict, List, Optional, Union
 
 import pandas as pd
 import tiktoken
-from hydra.utils import get_original_cwd
 from tqdm import tqdm
 
 from src.evals.config import Q21LogprobInequalityConfig
-from src.models import BaseModel, OpenAITextModels
-from src.models.openai_model import (
-    generate_logprob_response_with_turns,
+from src.models import (
+    BaseModel,
+    OpenAITextModels,
     generate_response_with_turns,
+    openai_model,
 )
 from src.pipelines.alternative_completions import get_data_with_alternatives
 from src.pipelines.sequence_completions import (
@@ -72,24 +72,21 @@ def _get_logprob_from_response(
 def run_q2_1_eval(
     config: Q21LogprobInequalityConfig,
 ):
-    """Main function to run Q2.1 eval."""
-    config.csv_input_path = os.path.join(get_original_cwd(), config.csv_input_path)
+    """Main function to run Q2.1 eval from main.py script"""
 
-    # main function to run this eval which can be called from main.py
     logger.info("Prep data for Q2.1 eval.")
-    logger.info("Skipping non-text models as logprobs are not available.")
     amb_seqs, data = get_data_with_alternatives(
-        config.csv_input_path,
         config.num_valid,
         config.num_invalid,
         config.invalid_fn_type,
-        skip_non_text_models=True,
     )
+
+    model = config.model
     results = []
     logprob_results = []
     for entry in tqdm(data, desc="Evaluating Q2.1"):
         try:
-            model: BaseModel = entry["model"]
+
             sequence = entry["sequence"]
             org_func = entry["org_func"]
             valid_fns = entry["valid_fns"]
@@ -102,7 +99,6 @@ def run_q2_1_eval(
                 model,
                 org_func,
                 config.num_shots,
-                config.cot,
                 config.few_shot_prompt_type,
                 amb_seqs,
                 sequence,
@@ -143,7 +139,7 @@ def run_q2_1_eval(
                 "num_invalid": config.num_invalid,
                 "num_shots": config.num_shots,
                 "num_mc": config.num_multiple_choices,
-                "invalid_fn_type": config.invalid_fn_type,
+                "invalid_fn_type": config.invalid_fn_type.value,
                 "test_passing_completion": int(test_passing_completion),
                 "test_passing_explanation": int(test_passing_explanation),
             }
@@ -254,7 +250,7 @@ def _add_logprob_entries(
             "num_invalid": config.num_invalid,
             "num_shots": config.num_shots,
             "num_mc": config.num_multiple_choices,
-            "invalid_fn_type": config.invalid_fn_type,
+            "invalid_fn_type": config.invalid_fn_type.value,
             "response_type": "completion",
             "answer": compl,
             "logprob": logprob,
@@ -288,7 +284,7 @@ def _add_logprob_entries(
             "num_invalid": config.num_invalid,
             "num_shots": config.num_shots,
             "num_mc": config.num_multiple_choices,
-            "invalid_fn_type": config.invalid_fn_type,
+            "invalid_fn_type": config.invalid_fn_type.value,
             "response_type": "explanation",
             "answer": expl,
             "logprob": logprob,
@@ -318,7 +314,6 @@ def _eval_sequence_completion(
     model: BaseModel,
     org_func: Dict[str, Any],
     num_shots: int,
-    cot: bool,
     few_shot_prompt_type: str,
     amb_seqs: Dict[str, List[Dict[str, Union[str, int]]]],
     sequence: str,
@@ -329,7 +324,6 @@ def _eval_sequence_completion(
         sequence,
         org_func,
         n_shots=num_shots,
-        use_cot=cot,
         ambiguous_sequences=amb_seqs,
         shot_type=few_shot_prompt_type,
     )
@@ -340,7 +334,7 @@ def _eval_sequence_completion(
         (compl, "invalid") for compl in invalid_completions
     ]:
         # add completion to the last prompt turn
-        turns = copy.deepcopy(completion_prompt["prompt_turns"])
+        turns: List[Dict[str, str]] = copy.deepcopy(completion_prompt["prompt_turns"])
         completion_string = " " + str(completion)
 
         turns.append(
@@ -350,7 +344,7 @@ def _eval_sequence_completion(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,
@@ -397,7 +391,7 @@ def _eval_sequence_completion(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,
@@ -464,7 +458,7 @@ def _eval_sequence_explanation(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,
@@ -509,7 +503,7 @@ def _eval_sequence_explanation(
             }
         )
 
-        tokens, token_logprobs = generate_logprob_response_with_turns(
+        tokens, token_logprobs = openai_model.generate_logprob_response_with_turns(
             model,
             turns=turns,
             max_tokens=0,

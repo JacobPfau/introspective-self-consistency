@@ -1,6 +1,10 @@
-# "Introspective Truthfulness in LMs" - Repository for AI safety camp 2023
+# Self-Consistency of Large Language Models under Ambiguity
+This repository accomapnies and produces the results from our [paper](https://arxiv.org/abs/2310.13439). The research was conducted during the AI safety camp 2023 in the team consisting of Henning Bartsch, Ole Jorgensen, Domenic Rosati, Jason Hoelscher-Obermaier, and Jacob Pfau.
 
-# Environment
+**Abstract:** Large language models (LLMs) that do not give consistent answers across contexts are problematic when used for tasks with expectations of consistency, e.g., question-answering, explanations, etc. Our work presents an evaluation benchmark for self-consistency in cases of under-specification where two or more answers can be correct. We conduct a series of behavioral experiments on the OpenAI model suite using an ambiguous integer sequence completion task. We find that average consistency ranges from 67\% to 82\%, far higher than would be predicted if a model's consistency was random, and increases as model capability improves. Furthermore, we show that models tend to maintain self-consistency across a series of robustness checks, including prompting speaker changes and sequence length changes. These results suggest that self-consistency arises as an emergent capability without specifically training for it. Despite this, we find that models are uncalibrated when judging their own consistency, with models displaying both over- and under-confidence. We also propose a nonparametric test for determining from token output distribution whether a model assigns non-trivial probability to alternative answers. Using this test, we find that despite increases in self-consistency, models usually place significant weight on alternative, inconsistent answers. This distribution of probability mass provides evidence that even highly self-consistent models internally compute multiple possible responses.
+
+
+# Setup
 Best practice is to create a virtual environment and install relevant dependencies in there to develop and run the code.
 
 ```
@@ -21,11 +25,20 @@ You can read more [here](https://pre-commit.com/).
 
 When you get stuck/annoyed by pre-commit rejecting your commit, you may choose to run `git commit -m "your message" --no-verify` or `-n` to skip the hooks. This is not recommended because it bypasses the linting and can introduce trouble for other devs.
 
+## Tests
+Tests can be run with `pytest`.
+The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
+To work around this invoke pytest as a python module or update Python path:
+```sh
+python -m pytest tests
+```
+
+
 # Experiments
 
 To run a specific task, we simply specify it via the "task" parameter in the call to main.py:
 ```sh
-python main.py +task=ambibench_completion # runs exactly that task  ("+" before task needed for hydra weirdness reasons)
+python main.py +task=sequence_completion_equality # runs exactly that task  ("+" before task needed for hydra syntax)
 ```
 
 Note that a single "hydra run" is not the same as a single invocation of `python main.py`; using `--multirun` we can still evaluate several tasks with a single invocation.
@@ -34,7 +47,7 @@ Note that a single "hydra run" is not the same as a single invocation of `python
 ## How to do multiple runs at once
 For this we rely on the standard hydra `--multirun` mechanism, as follows:
 ```sh
-python main.py --multirun +task=ambibench_completion,ambi_bench_category_prediction  # '-m' can be used as shorthand for '--multirun'
+python main.py --multirun +task=sequence_completion_capability,sequence_completion_equality  # '-m' can be used as shorthand for '--multirun'
 ```
 
 ## How to sweep over both tasks _and_ custom configurations per task
@@ -47,15 +60,27 @@ Once we have written down our experiment configs, we can do
 python main.py -m +experiment=demo_1,demo_2
 ```
 
-## Q0
-
+## Q0.1: Sequence Completion Capability
 ```sh
-python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo,gpt-4-0314,claude-v1
+python main.py --multirun +task=sequence_completion_capability model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314
+
 ```
 
-## Q1.2
+## Q0.2: Sequence Completion Equality
 
-The goal of Q2.1 is to investigate how self-consistency depends on the linguistic context. We vary both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
+```sh
+python main.py --multirun +task=sequence_completion_equality model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314,claude-v1
+```
+
+## Q1.2: Self-Consistency Robustness
+
+```sh
+python main.py --multirun +task=compute_dependence_with_base_changes model=davinci,text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314
+```
+
+### Speaker and Task Changes
+
+The goal of Q1.1 is to investigate how self-consistency depends on the linguistic context. We vary both _what_ precisely we ask for, as well as _who_ (which simulacrum) we ask it of.
 
 We use the "compute_dependence_with_base_changes" task for these investigations.
 
@@ -76,18 +101,14 @@ As a first experiment, we investigate whether asking the model explicitly to be 
 python main.py -m +task=compute_dependence_with_base_changes task_prompt=self-consistency,max-probability
 ```
 
-## Q2.1
+## Q2.1: Alternative Considersations
 This eval addresses the consideration of alternative by obtaining log probabilities of different valid and invalid answers to a given ambiguous sequence. We wish to determine whether the model consistently allocates significant probability mass to valid options and what distribution over log probabilities of alternative answers can be observed.
 
 ```sh
-python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10,12
+python main.py -m +task=q2_1_logprob_inequality num_shots=4,6,8,10 seed=41,42,43
 ```
 
-
-# Tests
-Tests are run using `pytest`.
-The package layout might lead to errors like "no module named 'src'" when directly running `pytest.`
-To work around this invoke pytest as a python module:
+## Q2.2: Verbalization of Alternatives
 ```sh
-python -m pytest src/tests
+python main.py -m +task=q2_2_alternative_verbalization num_shots=4,6,8,10 model=text-davinci-003,gpt-3.5-turbo-0301,gpt-4-0314 seed=41,42,43
 ```

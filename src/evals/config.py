@@ -3,8 +3,9 @@ from typing import Optional, Union
 
 from omegaconf import DictConfig, OmegaConf
 
-from src.models.base_model import BaseModel
-from src.models.utils import get_model_from_string
+from src.evals.errors import InvalidConfigError
+from src.models import BaseModel, get_model_from_string
+from src.pipelines import ShotSamplingType
 
 MAX_OFFSET = 8
 NUM_SHOTS = 8
@@ -14,6 +15,7 @@ NUM_SHOTS = 8
 class BaseEvalConfig:
     task: str
     model: BaseModel
+    seed: int
 
     def __post_init__(self):
         if isinstance(self.model, str):
@@ -29,40 +31,50 @@ class BaseEvalConfig:
 
 
 @dataclass
-class AmbibenchCompletionConfig(BaseEvalConfig):
-    data_glob: str
+class BasePrompttypeConfig(BaseEvalConfig):
+    few_shot_prompt_type: ShotSamplingType
+
+    def __post_init__(self):
+        super().__post_init__()
+
+        if isinstance(self.few_shot_prompt_type, str):
+            try:
+                self.few_shot_prompt_type = ShotSamplingType(
+                    self.few_shot_prompt_type.lower()
+                )
+            except ValueError:
+                raise InvalidConfigError(
+                    f"Invalid few shot prompt type: '{self.few_shot_prompt_type}'"
+                )
 
 
 @dataclass
-class AmbibenchCatPredConfig(BaseEvalConfig):
-    data_glob: str
-    multiple_choice: bool
-
-
-@dataclass
-class StringTransformationConfig(BaseEvalConfig):
+class SequenceCompletionCapabilityConfig(BasePrompttypeConfig):
     num_shots = NUM_SHOTS
-    cot = False
-
-
-@dataclass
-class SequenceCompletionEqConfig(BaseEvalConfig):
-    num_shots = NUM_SHOTS
-    cot = True
     max_offset = MAX_OFFSET
-    few_shot_prompt_type = "random"
+    csv_input_path: str
 
 
 @dataclass
-class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
+class SequenceCompletionEqConfig(BasePrompttypeConfig):
+    num_shots = NUM_SHOTS
+    max_offset = MAX_OFFSET
+
+
+class SequenceCompletionBaseChangeConfig(BasePrompttypeConfig):
     num_samples: int = 1
     on_ambiguous_sequences: bool = True
     num_shots: int = 4
-    shot_method: str = "random"
     task_prompt: str = "self-consistency"
     role_prompt: Optional[str] = None
     base: int = 10
     seed: int = 21
+    custom_sequences: bool = False
+    max_constant_term_one: int = 5
+    max_constant_term_two: int = 5
+    num_steps_to_check: int = 2
+    step_offsets: int = 5
+    show_function_space: bool = False
 
     def __post_init__(self):
         super().__post_init__()
@@ -71,19 +83,27 @@ class SequenceCompletionBaseChangeConfig(BaseEvalConfig):
 
 
 @dataclass
-class Q21LogprobInequalityConfig(BaseEvalConfig):
-    csv_input_path: str
+class Q21LogprobInequalityConfig(BasePrompttypeConfig):
     num_shots: int = field(default=4)
     num_valid: int = field(default=2)
     num_invalid: int = field(default=3)
-    num_multiple_choices: int = field(default=5)  # number of multiple choice options
-    cot: bool = field(default=False)
-    few_shot_prompt_type: str = field(default="random")
-    invalid_fn_type: str = field(default="random")
+    num_multiple_choices: int = field(default=5)
+    invalid_fn_type: ShotSamplingType = field(default="random")
+
+    def __post_init__(self):
+        super().__post_init__()
+
+        if isinstance(self.invalid_fn_type, str):
+            try:
+                self.invalid_fn_type = ShotSamplingType(self.invalid_fn_type.lower())
+            except ValueError:
+                raise InvalidConfigError(
+                    f"Invalid few shot prompt type: '{self.invalid_fn_type}'"
+                )
 
 
 @dataclass
 class Q22ModelVerbalizationConfig(BaseEvalConfig):
-    csv_input_path: str
     num_shots: int = field(default=4)
     max_considerations: int = field(default=5)
+    shot_pool_term: int = field(default=6)

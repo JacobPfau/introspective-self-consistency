@@ -2,21 +2,23 @@ from typing import List, Union
 
 from src.models import anthropic_model, openai_model
 
+from .base_model import BaseModel
+from .utils import get_model_from_string
+
 
 def generate_response_with_turns(
-    model: Union[
-        str,
-        anthropic_model.AnthropicChatModels,
-        openai_model.OpenAIChatModels,
-        openai_model.OpenAITextModels,
-    ],
+    model: Union[str, BaseModel],
     turns: List[dict[str, str]],
     temperature: float = 0.0,
     max_tokens: int = 256,
 ) -> str:
+
+    if isinstance(model, str):
+        model = get_model_from_string(model)
+
     if (
-        model in openai_model.OpenAITextModels.list()
-        or model in openai_model.OpenAIChatModels.list()
+        model.value
+        in openai_model.OpenAITextModels.list() + openai_model.OpenAIChatModels.list()
     ):
         return openai_model.generate_response_with_turns(
             turns=turns,
@@ -32,4 +34,4 @@ def generate_response_with_turns(
             model=model,
         )
     else:
-        raise ValueError(f"Invalid model: {model}")
+        raise ValueError(f"Invalid model: {model.value}")
