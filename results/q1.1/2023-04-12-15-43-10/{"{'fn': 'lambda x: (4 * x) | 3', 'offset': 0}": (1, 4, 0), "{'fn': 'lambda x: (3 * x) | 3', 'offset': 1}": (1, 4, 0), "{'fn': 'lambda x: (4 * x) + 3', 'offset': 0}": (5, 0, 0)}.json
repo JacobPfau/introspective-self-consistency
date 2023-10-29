@@ -1,1 +1,0 @@
-{"{'fn': 'lambda x: (4 * x) | 3', 'offset': 0}": [1, 4, 0], "{'fn': 'lambda x: (3 * x) | 3', 'offset': 1}": [1, 4, 0], "{'fn': 'lambda x: (4 * x) + 3', 'offset': 0}": [5, 0, 0]}
